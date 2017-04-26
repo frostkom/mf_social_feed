@@ -1,0 +1,188 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-26 14:28+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Martin Fors\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: sv_SE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: esc_html__;esc_html_e;esc_attr__;esc_attr_e;__;_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: ..\n"
+
+#: ../include/classes.php:180
+msgid "The JSON I got back was not correct"
+msgstr "Jag fick tillbaka JSON som inte var korrekt"
+
+#: ../include/classes.php:187
+#, php-format
+msgid "The JSON I got back was not correct. Have a look at %s"
+msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
+
+#: ../include/classes.php:416
+msgid "Display Social Feeds"
+msgstr "Visa sociala flöden"
+
+#: ../include/classes.php:421
+#: ../include/functions.php:7
+msgid "Social Feed"
+msgstr "Socialt flöde"
+
+#: ../include/classes.php:506
+msgid "Read More"
+msgstr "Läs mer"
+
+#: ../include/classes.php:509
+msgid "All"
+msgstr "Alla"
+
+#: ../include/classes.php:573
+msgid "I could not find any posts at the moment. Sorry!"
+msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
+
+#: ../include/classes.php:612
+msgid "Heading"
+msgstr "Rubrik"
+
+#: ../include/classes.php:613
+msgid "Feeds"
+msgstr "Flöden"
+
+#: ../include/classes.php:615
+#: ../include/functions.php:157
+msgid "Amount"
+msgstr "Antal"
+
+#: ../include/classes.php:616
+msgid "Show Border"
+msgstr "Visa kant runt"
+
+#: ../include/classes.php:617
+msgid "Show Likes"
+msgstr "Visa gilla"
+
+#: ../include/classes.php:622
+msgid "No"
+msgstr "Nej"
+
+#: ../include/classes.php:623
+#: ../include/classes.php:624
+msgid "Yes"
+msgstr "Ja"
+
+#: ../include/classes.php:623
+msgid "Individually"
+msgstr "Individuellt"
+
+#: ../include/classes.php:624
+msgid "Grouped"
+msgstr "Grupperat"
+
+#: ../include/classes.php:627
+msgid "Show Filter"
+msgstr "Visa filter"
+
+#: ../include/functions.php:6
+#: ../include/functions.php:8
+#: ../include/functions.php:75
+msgid "Social Feeds"
+msgstr "Sociala flöden"
+
+#: ../include/functions.php:60
+msgid "Facebook APP ID"
+msgstr ""
+
+#: ../include/functions.php:61
+msgid "Facebook Secret"
+msgstr ""
+
+#: ../include/functions.php:62
+msgid "Instagram Access Token"
+msgstr ""
+
+#: ../include/functions.php:63
+msgid "Twitter Key"
+msgstr ""
+
+#: ../include/functions.php:64
+msgid "Twitter Secret"
+msgstr ""
+
+#: ../include/functions.php:65
+msgid "Twitter Access Token"
+msgstr ""
+
+#: ../include/functions.php:66
+msgid "Twitter Access Token Secret"
+msgstr ""
+
+#: ../include/functions.php:83
+#: ../include/functions.php:115
+#, php-format
+msgid "Go to %s and log in"
+msgstr "Gå till %s och logga in"
+
+#: ../include/functions.php:84
+#, php-format
+msgid "Create a new app and copy %s and %s to paste here"
+msgstr "Skapa en ny app och kopiera %s och %s för att klistra in här"
+
+#: ../include/functions.php:102
+#, php-format
+msgid "Go to %s and click on %s"
+msgstr "Gå till %s och klicka på %s"
+
+#: ../include/functions.php:103
+msgid "Make sure %s field is set to s%"
+msgstr "Se till att fältet %s innehåller %s"
+
+#: ../include/functions.php:104
+#, php-format
+msgid "Open a new browser tab and go to %s by replacing %s with your %s"
+msgstr "Öppna en ny tab i din webbläsare och go till %s genom att ersätta %s med din %s"
+
+#: ../include/functions.php:105
+msgid "Paste the returned token here"
+msgstr "Klistra in token som du får tillbaka här"
+
+#: ../include/functions.php:116
+#, php-format
+msgid "Click the tab %s"
+msgstr "Klicka på tabben %s"
+
+#: ../include/functions.php:117
+#, php-format
+msgid "Copy %s, %s, %s and %s to paste here"
+msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
+
+#: ../include/functions.php:155
+#: ../include/functions.php:264
+msgid "Service"
+msgstr "Tjänst"
+
+#: ../include/functions.php:156
+#: ../include/functions.php:271
+msgid "Search for"
+msgstr "Sök efter"
+
+#: ../include/functions.php:190
+#: ../include/functions.php:205
+msgid "I got an error when accessing the feed"
+msgstr "Jag fick ett fel när jag hämtade flödet"
+
+#: ../include/functions.php:211
+msgid "I am waiting to get access to the feed"
+msgstr "Jag väntar på att få tillgång till flödet"
+
+#: ../include/functions.php:258
+msgid "Settings"
+msgstr "Inställningar"
+
+#~ msgid "Less"
+#~ msgstr "Mindre"
