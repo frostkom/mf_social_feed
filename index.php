@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: MF Social Feed
-Plugin URI: 
+Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
 Version: 2.0.0
 Author: Martin Fors
@@ -9,7 +9,7 @@ Author URI: http://frostkom.se
 Text Domain: lang_social_feed
 Domain Path: /lang
 
-GitHub Plugin URI: 
+GitHub Plugin URI: frostkom/mf_social_feed
 */
 
 include_once("include/classes.php");
