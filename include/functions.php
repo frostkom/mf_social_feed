@@ -256,7 +256,7 @@ function meta_boxes_social_feed($meta_boxes)
 	$meta_boxes[] = array(
 		'id' => $meta_prefix.'settings',
 		'title' => __("Settings", 'lang_social_feed'),
-		'pages' => array('mf_social_feed'),
+		'post_types' => array('mf_social_feed'),
 		//'context' => 'side',
 		'priority' => 'low',
 		'fields' => array(
