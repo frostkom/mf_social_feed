@@ -156,11 +156,6 @@
 								right: 0;
 							}
 
-								.show_border .shorten-shortened:after
-								{
-									background: linear-gradient(to top, #fff 0, transparent 100%);
-								}
-
 								.shorten-clipped
 								{
 									opacity: 0;
