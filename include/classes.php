@@ -433,7 +433,7 @@ class widget_social_feed extends WP_Widget
 
 		echo $before_widget;
 
-			if($instance['social_heading'] != '')
+			if(isset($instance['social_heading']) && $instance['social_heading'] != '')
 			{
 				echo $before_title
 					.$instance['social_heading']
@@ -444,12 +444,12 @@ class widget_social_feed extends WP_Widget
 
 				$query_where = "";
 
-				if(count($instance['social_feeds']) > 0)
+				if(isset($instance['social_feeds']) && count($instance['social_feeds']) > 0)
 				{
 					$query_where .= " AND post_excerpt IN('".implode("','", $instance['social_feeds'])."')";
 				}
 
-				$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid, post_excerpt FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish'".$query_where." ORDER BY post_date DESC LIMIT 0, ".($instance['social_amount'] >= 1 ? $instance['social_amount'] : 18));
+				$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid, post_excerpt FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish'".$query_where." ORDER BY post_date DESC LIMIT 0, ".(isset($instance['social_amount']) && $instance['social_amount'] >= 1 ? $instance['social_amount'] : 18));
 
 				if($wpdb->num_rows > 0)
 				{
