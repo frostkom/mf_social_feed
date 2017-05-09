@@ -29,10 +29,11 @@ function cron_social_feed()
 	global $wpdb;
 
 	$obj_cron = new mf_cron();
-
 	$obj_social_feed = new mf_social_feed();
 
-	$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND post_modified < DATE_SUB(NOW(), INTERVAL 30 MINUTE) ORDER BY RAND()");
+	$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
+
+	$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND post_modified < DATE_SUB(NOW(), INTERVAL ".$setting_social_time_limit." MINUTE) ORDER BY RAND()");
 
 	foreach($result as $r)
 	{
@@ -41,10 +42,7 @@ function cron_social_feed()
 			break;
 		}
 
-		$feed_id = $r->ID;
-
-		$obj_social_feed->set_id($feed_id);
-
+		$obj_social_feed->set_id($r->ID);
 		$obj_social_feed->fetch_feed();
 	}
 }
@@ -57,6 +55,7 @@ function settings_social_feed()
 
 	$arr_settings = array();
 
+	$arr_settings['setting_social_time_limit'] = __("Time Limit", 'lang_social_feed');
 	$arr_settings['setting_facebook_api_id'] = __("Facebook APP ID", 'lang_social_feed');
 	$arr_settings['setting_facebook_api_secret'] = __("Facebook Secret", 'lang_social_feed');
 	$arr_settings['setting_instagram_api_token'] = __("Instagram Access Token", 'lang_social_feed');
@@ -73,6 +72,16 @@ function settings_social_feed_callback()
 	$setting_key = get_setting_key(__FUNCTION__);
 
 	echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed'));
+}
+
+function setting_social_time_limit_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+	$option = get_option_or_default($setting_key, 30);
+
+	$description = __("Minutes between each API request", 'lang_social_feed');
+
+	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='10' max='1440'", 'suffix' => $description));
 }
 
 function setting_facebook_api_id_callback()
@@ -174,7 +183,28 @@ function column_cell_social_feed($col, $id)
 		break;
 
 		case 'search_for':
-			echo $post_meta;
+			$service = get_post_meta($id, $meta_prefix.'type', true);
+
+			switch($service)
+			{
+				case 'facebook':
+					$feed_url = "//facebook.com/".str_replace("@", "", $post_meta);
+				break;
+
+				case 'instagram':
+					$feed_url = "//instagram.com/".str_replace("@", "", $post_meta);
+				break;
+
+				case 'twitter':
+					$feed_url = "//twitter.com/".str_replace("@", "", $post_meta);
+				break;
+
+				default:
+					$feed_url = "#";
+				break;
+			}
+
+			echo "<a href='".$feed_url."' rel='external'>".$post_meta."</a>";
 		break;
 
 		case 'amount_of_posts':
@@ -192,6 +222,8 @@ function column_cell_social_feed($col, $id)
 
 			else if($amount == 0)
 			{
+				$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
+
 				$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND ID = '%d' LIMIT 0, 1", $id));
 
 				foreach($result as $r)
@@ -199,10 +231,10 @@ function column_cell_social_feed($col, $id)
 					$post_date = $r->post_date;
 					$post_modified = $r->post_modified;
 
-					if($post_modified > $post_date)
+					if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime("-".$setting_social_time_limit." minute")))
 					{
 						echo "<i class='fa fa-close red fa-2x'></i>
-						<div class='row-actions'>".__("I got an error when accessing the feed", 'lang_social_feed')."</div>";
+						<div class='row-actions'>".__("The feed does not seam to work. This might be due to that the feed you are trying to access is not public.", 'lang_social_feed')."</div>";
 					}
 
 					else

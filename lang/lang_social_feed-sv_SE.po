@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-26 14:28+0100\n"
+"POT-Creation-Date: 2017-05-09 13:20+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -50,137 +50,148 @@ msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
 msgid "Heading"
 msgstr "Rubrik"
 
-#: ../include/classes.php:613
+#: ../include/classes.php:616
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:615
-#: ../include/functions.php:157
+#: ../include/classes.php:620
+#: ../include/functions.php:166
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:616
+#: ../include/classes.php:621
 msgid "Show Border"
 msgstr "Visa kant runt"
 
-#: ../include/classes.php:617
+#: ../include/classes.php:622
 msgid "Show Likes"
 msgstr "Visa gilla"
 
-#: ../include/classes.php:622
+#: ../include/classes.php:628
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:623
-#: ../include/classes.php:624
+#: ../include/classes.php:629
+#: ../include/classes.php:630
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:623
+#: ../include/classes.php:629
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:624
+#: ../include/classes.php:630
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:627
+#: ../include/classes.php:633
 msgid "Show Filter"
 msgstr "Visa filter"
 
 #: ../include/functions.php:6
 #: ../include/functions.php:8
-#: ../include/functions.php:75
+#: ../include/functions.php:74
 msgid "Social Feeds"
 msgstr "Sociala flöden"
 
-#: ../include/functions.php:60
+#: ../include/functions.php:58
+msgid "Time Limit"
+msgstr "Tidsgräns"
+
+#: ../include/functions.php:59
 msgid "Facebook APP ID"
 msgstr ""
 
-#: ../include/functions.php:61
+#: ../include/functions.php:60
 msgid "Facebook Secret"
 msgstr ""
 
-#: ../include/functions.php:62
+#: ../include/functions.php:61
 msgid "Instagram Access Token"
 msgstr ""
 
-#: ../include/functions.php:63
+#: ../include/functions.php:62
 msgid "Twitter Key"
 msgstr ""
 
-#: ../include/functions.php:64
+#: ../include/functions.php:63
 msgid "Twitter Secret"
 msgstr ""
 
-#: ../include/functions.php:65
+#: ../include/functions.php:64
 msgid "Twitter Access Token"
 msgstr ""
 
-#: ../include/functions.php:66
+#: ../include/functions.php:65
 msgid "Twitter Access Token Secret"
 msgstr ""
 
-#: ../include/functions.php:83
-#: ../include/functions.php:115
+#: ../include/functions.php:82
+msgid "Minutes between each API request"
+msgstr "Minuter mellan varje API-anrop"
+
+#: ../include/functions.php:92
+#: ../include/functions.php:124
 #, php-format
 msgid "Go to %s and log in"
 msgstr "Gå till %s och logga in"
 
-#: ../include/functions.php:84
+#: ../include/functions.php:93
 #, php-format
 msgid "Create a new app and copy %s and %s to paste here"
 msgstr "Skapa en ny app och kopiera %s och %s för att klistra in här"
 
-#: ../include/functions.php:102
+#: ../include/functions.php:111
 #, php-format
 msgid "Go to %s and click on %s"
 msgstr "Gå till %s och klicka på %s"
 
-#: ../include/functions.php:103
+#: ../include/functions.php:112
 msgid "Make sure %s field is set to s%"
 msgstr "Se till att fältet %s innehåller %s"
 
-#: ../include/functions.php:104
+#: ../include/functions.php:113
 #, php-format
 msgid "Open a new browser tab and go to %s by replacing %s with your %s"
 msgstr "Öppna en ny tab i din webbläsare och go till %s genom att ersätta %s med din %s"
 
-#: ../include/functions.php:105
+#: ../include/functions.php:114
 msgid "Paste the returned token here"
 msgstr "Klistra in token som du får tillbaka här"
 
-#: ../include/functions.php:116
+#: ../include/functions.php:125
 #, php-format
 msgid "Click the tab %s"
 msgstr "Klicka på tabben %s"
 
-#: ../include/functions.php:117
+#: ../include/functions.php:126
 #, php-format
 msgid "Copy %s, %s, %s and %s to paste here"
 msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 
-#: ../include/functions.php:155
-#: ../include/functions.php:264
+#: ../include/functions.php:164
+#: ../include/functions.php:296
 msgid "Service"
 msgstr "Tjänst"
 
-#: ../include/functions.php:156
-#: ../include/functions.php:271
+#: ../include/functions.php:165
+#: ../include/functions.php:303
 msgid "Search for"
 msgstr "Sök efter"
 
-#: ../include/functions.php:190
-#: ../include/functions.php:205
+#: ../include/functions.php:220
 msgid "I got an error when accessing the feed"
 msgstr "Jag fick ett fel när jag hämtade flödet"
 
-#: ../include/functions.php:211
+#: ../include/functions.php:237
+msgid "The feed does not seam to work. This might be due to that the feed you are trying to access is not public."
+msgstr "Flödet verkar inte fungera. Det kan t.ex. bero på att flödet som du försöker hämta från inte är publikt."
+
+#: ../include/functions.php:243
 msgid "I am waiting to get access to the feed"
 msgstr "Jag väntar på att få tillgång till flödet"
 
-#: ../include/functions.php:258
+#: ../include/functions.php:290
 msgid "Settings"
 msgstr "Inställningar"
 
