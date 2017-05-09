@@ -609,9 +609,14 @@ class widget_social_feed extends WP_Widget
 		get_post_children(array('post_type' => 'mf_social_feed'), $arr_data_feeds);
 
 		echo "<div class='mf_form'>"
-			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading']))
-			.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']))
-			."<div class='flex_flow'>"
+			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading']));
+
+			if(count($arr_data_feeds) > 1)
+			{
+				echo show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']));
+			}
+
+			echo "<div class='flex_flow'>"
 				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
 				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_border'), 'text' => __("Show Border", 'lang_social_feed'), 'value' => $instance['social_border']))
 				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Show Likes", 'lang_social_feed'), 'value' => $instance['social_likes']))
