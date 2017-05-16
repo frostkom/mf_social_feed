@@ -309,3 +309,15 @@ function meta_boxes_social_feed($meta_boxes)
 
 	return $meta_boxes;
 }
+
+function save_post_social_feed($post_id, $post, $update)
+{
+	global $wpdb;
+
+	if($post->post_type == 'mf_social_feed')
+	{
+		$obj_social_feed = new mf_social_feed();
+		$obj_social_feed->set_id($post_id);
+		$obj_social_feed->fetch_feed();
+	}
+}
