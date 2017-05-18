@@ -86,14 +86,28 @@ class mf_social_feed
 		$this->insert_posts();
 	}
 
+	function filter_search_for($value)
+	{
+		if(strpos($value, "/"))
+		{
+			$arr_search = explode("/", $value);
+
+			$value = $arr_search[count($arr_search) - 1];
+		}
+
+		if(substr($value, 0, 1) == "@")
+		{
+			$value = substr($value, 1);
+		}
+
+		return $value;
+	}
+
 	function fetch_facebook()
 	{
 		include_once("Facebook/autoload.php");
 
-		if(substr($this->search, 0, 1) == "@")
-		{
-			$this->search = substr($this->search, 1);
-		}
+		$this->search = $this->filter_search_for($this->search);
 
 		$fb = new Facebook\Facebook([
 		  'app_id' => $this->facebook_api_id,
@@ -442,14 +456,22 @@ class widget_social_feed extends WP_Widget
 
 			echo "<div class='section'>";
 
+				$arr_public_feeds = array();
 				$query_where = "";
-
+				
 				if(isset($instance['social_feeds']) && count($instance['social_feeds']) > 0)
 				{
-					$query_where .= " AND post_excerpt IN('".implode("','", $instance['social_feeds'])."')";
+					$query_where .= " AND ID IN('".implode("','", $instance['social_feeds'])."')";
 				}
 
-				$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid, post_excerpt FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish'".$query_where." ORDER BY post_date DESC LIMIT 0, ".(isset($instance['social_amount']) && $instance['social_amount'] >= 1 ? $instance['social_amount'] : 18));
+				$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish'".$query_where);
+
+				foreach($result as $r)
+				{
+					$arr_public_feeds[] = $r->ID;
+				}
+
+				$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid, post_excerpt FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".(isset($instance['social_amount']) && $instance['social_amount'] >= 1 ? $instance['social_amount'] : 18));
 
 				if($wpdb->num_rows > 0)
 				{

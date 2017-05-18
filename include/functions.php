@@ -172,9 +172,9 @@ function column_cell_social_feed($col, $id)
 {
 	global $wpdb;
 
-	$meta_prefix = "mf_social_feed_";
+	$obj_social_feed = new mf_social_feed();
 
-	$post_meta = get_post_meta($id, $meta_prefix.$col, true);
+	$post_meta = get_post_meta($id, $obj_social_feed->meta_prefix.$col, true);
 
 	switch($col)
 	{
@@ -183,20 +183,22 @@ function column_cell_social_feed($col, $id)
 		break;
 
 		case 'search_for':
-			$service = get_post_meta($id, $meta_prefix.'type', true);
+			$service = get_post_meta($id, $obj_social_feed->meta_prefix.'type', true);
+
+			$post_meta = $obj_social_feed->filter_search_for($post_meta);
 
 			switch($service)
 			{
 				case 'facebook':
-					$feed_url = "//facebook.com/".str_replace("@", "", $post_meta);
+					$feed_url = "//facebook.com/".$post_meta;
 				break;
 
 				case 'instagram':
-					$feed_url = "//instagram.com/".str_replace("@", "", $post_meta);
+					$feed_url = "//instagram.com/".$post_meta;
 				break;
 
 				case 'twitter':
-					$feed_url = "//twitter.com/".str_replace("@", "", $post_meta);
+					$feed_url = "//twitter.com/".$post_meta;
 				break;
 
 				default:
@@ -212,7 +214,7 @@ function column_cell_social_feed($col, $id)
 
 			$amount = $wpdb->num_rows;
 
-			$post_error = get_post_meta($id, $meta_prefix.'error', true);
+			$post_error = get_post_meta($id, $obj_social_feed->meta_prefix.'error', true);
 
 			if($post_error != '')
 			{
@@ -314,7 +316,7 @@ function save_post_social_feed($post_id, $post, $update)
 {
 	global $wpdb;
 
-	if($post->post_type == 'mf_social_feed')
+	if($post->post_type == 'mf_social_feed' && $update == false)
 	{
 		$obj_social_feed = new mf_social_feed();
 		$obj_social_feed->set_id($post_id);
