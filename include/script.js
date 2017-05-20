@@ -27,7 +27,7 @@ jQuery.fn.shorten = function(options)
 			self.addClass('shorten-shortened').html(text_start + "<span class='shorten-clipped hide'>" + text_end + "</span><span class='shorten-ellipsis form_button'>" + settings.ellipsis + "<br><a href='#' class='shorten-more-link'>" + settings.moreText + settings.ellipsis + "</a></span>");
 		}
 	});
-}
+};
 
 jQuery(function($)
 {
