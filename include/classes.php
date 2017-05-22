@@ -62,28 +62,45 @@ class mf_social_feed
 		}
 	}
 
-	function fetch_feed()
+	function get_amount($id = 0)
 	{
-		$this->arr_posts = array();
+		global $wpdb;
 
-		switch($this->get_type())
+		if($id > 0)
 		{
-			case 'facebook':
-				$this->fetch_facebook();
-			break;
-
-			case 'instagram':
-				$this->fetch_instagram();
-			break;
-
-			case 'twitter':
-				$this->fetch_twitter();
-			break;
+			$this->id = $id;
 		}
 
-		$this->set_date_modified();
+		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d'", $this->id));
+	}
 
-		$this->insert_posts();
+	function fetch_feed()
+	{
+		$type = $this->get_type();
+
+		if($this->search != '')
+		{
+			$this->arr_posts = array();
+
+			switch($type)
+			{
+				case 'facebook':
+					$this->fetch_facebook();
+				break;
+
+				case 'instagram':
+					$this->fetch_instagram();
+				break;
+
+				case 'twitter':
+					$this->fetch_twitter();
+				break;
+			}
+
+			$this->set_date_modified();
+
+			$this->insert_posts();
+		}
 	}
 
 	function filter_search_for($value)
@@ -287,6 +304,8 @@ class mf_social_feed
 
 		foreach($results as $key => $post)
 		{
+			do_log("Twitter row: ".var_export($post, true));
+
 			/*array('created_at' => 'Fri Feb 17 08:09:54 +0000 2017', 'id' => '[id]', 'id_str' => '[id]', 'text' => 'Text #hashtag', 'truncated' => false, 
 			'entities' => stdClass::__set_state(array(
 				'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))), 
@@ -355,7 +374,7 @@ class mf_social_feed
 		{
 			$post_title = $post['type']." ".$post['id'];
 
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_title = %s AND post_excerpt = '%d' LIMIT 0, 1", $post_title, $this->id));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_title = %s AND post_excerpt = '%d' AND post_date = %s LIMIT 0, 1", $post_title, $this->id, $post['created']));
 
 			if($wpdb->num_rows == 0)
 			{
@@ -370,8 +389,6 @@ class mf_social_feed
 					'meta_input' => array(
 						$this->meta_prefix.'name' => $post['name'],
 						$this->meta_prefix.'image' => $post['image'],
-						//$this->meta_prefix.'likes' => $post['likes'],
-						//$this->meta_prefix.'comments' => $post['comments'],
 					),
 				);
 
@@ -399,8 +416,6 @@ class mf_social_feed
 						'meta_input' => array(
 							$this->meta_prefix.'name' => $post['name'],
 							$this->meta_prefix.'image' => $post['image'],
-							//$this->meta_prefix.'likes' => $post['likes'],
-							//$this->meta_prefix.'comments' => $post['comments'],
 						),
 					);
 
@@ -418,6 +433,166 @@ class mf_social_feed
 				}
 			}
 		}
+	}
+
+	function get_output($data)
+	{
+		global $wpdb;
+
+		if(!isset($data['social_type'])){										$data['social_type'] = 'widget';}
+		if(!isset($data['social_amount']) || $data['social_amount'] < 1){		$data['social_amount'] = 18;}
+		if(!isset($data['social_border'])){										$data['social_border'] = 'yes';}
+
+		$arr_public_feeds = array();
+		$out = $query_where = "";
+
+		if($data['social_type'] == 'shortcode')
+		{
+			$out .= "<div class='widget social_feed'>";
+		}
+		
+			if(isset($data['social_feeds']) && count($data['social_feeds']) > 0)
+			{
+				$query_where .= " AND ID IN('".implode("','", $data['social_feeds'])."')";
+			}
+
+			$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish'".$query_where);
+
+			foreach($result as $r)
+			{
+				$arr_public_feeds[] = $r->ID;
+			}
+
+			$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid, post_excerpt FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".$data['social_amount']);
+
+			if($wpdb->num_rows > 0)
+			{
+				$arr_services = get_social_types_for_select();
+
+				$arr_post_feeds = $arr_post_posts = array();
+
+				foreach($result as $r)
+				{
+					$post_id = $r->ID;
+					$post_content = $r->post_content;
+					$post_date = $r->post_date;
+					$post_link = $r->guid;
+					$post_feed = $r->post_excerpt;
+
+					list($service, $service_id) = explode(" ", $r->post_title);
+
+					$post_name = get_post_meta($post_id, $this->meta_prefix.'name', true);
+					$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
+					$post_likes = get_post_meta($post_id, $this->meta_prefix.'likes', true);
+					$post_comments = get_post_meta($post_id, $this->meta_prefix.'comments', true);
+
+					if($post_content != '' || $post_image != '')
+					{
+						if(isset($data['social_filter']) && $data['social_filter'] != 'no')
+						{
+							if($data['social_filter'] == 'yes')
+							{
+								$arr_post_feeds[$post_feed] = get_post_title($post_feed);
+							}
+
+							else if($data['social_filter'] == 'group')
+							{
+								$arr_post_feeds[$service] = $arr_services[$service];
+							}
+						}
+
+						$arr_post_posts[] = array(
+							'service' => $service,
+							'feed' => $post_feed,
+							'link' => $post_link,
+							'name' => $post_name,
+							'content' => $post_content,
+							'image' => $post_image,
+							'date' => $post_date,
+							'likes' => $post_likes,
+							'comments' => $post_comments,
+						);
+					}
+				}
+
+				if(isset($data['social_filter']) && $data['social_filter'] != 'no' && count($arr_post_feeds) > 1)
+				{
+					mf_enqueue_script('script_social_feed', plugin_dir_url(__FILE__)."script.js", array('read_more' => __("Read More", 'lang_social_feed')), get_plugin_version(__FILE__));
+
+					$out .= "<ul class='sf_feeds'>
+						<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>";
+
+						foreach($arr_post_feeds as $key => $value)
+						{
+							$out .= "<li><a href='#' id='".($data['social_filter'] == 'yes' ? "sf_feed_".$key : "sf_".$key)."'>".$value."</a></li>";
+						}
+
+					$out .= "</ul>";
+				}
+
+				$class_xtra = "";
+
+				if(count($arr_post_posts) < 3)
+				{
+					$class_xtra .= " one_column";
+				}
+
+				if($data['social_border'] == 'yes')
+				{
+					$class_xtra .= " show_border";
+				}
+
+				$out .= "<ul class='sf_posts".$class_xtra."'>";
+
+					foreach($arr_post_posts as $post)
+					{
+						$out .= "<li class='sf_".$post['service']." sf_feed_".$post['feed']."'>
+							<i class='fa fa-".$post['service']."'></i>";
+
+							if($post['name'])
+							{
+								$out .= "<span class='name'>".$post['name']."</span>";
+							}
+
+							$out .= "<span class='date'>".format_date($post['date'])."</span>
+							<a href='".$post['link']."' class='content' rel='external'>";
+
+								if($post['image'] != '')
+								{
+									$out .= "<img src='".$post['image']."'>";
+								}
+
+								if($post['content'] != '')
+								{
+									$out .= "<p>".$post['content']."</p>";
+								}
+
+								if(isset($data['social_likes']) && $data['social_likes'] == 'yes' && ($post['likes'] != '' || $post['comments'] != ''))
+								{
+									$out .= "<div class='likes'>
+										<i class='fa fa-thumbs-up'></i><span>".$post['likes']."</span>
+										<i class='fa fa-comment-o'></i><span>".$post['comments']."</span>
+									</div>";
+								}
+
+							$out .= "</a>
+						</li>";
+					}
+
+				$out .= "</ul>";
+			}
+
+			else
+			{
+				$out .= "<p>".__("I could not find any posts at the moment. Sorry!", 'lang_social_feed')."</p>";
+			}
+
+		if($data['social_type'] == 'shortcode')
+		{
+			$out .= "</div>";
+		}
+
+		return $out;
 	}
 }
 
@@ -442,8 +617,8 @@ class widget_social_feed extends WP_Widget
 		global $wpdb;
 
 		extract($args);
-
-		$instance['social_border'] = isset($instance['social_border']) ? $instance['social_border'] : 'yes';
+		
+		$obj_social_feed = new mf_social_feed();
 
 		echo $before_widget;
 
@@ -454,148 +629,9 @@ class widget_social_feed extends WP_Widget
 				.$after_title;
 			}
 
-			echo "<div class='section'>";
-
-				$arr_public_feeds = array();
-				$query_where = "";
-				
-				if(isset($instance['social_feeds']) && count($instance['social_feeds']) > 0)
-				{
-					$query_where .= " AND ID IN('".implode("','", $instance['social_feeds'])."')";
-				}
-
-				$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish'".$query_where);
-
-				foreach($result as $r)
-				{
-					$arr_public_feeds[] = $r->ID;
-				}
-
-				$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid, post_excerpt FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".(isset($instance['social_amount']) && $instance['social_amount'] >= 1 ? $instance['social_amount'] : 18));
-
-				if($wpdb->num_rows > 0)
-				{
-					$arr_services = get_social_types_for_select();
-
-					$arr_post_feeds = $arr_post_posts = array();
-
-					foreach($result as $r)
-					{
-						$post_id = $r->ID;
-						$post_content = $r->post_content;
-						$post_date = $r->post_date;
-						$post_link = $r->guid;
-						$post_feed = $r->post_excerpt;
-
-						list($service, $service_id) = explode(" ", $r->post_title);
-
-						$post_name = get_post_meta($post_id, $this->meta_prefix.'name', true);
-						$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
-						$post_likes = get_post_meta($post_id, $this->meta_prefix.'likes', true);
-						$post_comments = get_post_meta($post_id, $this->meta_prefix.'comments', true);
-
-						if($post_content != '' || $post_image != '')
-						{
-							if(isset($instance['social_filter']) && $instance['social_filter'] != 'no')
-							{
-								if($instance['social_filter'] == 'yes')
-								{
-									$arr_post_feeds[$post_feed] = get_post_title($post_feed);
-								}
-
-								else if($instance['social_filter'] == 'group')
-								{
-									$arr_post_feeds[$service] = $arr_services[$service];
-								}
-							}
-
-							$arr_post_posts[] = array(
-								'service' => $service,
-								'feed' => $post_feed,
-								'link' => $post_link,
-								'name' => $post_name,
-								'content' => $post_content,
-								'image' => $post_image,
-								'date' => $post_date,
-								'likes' => $post_likes,
-								'comments' => $post_comments,
-							);
-						}
-					}
-
-					if(isset($instance['social_filter']) && $instance['social_filter'] != 'no')
-					{
-						mf_enqueue_script('script_social_feed', plugin_dir_url(__FILE__)."script.js", array('read_more' => __("Read More", 'lang_social_feed')), get_plugin_version(__FILE__));
-
-						echo "<ul class='sf_feeds'>
-							<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>";
-
-							foreach($arr_post_feeds as $key => $value)
-							{
-								echo "<li><a href='#' id='".($instance['social_filter'] == 'yes' ? "sf_feed_".$key : "sf_".$key)."'>".$value."</a></li>";
-							}
-
-						echo "</ul>";
-					}
-
-					$class_xtra = "";
-
-					if(count($arr_post_posts) < 3)
-					{
-						$class_xtra .= " one_column";
-					}
-
-					if($instance['social_border'] == 'yes')
-					{
-						$class_xtra .= " show_border";
-					}
-
-					echo "<ul class='sf_posts".$class_xtra."'>";
-
-						foreach($arr_post_posts as $post)
-						{
-							echo "<li class='sf_".$post['service']." sf_feed_".$post['feed']."'>
-								<i class='fa fa-".$post['service']."'></i>";
-
-								if($post['name'])
-								{
-									echo "<span class='name'>".$post['name']."</span>";
-								}
-
-								echo "<span class='date'>".format_date($post['date'])."</span>
-								<a href='".$post['link']."' class='content' rel='external'>";
-
-									if($post['image'] != '')
-									{
-										echo "<img src='".$post['image']."'>";
-									}
-
-									if($post['content'] != '')
-									{
-										echo "<p>".$post['content']."</p>";
-									}
-
-									if(isset($instance['social_likes']) && $instance['social_likes'] == 'yes' && ($post['likes'] != '' || $post['comments'] != ''))
-									{
-										echo "<div class='likes'>
-											<i class='fa fa-thumbs-up'></i><span>".$post['likes']."</span>
-											<i class='fa fa-comment-o'></i><span>".$post['comments']."</span>
-										</div>";
-									}
-
-								echo "</a>
-							</li>";
-						}
-
-					echo "</ul>";
-				}
-
-				else
-				{
-					echo "<p>".__("I could not find any posts at the moment. Sorry!", 'lang_social_feed')."</p>";
-				}
-
-			echo "</div>"
+			echo "<div class='section'>"
+				.$obj_social_feed->get_output($instance)
+			."</div>"
 		.$after_widget;
 	}
 

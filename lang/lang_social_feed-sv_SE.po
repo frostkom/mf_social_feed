@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-09 13:20+0100\n"
+"POT-Creation-Date: 2017-05-22 20:41+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -16,75 +16,75 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../include/classes.php:180
+#: ../include/classes.php:211
 msgid "The JSON I got back was not correct"
 msgstr "Jag fick tillbaka JSON som inte var korrekt"
 
-#: ../include/classes.php:187
+#: ../include/classes.php:218
 #, php-format
 msgid "The JSON I got back was not correct. Have a look at %s"
 msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
 
-#: ../include/classes.php:416
+#: ../include/classes.php:522
+msgid "Read More"
+msgstr "Läs mer"
+
+#: ../include/classes.php:525
+msgid "All"
+msgstr "Alla"
+
+#: ../include/classes.php:589
+msgid "I could not find any posts at the moment. Sorry!"
+msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
+
+#: ../include/classes.php:607
 msgid "Display Social Feeds"
 msgstr "Visa sociala flöden"
 
-#: ../include/classes.php:421
+#: ../include/classes.php:612
 #: ../include/functions.php:7
 msgid "Social Feed"
 msgstr "Socialt flöde"
 
-#: ../include/classes.php:506
-msgid "Read More"
-msgstr "Läs mer"
-
-#: ../include/classes.php:509
-msgid "All"
-msgstr "Alla"
-
-#: ../include/classes.php:573
-msgid "I could not find any posts at the moment. Sorry!"
-msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
-
-#: ../include/classes.php:612
+#: ../include/classes.php:672
 msgid "Heading"
 msgstr "Rubrik"
 
-#: ../include/classes.php:616
+#: ../include/classes.php:676
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:620
+#: ../include/classes.php:680
 #: ../include/functions.php:166
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:621
+#: ../include/classes.php:681
 msgid "Show Border"
 msgstr "Visa kant runt"
 
-#: ../include/classes.php:622
+#: ../include/classes.php:682
 msgid "Show Likes"
 msgstr "Visa gilla"
 
-#: ../include/classes.php:628
+#: ../include/classes.php:688
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:629
-#: ../include/classes.php:630
+#: ../include/classes.php:689
+#: ../include/classes.php:690
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:629
+#: ../include/classes.php:689
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:630
+#: ../include/classes.php:690
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:633
+#: ../include/classes.php:693
 msgid "Show Filter"
 msgstr "Visa filter"
 
@@ -170,30 +170,57 @@ msgid "Copy %s, %s, %s and %s to paste here"
 msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 
 #: ../include/functions.php:164
-#: ../include/functions.php:296
+#: ../include/functions.php:331
 msgid "Service"
 msgstr "Tjänst"
 
 #: ../include/functions.php:165
-#: ../include/functions.php:303
+#: ../include/functions.php:343
 msgid "Search for"
 msgstr "Sök efter"
 
-#: ../include/functions.php:220
+#: ../include/functions.php:226
+msgid "Fetch"
+msgstr "Hämta"
+
+#: ../include/functions.php:240
 msgid "I got an error when accessing the feed"
 msgstr "Jag fick ett fel när jag hämtade flödet"
 
-#: ../include/functions.php:237
+#: ../include/functions.php:257
 msgid "The feed does not seam to work. This might be due to that the feed you are trying to access is not public."
 msgstr "Flödet verkar inte fungera. Det kan t.ex. bero på att flödet som du försöker hämta från inte är publikt."
 
-#: ../include/functions.php:243
+#: ../include/functions.php:263
 msgid "I am waiting to get access to the feed"
 msgstr "Jag väntar på att få tillgång till flödet"
 
-#: ../include/functions.php:290
+#: ../include/functions.php:276
+msgid "Latest"
+msgstr "Senaste"
+
+#: ../include/functions.php:297
+msgid "Facebook"
+msgstr ""
+
+#: ../include/functions.php:297
+msgid "Posts can only be fetched from Facebook Pages, not personal Profiles"
+msgstr "Inlägg kan endas hämtas från sk. Facebook Pages, inte från personliga profiler"
+
+#: ../include/functions.php:298
+msgid "Instagram"
+msgstr ""
+
+#: ../include/functions.php:298
+#: ../include/functions.php:299
+msgid "Posts can either be fetched from @users or #hashtags"
+msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
+
+#: ../include/functions.php:299
+msgid "Twitter"
+msgstr ""
+
+#: ../include/functions.php:325
 msgid "Settings"
 msgstr "Inställningar"
 
-#~ msgid "Less"
-#~ msgstr "Mindre"

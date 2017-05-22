@@ -185,20 +185,20 @@ function column_cell_social_feed($col, $id)
 		case 'search_for':
 			$service = get_post_meta($id, $obj_social_feed->meta_prefix.'type', true);
 
-			$post_meta = $obj_social_feed->filter_search_for($post_meta);
+			$post_meta_filtered = $obj_social_feed->filter_search_for($post_meta);
 
 			switch($service)
 			{
 				case 'facebook':
-					$feed_url = "//facebook.com/".$post_meta;
+					$feed_url = "//facebook.com/".$post_meta_filtered;
 				break;
 
 				case 'instagram':
-					$feed_url = "//instagram.com/".$post_meta;
+					$feed_url = "//instagram.com/".$post_meta_filtered;
 				break;
 
 				case 'twitter':
-					$feed_url = "//twitter.com/".$post_meta;
+					$feed_url = "//twitter.com/".$post_meta_filtered;
 				break;
 
 				default:
@@ -207,12 +207,30 @@ function column_cell_social_feed($col, $id)
 			}
 
 			echo "<a href='".$feed_url."' rel='external'>".$post_meta."</a>";
+
+			if(IS_SUPER_ADMIN)
+			{
+				$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed' AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE)", $id));
+
+				if($wpdb->num_rows > 0)
+				{
+					$intFeedID = check_var('intFeedID');
+
+					if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce'], 'feed_fetch_'.$id))
+					{
+						$obj_social_feed->set_id($id);
+						$obj_social_feed->fetch_feed();
+					}
+
+					echo "<div class='row-actions'>
+						<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), "feed_fetch_".$id)."'>".__("Fetch", 'lang_social_feed')."</a>
+					</div>";
+				}
+			}
 		break;
 
 		case 'amount_of_posts':
-			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d'", $id));
-
-			$amount = $wpdb->num_rows;
+			$amount = $obj_social_feed->get_amount($id);
 
 			$post_error = get_post_meta($id, $obj_social_feed->meta_prefix.'error', true);
 
@@ -252,9 +270,10 @@ function column_cell_social_feed($col, $id)
 				echo $amount;
 
 				$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
+				$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $id));
 
 				echo "<div class='row-actions'>"
-					.format_date($post_modified)
+					.format_date($post_modified)." (".__("Latest", 'lang_social_feed').": ".format_date($post_latest).")"
 				."</div>";
 			}
 		break;
@@ -269,6 +288,20 @@ function get_social_types_for_select()
 		'twitter' => "Twitter",
 	);
 }
+
+function get_feed_info()
+{
+	$meta_prefix = "mf_social_feed_";
+
+	$out = "<ul id='".$meta_prefix."info_facebook'>
+		<li><strong>".__("Facebook", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</li>
+		<li><strong>".__("Instagram", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
+		<li><strong>".__("Twitter", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
+	</ul>";
+
+	return $out;
+}
+
 
 function meta_boxes_social_feed($meta_boxes)
 {
@@ -300,11 +333,21 @@ function meta_boxes_social_feed($meta_boxes)
 				'type' => 'select',
 				'options' => get_social_types_for_select(),
 				'std' => $default_type,
+				/*'attributes' => array(
+					'condition_type' => 'show_if',
+					'condition_value' => 'facebook',
+					'condition_field' => $meta_prefix.'info_facebook',
+				),*/
 			),
 			array(
 				'name' => __("Search for", 'lang_social_feed'),
 				'id' => $meta_prefix.'search_for',
 				'type' => 'text',
+			),
+			array(
+				'id' => $meta_prefix.'info',
+				'type' => 'custom_html',
+				'callback' => 'get_feed_info',
 			),
 		)
 	);
@@ -316,10 +359,26 @@ function save_post_social_feed($post_id, $post, $update)
 {
 	global $wpdb;
 
-	if($post->post_type == 'mf_social_feed' && $update == false)
+	if($post->post_type == 'mf_social_feed') // && $post->post_status == 'publish' && $update == false
 	{
-		$obj_social_feed = new mf_social_feed();
-		$obj_social_feed->set_id($post_id);
-		$obj_social_feed->fetch_feed();
+		$obj_social_feed = new mf_social_feed($post_id);
+
+		if(!($obj_social_feed->get_amount() > 0))
+		{
+			$obj_social_feed->fetch_feed();
+		}
 	}
+}
+
+function shortcode_social_feed($atts)
+{
+	extract(shortcode_atts(array(
+		'amount' => 0,
+		'filter' => 'group',
+		'likes' => 'no',
+	), $atts));
+
+	$obj_social_feed = new mf_social_feed();
+
+	return $obj_social_feed->get_output(array('social_type' => 'shortcode', 'social_amount' => $amount, 'social_filter' => $filter, 'social_likes' => $likes));
 }
