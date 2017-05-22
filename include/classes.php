@@ -304,7 +304,7 @@ class mf_social_feed
 
 		foreach($results as $key => $post)
 		{
-			do_log("Twitter row: ".var_export($post, true));
+			//do_log("Twitter row: ".var_export($post, true));
 
 			/*array('created_at' => 'Fri Feb 17 08:09:54 +0000 2017', 'id' => '[id]', 'id_str' => '[id]', 'text' => 'Text #hashtag', 'truncated' => false, 
 			'entities' => stdClass::__set_state(array(
