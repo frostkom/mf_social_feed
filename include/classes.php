@@ -137,6 +137,8 @@ class mf_social_feed
 
 		foreach($graphObject as $key => $post)
 		{
+			//do_log("FB row: ".var_export($post, true));
+
 			/*array('items' => array('message' => 'Text #hashtag', 'created_time' => DateTime::__set_state(array('date' => '2017-02-08 11:59:40.000000', 'timezone_type' => 1, 'timezone' => '+00:00')), 'id' => '[id]_[id]')*/
 
 			$post_id = $post['id'];
@@ -518,6 +520,8 @@ class mf_social_feed
 				if(isset($data['social_filter']) && $data['social_filter'] != 'no' && count($arr_post_feeds) > 1)
 				{
 					mf_enqueue_script('script_social_feed', plugin_dir_url(__FILE__)."script.js", array('read_more' => __("Read More", 'lang_social_feed')), get_plugin_version(__FILE__));
+
+					$arr_post_feeds = array_sort(array('array' => $arr_post_feeds, 'keep_index' => true));
 
 					$out .= "<ul class='sf_feeds'>
 						<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>";

@@ -212,18 +212,22 @@ function column_cell_social_feed($col, $id)
 			{
 				$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed' AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE)", $id));
 
+				if($wpdb->num_rows > 0 && isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce'], 'feed_fetch_'.$id))
+				{
+					$obj_social_feed->set_id($id);
+					$obj_social_feed->fetch_feed();
+
+					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed' AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE)", $id));
+				}
+
 				if($wpdb->num_rows > 0)
 				{
 					$intFeedID = check_var('intFeedID');
 
-					if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce'], 'feed_fetch_'.$id))
-					{
-						$obj_social_feed->set_id($id);
-						$obj_social_feed->fetch_feed();
-					}
+					$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
 
 					echo "<div class='row-actions'>
-						<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), "feed_fetch_".$id)."'>".__("Fetch", 'lang_social_feed')."</a>
+						<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), "feed_fetch_".$id)."'>".__("Fetch", 'lang_social_feed')."</a> | ".__("Fetched", 'lang_social_feed').": ".format_date($post_modified)."
 					</div>";
 				}
 			}
@@ -267,13 +271,11 @@ function column_cell_social_feed($col, $id)
 
 			else if($amount > 0)
 			{
-				echo $amount;
-
-				$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
 				$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $id));
 
-				echo "<div class='row-actions'>"
-					.format_date($post_modified)." (".__("Latest", 'lang_social_feed').": ".format_date($post_latest).")"
+				echo $amount
+				."<div class='row-actions'>"
+					.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
 				."</div>";
 			}
 		break;
