@@ -212,23 +212,28 @@ function column_cell_social_feed($col, $id)
 			{
 				$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed' AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE)", $id));
 
-				if($wpdb->num_rows > 0 && isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce'], 'feed_fetch_'.$id))
-				{
-					$obj_social_feed->set_id($id);
-					$obj_social_feed->fetch_feed();
-
-					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed' AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE)", $id));
-				}
-
 				if($wpdb->num_rows > 0)
 				{
 					$intFeedID = check_var('intFeedID');
 
-					$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
+					if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce'], 'feed_fetch_'.$id))
+					{
+						$obj_social_feed->set_id($id);
+						$obj_social_feed->fetch_feed();
 
-					echo "<div class='row-actions'>
-						<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), "feed_fetch_".$id)."'>".__("Fetch", 'lang_social_feed')."</a> | ".__("Fetched", 'lang_social_feed').": ".format_date($post_modified)."
-					</div>";
+						echo "<div class='row-actions'>
+							".__("Fetched", 'lang_social_feed')."
+						</div>";
+					}
+
+					else
+					{
+						$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
+
+						echo "<div class='row-actions'>
+							<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), "feed_fetch_".$id)."'>".__("Fetch", 'lang_social_feed')."</a> | ".__("Fetched", 'lang_social_feed').": ".format_date($post_modified)."
+						</div>";
+					}
 				}
 			}
 		break;

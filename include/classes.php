@@ -126,60 +126,148 @@ class mf_social_feed
 
 		$this->search = $this->filter_search_for($this->search);
 
-		$fb = new Facebook\Facebook([
-		  'app_id' => $this->facebook_api_id,
-		  'app_secret' => $this->facebook_api_secret,
-		  'default_graph_version' => 'v2.8',
-		]);
+		$fb_access_token = $this->facebook_api_id."|".$this->facebook_api_secret;
+		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$fb_access_token; //&limit=10
 
-		$response = $fb->get("/".$this->search."/feed?access_token=".$this->facebook_api_id."|".$this->facebook_api_secret);
-		$graphObject = $response->getGraphEdge();
+		$content = get_url_content($fb_feed_url);
+		$json = json_decode($content, true);
 
-		foreach($graphObject as $key => $post)
+		if(isset($json['data']))
 		{
-			//do_log("FB row: ".var_export($post, true));
-
-			/*array('items' => array('message' => 'Text #hashtag', 'created_time' => DateTime::__set_state(array('date' => '2017-02-08 11:59:40.000000', 'timezone_type' => 1, 'timezone' => '+00:00')), 'id' => '[id]_[id]')*/
-
-			$post_id = $post['id'];
-			$arr_post_id = explode("_", $post_id);
-			$post_link = "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1];
-
-			$post_content = "";
-
-			if(isset($post['message']))
+			foreach($json['data'] as $post)
 			{
-				$post_content = $post['message'];
-			}
+				/*{
+					 "id": "[id]_[id]",
+					 "from": {
+						"name": "[name]",
+						"id": "[id]"
+					 },
+					 "message": "[message]",
+					 "picture": "[picture_src]",
+					 "link": "[link]",
+					 "name": "[link_title]",
+					 "caption": "[link_caption]",
+					 "description": "[link_description]",
+					 "icon": "https://www.facebook.com/images/icons/post.gif",
+					 "actions": [
+						{
+						   "name": "Share",
+						   "link": "[post_url]"
+						}
+					 ],
+					 "type": "link",
+					 "status_type": "shared_story",
+					 "application": {
+						"link": "[application_link]",
+						"name": "[application_name]",
+						"id": "[id]"
+					 },
+					 "created_time": "2017-05-23T09:06:45+0000",
+					 "updated_time": "2017-05-23T09:06:45+0000",
+					 "is_hidden": false,
+					 "is_expired": false
+				  },*/
 
-			else if(isset($post['story']))
-			{
-				$post_content = $post['story'];
-			}
+				$post_id = $post['id'];
+				$arr_post_id = explode("_", $post_id);
+				$post_link = "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1];
 
-			$post_image = "https://graph.facebook.com/".$arr_post_id[1]."/picture";
-			$post_image_size = @getimagesize($post_image);
-			$post_has_image = is_array($post_image_size) && $post_image_size[0] > 0;
+				$post_content = "";
 
-			$post_date = "";
-
-			foreach($post['created_time'] as $key => $time)
-			{
-				if($key == 'date')
+				if(isset($post['message']))
 				{
-					$post_date = date("Y-m-d H:i:s", strtotime($time));
+					$post_content = $post['message'];
 				}
-			}
 
-			$this->arr_posts[] = array(
-				'type' => $this->type,
-				'id' => $post_id,
-				'name' => $this->search,
-				'text' => $post_content,
-				'link' => $post_link,
-				'image' => ($post_has_image ? $post_image : ""),
-				'created' => $post_date,
-			);
+				else if(isset($post['story']))
+				{
+					$post_content = $post['story'];
+				}
+
+				$post_image = $post['full_picture'];
+				$post_date = date("Y-m-d H:i:s", strtotime($post['created_time']));
+
+				$this->arr_posts[] = array(
+					'type' => $this->type,
+					'id' => $post_id,
+					'name' => $this->search,
+					'text' => $post_content,
+					'link' => $post_link,
+					'image' => $post_image,
+					'created' => $post_date,
+				);
+
+				do_log(var_export(array(
+					'type' => $this->type,
+					'id' => $post_id,
+					'name' => $this->search,
+					'text' => $post_content,
+					'link' => $post_link,
+					'image' => $post_image,
+					'created' => $post_date,
+				), true));
+			}
+		}
+
+		else
+		{
+			do_log("Old FB way used (".$fb_feed_url.")");
+
+			$fb = new Facebook\Facebook([
+			  'app_id' => $this->facebook_api_id,
+			  'app_secret' => $this->facebook_api_secret,
+			  'default_graph_version' => 'v2.8',
+			]);
+
+			$response = $fb->get("/".$this->search."/feed?access_token=".$fb_access_token);
+			$graphObject = $response->getGraphEdge();
+
+			foreach($graphObject as $key => $post)
+			{
+				//do_log("FB row: ".var_export($post, true));
+
+				/*array('items' => array('message' => 'Text #hashtag', 'created_time' => DateTime::__set_state(array('date' => '2017-02-08 11:59:40.000000')), 'id' => '[id]_[id]')*/
+
+				$post_id = $post['id'];
+				$arr_post_id = explode("_", $post_id);
+				$post_link = "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1];
+
+				$post_content = "";
+
+				if(isset($post['message']))
+				{
+					$post_content = $post['message'];
+				}
+
+				else if(isset($post['story']))
+				{
+					$post_content = $post['story'];
+				}
+
+				$post_image = "https://graph.facebook.com/".$arr_post_id[1]."/picture";
+				$post_image_size = @getimagesize($post_image);
+				$post_has_image = is_array($post_image_size) && $post_image_size[0] > 0;
+
+				$post_date = "";
+
+				foreach($post['created_time'] as $key => $time)
+				{
+					if($key == 'date')
+					{
+						$post_date = date("Y-m-d H:i:s", strtotime($time));
+					}
+				}
+
+				$this->arr_posts[] = array(
+					'type' => $this->type,
+					'id' => $post_id,
+					'name' => $this->search,
+					'text' => $post_content,
+					'link' => $post_link,
+					'image' => ($post_has_image ? $post_image : ""),
+					'created' => $post_date,
+				);
+			}
 		}
 	}
 
@@ -376,7 +464,7 @@ class mf_social_feed
 		{
 			$post_title = $post['type']." ".$post['id'];
 
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_title = %s AND post_excerpt = '%d' AND post_date = %s LIMIT 0, 1", $post_title, $this->id, $post['created']));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_title = %s AND post_excerpt = '%d' LIMIT 0, 1", $post_title, $this->id)); // AND post_date = %s, $post['created']
 
 			if($wpdb->num_rows == 0)
 			{
