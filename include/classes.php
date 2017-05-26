@@ -122,8 +122,6 @@ class mf_social_feed
 
 	function fetch_facebook()
 	{
-		include_once("Facebook/autoload.php");
-
 		$this->search = $this->filter_search_for($this->search);
 
 		$fb_access_token = $this->facebook_api_id."|".$this->facebook_api_secret;
@@ -184,7 +182,7 @@ class mf_social_feed
 					$post_content = $post['story'];
 				}
 
-				$post_image = $post['full_picture'];
+				$post_image = $post['full_picture'] != '' ? $post['full_picture'] : "";
 				$post_date = date("Y-m-d H:i:s", strtotime($post['created_time']));
 
 				$this->arr_posts[] = array(
@@ -196,22 +194,16 @@ class mf_social_feed
 					'image' => $post_image,
 					'created' => $post_date,
 				);
-
-				do_log(var_export(array(
-					'type' => $this->type,
-					'id' => $post_id,
-					'name' => $this->search,
-					'text' => $post_content,
-					'link' => $post_link,
-					'image' => $post_image,
-					'created' => $post_date,
-				), true));
 			}
+
+			delete_post_meta($this->id, $this->meta_prefix.'error');
 		}
 
 		else
 		{
-			do_log("Old FB way used (".$fb_feed_url.")");
+			update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
+
+			/*include_once("Facebook/autoload.php");
 
 			$fb = new Facebook\Facebook([
 			  'app_id' => $this->facebook_api_id,
@@ -226,7 +218,7 @@ class mf_social_feed
 			{
 				//do_log("FB row: ".var_export($post, true));
 
-				/*array('items' => array('message' => 'Text #hashtag', 'created_time' => DateTime::__set_state(array('date' => '2017-02-08 11:59:40.000000')), 'id' => '[id]_[id]')*/
+				//array('items' => array('message' => 'Text #hashtag', 'created_time' => DateTime::__set_state(array('date' => '2017-02-08 11:59:40.000000')), 'id' => '[id]_[id]')
 
 				$post_id = $post['id'];
 				$arr_post_id = explode("_", $post_id);
@@ -267,7 +259,7 @@ class mf_social_feed
 					'image' => ($post_has_image ? $post_image : ""),
 					'created' => $post_date,
 				);
-			}
+			}*/
 		}
 	}
 
@@ -297,15 +289,11 @@ class mf_social_feed
 				}
 
 				delete_post_meta($this->id, $this->meta_prefix.'error');
-
-				do_log(__("The JSON I got back was not correct", 'lang_social_feed'), 'trash');
 			}
 
 			else
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', 'instagram');
-
-				do_log(sprintf(__("The JSON I got back was not correct. Have a look at %s", 'lang_social_feed'), $url));
+				update_post_meta($this->id, $this->meta_prefix.'error', sprintf(__("The JSON I got back was not correct. Have a look at %s", 'lang_social_feed'), $url));
 			}
 		}
 

@@ -246,7 +246,7 @@ function column_cell_social_feed($col, $id)
 			if($post_error != '')
 			{
 				echo "<i class='fa fa-close red fa-2x'></i>
-				<div class='row-actions'>".__("I got an error when accessing the feed", 'lang_social_feed')."</div>";
+				<div class='row-actions'>".($post_error != '' ? $post_error : __("I got an error when accessing the feed", 'lang_social_feed'))."</div>";
 			}
 
 			else if($amount == 0)
