@@ -366,7 +366,7 @@ function save_post_social_feed($post_id, $post, $update)
 {
 	global $wpdb;
 
-	if($post->post_type == 'mf_social_feed') // && $post->post_status == 'publish' && $update == false
+	if($post->post_type == 'mf_social_feed' && $post->post_status == 'publish') // && $update == false
 	{
 		$obj_social_feed = new mf_social_feed($post_id);
 

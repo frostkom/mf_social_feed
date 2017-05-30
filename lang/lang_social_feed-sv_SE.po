@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-26 13:54+0100\n"
+"POT-Creation-Date: 2017-05-30 12:14+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -16,71 +16,71 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../include/classes.php:307
+#: ../include/classes.php:296
 #, php-format
 msgid "The JSON I got back was not correct. Have a look at %s"
 msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
 
-#: ../include/classes.php:609
+#: ../include/classes.php:598
 msgid "Read More"
 msgstr "Läs mer"
 
-#: ../include/classes.php:614
+#: ../include/classes.php:603
 msgid "All"
 msgstr "Alla"
 
-#: ../include/classes.php:678
+#: ../include/classes.php:667
 msgid "I could not find any posts at the moment. Sorry!"
 msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
 
-#: ../include/classes.php:696
+#: ../include/classes.php:685
 msgid "Display Social Feeds"
 msgstr "Visa sociala flöden"
 
-#: ../include/classes.php:701
+#: ../include/classes.php:690
 #: ../include/functions.php:7
 msgid "Social Feed"
 msgstr "Socialt flöde"
 
-#: ../include/classes.php:761
+#: ../include/classes.php:750
 msgid "Heading"
 msgstr "Rubrik"
 
-#: ../include/classes.php:765
+#: ../include/classes.php:754
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:769
+#: ../include/classes.php:758
 #: ../include/functions.php:166
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:770
+#: ../include/classes.php:759
 msgid "Show Border"
 msgstr "Visa kant runt"
 
-#: ../include/classes.php:771
+#: ../include/classes.php:760
 msgid "Show Likes"
 msgstr "Visa gilla"
 
-#: ../include/classes.php:777
+#: ../include/classes.php:766
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:778
-#: ../include/classes.php:779
+#: ../include/classes.php:767
+#: ../include/classes.php:768
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:778
+#: ../include/classes.php:767
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:779
+#: ../include/classes.php:768
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:782
+#: ../include/classes.php:771
 msgid "Show Filter"
 msgstr "Visa filter"
 
