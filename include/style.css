@@ -102,12 +102,17 @@
 						color: #c02f2e;
 					}
 
+					.sf_rss .fa, .column-type .fa-rss
+					{
+						color: #e9bb63;
+					}
+
 					.sf_twitter .fa, .column-type .fa-twitter
 					{
 						color: #55acee;
 					}
 
-				.widget.social_feed .name
+				.widget.social_feed .title, .widget.social_feed .name
 				{
 					float: left;
 					font-size: .8em;

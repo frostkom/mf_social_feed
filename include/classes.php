@@ -42,7 +42,7 @@ class mf_social_feed
 
 	function get_api_credentials()
 	{
-		switch($this->get_type())
+		switch($this->type) //$this->get_type()
 		{
 			case 'facebook':
 				$this->facebook_api_id = get_option_or_default('setting_facebook_api_id', '218056055327780');
@@ -92,6 +92,10 @@ class mf_social_feed
 					$this->fetch_instagram();
 				break;
 
+				case 'rss':
+					$this->fetch_rss();
+				break;
+
 				case 'twitter':
 					$this->fetch_twitter();
 				break;
@@ -134,38 +138,6 @@ class mf_social_feed
 		{
 			foreach($json['data'] as $post)
 			{
-				/*{
-					 "id": "[id]_[id]",
-					 "from": {
-						"name": "[name]",
-						"id": "[id]"
-					 },
-					 "message": "[message]",
-					 "picture": "[picture_src]",
-					 "link": "[link]",
-					 "name": "[link_title]",
-					 "caption": "[link_caption]",
-					 "description": "[link_description]",
-					 "icon": "https://www.facebook.com/images/icons/post.gif",
-					 "actions": [
-						{
-						   "name": "Share",
-						   "link": "[post_url]"
-						}
-					 ],
-					 "type": "link",
-					 "status_type": "shared_story",
-					 "application": {
-						"link": "[application_link]",
-						"name": "[application_name]",
-						"id": "[id]"
-					 },
-					 "created_time": "2017-05-23T09:06:45+0000",
-					 "updated_time": "2017-05-23T09:06:45+0000",
-					 "is_hidden": false,
-					 "is_expired": false
-				  },*/
-
 				$post_id = $post['id'];
 				$arr_post_id = explode("_", $post_id);
 				$post_link = "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1];
@@ -182,13 +154,14 @@ class mf_social_feed
 					$post_content = $post['story'];
 				}
 
-				$post_image = $post['full_picture'] != '' ? $post['full_picture'] : "";
+				$post_image = isset($post['full_picture']) && $post['full_picture'] != '' ? $post['full_picture'] : "";
 				$post_date = date("Y-m-d H:i:s", strtotime($post['created_time']));
 
 				$this->arr_posts[] = array(
 					'type' => $this->type,
 					'id' => $post_id,
 					'name' => $this->search,
+					//'title' => $this->type." ".$post_id,
 					'text' => $post_content,
 					'link' => $post_link,
 					'image' => $post_image,
@@ -202,64 +175,6 @@ class mf_social_feed
 		else
 		{
 			update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
-
-			/*include_once("Facebook/autoload.php");
-
-			$fb = new Facebook\Facebook([
-			  'app_id' => $this->facebook_api_id,
-			  'app_secret' => $this->facebook_api_secret,
-			  'default_graph_version' => 'v2.8',
-			]);
-
-			$response = $fb->get("/".$this->search."/feed?access_token=".$fb_access_token);
-			$graphObject = $response->getGraphEdge();
-
-			foreach($graphObject as $key => $post)
-			{
-				//do_log("FB row: ".var_export($post, true));
-
-				//array('items' => array('message' => 'Text #hashtag', 'created_time' => DateTime::__set_state(array('date' => '2017-02-08 11:59:40.000000')), 'id' => '[id]_[id]')
-
-				$post_id = $post['id'];
-				$arr_post_id = explode("_", $post_id);
-				$post_link = "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1];
-
-				$post_content = "";
-
-				if(isset($post['message']))
-				{
-					$post_content = $post['message'];
-				}
-
-				else if(isset($post['story']))
-				{
-					$post_content = $post['story'];
-				}
-
-				$post_image = "https://graph.facebook.com/".$arr_post_id[1]."/picture";
-				$post_image_size = @getimagesize($post_image);
-				$post_has_image = is_array($post_image_size) && $post_image_size[0] > 0;
-
-				$post_date = "";
-
-				foreach($post['created_time'] as $key => $time)
-				{
-					if($key == 'date')
-					{
-						$post_date = date("Y-m-d H:i:s", strtotime($time));
-					}
-				}
-
-				$this->arr_posts[] = array(
-					'type' => $this->type,
-					'id' => $post_id,
-					'name' => $this->search,
-					'text' => $post_content,
-					'link' => $post_link,
-					'image' => ($post_has_image ? $post_image : ""),
-					'created' => $post_date,
-				);
-			}*/
 		}
 	}
 
@@ -339,6 +254,7 @@ class mf_social_feed
 						'type' => $this->type,
 						'id' => $post->id,
 						'name' => isset($post->caption->from->username) ? $post->caption->from->username : $this->search,
+						//'title' => $this->type." ".$post->id,
 						'text' => isset($post->caption->text) ? $post->caption->text : "",
 						'link' => $post->link,
 						'image' => $post->images->standard_resolution->url,
@@ -377,13 +293,8 @@ class mf_social_feed
 			$results = $twitter->load(Twitter::ME);
 		}
 
-		//$results = $twitter->load(Twitter::ME_AND_FRIENDS);
-		//$results = $twitter->request('statuses/retweets_of_me', 'GET', ['count' => 20]);
-
 		foreach($results as $key => $post)
 		{
-			//do_log("Twitter row: ".var_export($post, true));
-
 			/*array('created_at' => 'Fri Feb 17 08:09:54 +0000 2017', 'id' => '[id]', 'id_str' => '[id]', 'text' => 'Text #hashtag', 'truncated' => false, 
 			'entities' => stdClass::__set_state(array(
 				'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))), 
@@ -429,11 +340,65 @@ class mf_social_feed
 				'type' => $this->type,
 				'id' => $post->id,
 				'name' => isset($post->user->screen_name) ? $post->user->screen_name : $this->search,
+				//'title' => $this->type." ".$post->id,
 				'text' => $post->text,
 				'link' => "//twitter.com/".$this->search."/status/".$post->id,
 				'image' => (isset($post->entities->media[0]->media_url) ? $post->entities->media[0]->media_url : ""),
 				'created' => date("Y-m-d H:i:s", strtotime($post->created_at)),
 			);
+		}
+	}
+
+	function fetch_rss()
+	{
+		include_once("simplepie_1.3.1.compiled.php");
+
+		$feed = new SimplePie();
+		$feed->set_feed_url(validate_url($this->search, false));
+		//$feed->set_cache_location($globals['server_temp_cache']);
+		//$feed->enable_cache(false);
+		//$feed->handle_content_type(); // text/html utf-8 character encoding
+		//$feed->set_output_encoding('ISO-8859-1');
+		//$feed->enable_order_by_date(false);
+		$feed->strip_htmltags(array('a', 'b', 'div', 'p', 'span'));
+		$feed->strip_attributes(array('class', 'target', 'style', 'align'));
+		$check = $feed->init();
+
+		if($check)
+		{
+			foreach($feed->get_items() as $item)
+			{
+				$post_link = $item->get_permalink();
+				$post_title = $item->get_title();
+				$post_content = $item->get_description();
+
+				$post_image = "";
+
+				/*if($enclosure = $item->get_enclosure())
+				{
+					$post_image = $enclosure->get_link();
+				}*/
+
+				$post_date = $item->get_date('Y-m-d H:i:s');
+
+				$this->arr_posts[] = array(
+					'type' => $this->type,
+					//'id' => md5($post_title.$post_link),
+					'name' => $this->search,
+					'title' => $post_title,
+					'text' => $post_content,
+					'link' => $post_link,
+					'image' => $post_image,
+					'created' => $post_date,
+				);
+			}
+
+			delete_post_meta($this->id, $this->meta_prefix.'error');
+		}
+		
+		else
+		{
+			update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
 		}
 	}
 
@@ -450,23 +415,27 @@ class mf_social_feed
 
 		foreach($this->arr_posts as $post)
 		{
-			$post_title = $post['type']." ".$post['id'];
+			$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type']." ".$post['id']);
+			$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
 
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_title = %s AND post_excerpt = '%d' LIMIT 0, 1", $post_title, $this->id)); // AND post_date = %s, $post['created']
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND (post_title = %s OR post_name = %s) AND post_excerpt = '%d' LIMIT 0, 1", $post_title, $post_name, $this->id));
 
 			if($wpdb->num_rows == 0)
 			{
 				$post_data = array(
 					'post_type' => 'mf_social_feed_post',
 					'post_status' => 'publish',
+					'post_name' => $post_name,
+					//'guid' => $post['link'],
 					'post_title' => $post_title,
 					'post_content' => $post['text'],
 					'post_date' => $post['created'],
-					'guid' => $post['link'],
 					'post_excerpt' => $this->id,
 					'meta_input' => array(
+						$this->meta_prefix.'service' => $post['type'],
 						$this->meta_prefix.'name' => $post['name'],
 						$this->meta_prefix.'image' => $post['image'],
+						$this->meta_prefix.'link' => $post['link'],
 					),
 				);
 
@@ -489,11 +458,15 @@ class mf_social_feed
 				{
 					$post_data = array(
 						'ID' => $r->ID,
+						'post_name' => $post_name,
+						//'guid' => $post['link'],
+						'post_title' => $post_title,
 						'post_content' => $post['text'],
-						'guid' => $post['link'],
 						'meta_input' => array(
+							$this->meta_prefix.'service' => $post['type'],
 							$this->meta_prefix.'name' => $post['name'],
 							$this->meta_prefix.'image' => $post['image'],
+							$this->meta_prefix.'link' => $post['link'],
 						),
 					);
 
@@ -552,17 +525,27 @@ class mf_social_feed
 				foreach($result as $r)
 				{
 					$post_id = $r->ID;
+					$post_title = $r->post_title;
 					$post_content = $r->post_content;
 					$post_date = $r->post_date;
-					$post_link = $r->guid;
 					$post_feed = $r->post_excerpt;
 
-					list($service, $service_id) = explode(" ", $r->post_title);
-
+					$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 					$post_name = get_post_meta($post_id, $this->meta_prefix.'name', true);
 					$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
+					$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
 					$post_likes = get_post_meta($post_id, $this->meta_prefix.'likes', true);
 					$post_comments = get_post_meta($post_id, $this->meta_prefix.'comments', true);
+
+					if($post_service == '')
+					{
+						list($post_service, $service_id) = explode(" ", $r->post_title);
+					}
+
+					if($post_link == '')
+					{
+						$post_link = $r->guid;
+					}
 
 					if($post_content != '' || $post_image != '')
 					{
@@ -575,15 +558,16 @@ class mf_social_feed
 
 							else if($data['social_filter'] == 'group')
 							{
-								$arr_post_feeds[$service] = $arr_services[$service];
+								$arr_post_feeds[$post_service] = $arr_services[$post_service];
 							}
 						}
 
 						$arr_post_posts[] = array(
-							'service' => $service,
+							'service' => $post_service,
 							'feed' => $post_feed,
 							'link' => $post_link,
 							'name' => $post_name,
+							'title' => $post_title,
 							'content' => $post_content,
 							'image' => $post_image,
 							'date' => $post_date,
@@ -629,7 +613,12 @@ class mf_social_feed
 						$out .= "<li class='sf_".$post['service']." sf_feed_".$post['feed']."'>
 							<i class='fa fa-".$post['service']."'></i>";
 
-							if($post['name'])
+							if($post['service'] == 'rss' && $post['title'] != '')
+							{
+								$out .= "<span class='title'>".$post['title']."</span>";
+							}
+
+							else if($post['name'])
 							{
 								$out .= "<span class='name'>".$post['name']."</span>";
 							}

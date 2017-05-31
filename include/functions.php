@@ -157,6 +157,36 @@ function widgets_social_feed()
 	register_widget('widget_social_feed');
 }
 
+function count_shortcode_button_social_feed($count)
+{
+	if($count == 0)
+	{
+		/*if(has_feeds())
+		{*/
+			$count++;
+		//}
+	}
+
+	return $count;
+}
+
+function get_shortcode_output_social_feed($out)
+{
+	/*if(has_feeds())
+	{*/
+		$out .= "<h3>".__("Social Feeds", 'lang_social_feed')."</h3>";
+
+		$arr_data = array(
+			'' => __("No", 'lang_social_feed'),
+			'yes' => __("Yes", 'lang_social_feed')
+		);
+
+		$out .= show_select(array('data' => $arr_data, 'xtra' => "rel='mf_social_feed amount=0 filter=group likes=no'"));
+	//}
+
+	return $out;
+}
+
 function column_header_social_feed($cols)
 {
 	unset($cols['date']);
@@ -197,6 +227,13 @@ function column_cell_social_feed($col, $id)
 					$feed_url = "//instagram.com/".$post_meta_filtered;
 				break;
 
+				case 'rss':
+					$feed_url = $post_meta;
+
+					$post_meta_parts = parse_url($post_meta);
+					$post_meta = $post_meta_parts['host'];
+				break;
+
 				case 'twitter':
 					$feed_url = "//twitter.com/".$post_meta_filtered;
 				break;
@@ -207,6 +244,8 @@ function column_cell_social_feed($col, $id)
 			}
 
 			echo "<a href='".$feed_url."' rel='external'>".$post_meta."</a>";
+
+			$fetch_link = "";
 
 			if(IS_SUPER_ADMIN)
 			{
@@ -220,22 +259,21 @@ function column_cell_social_feed($col, $id)
 					{
 						$obj_social_feed->set_id($id);
 						$obj_social_feed->fetch_feed();
-
-						echo "<div class='row-actions'>
-							".__("Fetched", 'lang_social_feed')."
-						</div>";
 					}
 
 					else
 					{
-						$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
-
-						echo "<div class='row-actions'>
-							<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), "feed_fetch_".$id)."'>".__("Fetch", 'lang_social_feed')."</a> | ".__("Fetched", 'lang_social_feed').": ".format_date($post_modified)."
-						</div>";
+						$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), "feed_fetch_".$id)."'>".__("Fetch", 'lang_social_feed')."</a> | ";
 					}
 				}
 			}
+
+			$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
+
+			echo "<div class='row-actions'>"
+				.$fetch_link
+				.__("Fetched", 'lang_social_feed').": ".format_date($post_modified)
+			."</div>";
 		break;
 
 		case 'amount_of_posts':
@@ -290,9 +328,10 @@ function column_cell_social_feed($col, $id)
 function get_social_types_for_select()
 {
 	return array(
-		'facebook' => "Facebook",
-		'instagram' => "Instagram",
-		'twitter' => "Twitter",
+		'facebook' => __("Facebook", 'lang_social_feed'),
+		'instagram' => __("Instagram", 'lang_social_feed'),
+		'rss' => __("RSS", 'lang_social_feed'),
+		'twitter' => __("Twitter", 'lang_social_feed'),
 	);
 }
 
@@ -303,6 +342,7 @@ function get_feed_info()
 	$out = "<ul id='".$meta_prefix."info_facebook'>
 		<li><strong>".__("Facebook", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</li>
 		<li><strong>".__("Instagram", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
+		<li><strong>".__("RSS", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched by entering the full URL to the feed", 'lang_social_feed')."</li>
 		<li><strong>".__("Twitter", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
 	</ul>";
 
