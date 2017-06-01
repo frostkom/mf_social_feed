@@ -426,13 +426,13 @@ class mf_social_feed
 					'post_type' => 'mf_social_feed_post',
 					'post_status' => 'publish',
 					'post_name' => $post_name,
-					//'guid' => $post['link'],
 					'post_title' => $post_title,
 					'post_content' => $post['text'],
 					'post_date' => $post['created'],
 					'post_excerpt' => $this->id,
 					'meta_input' => array(
 						$this->meta_prefix.'service' => $post['type'],
+						$this->meta_prefix.'feed_id' => $this->id,
 						$this->meta_prefix.'name' => $post['name'],
 						$this->meta_prefix.'image' => $post['image'],
 						$this->meta_prefix.'link' => $post['link'],
@@ -459,11 +459,11 @@ class mf_social_feed
 					$post_data = array(
 						'ID' => $r->ID,
 						'post_name' => $post_name,
-						//'guid' => $post['link'],
 						'post_title' => $post_title,
 						'post_content' => $post['text'],
 						'meta_input' => array(
 							$this->meta_prefix.'service' => $post['type'],
+							$this->meta_prefix.'feed_id' => $this->id,
 							$this->meta_prefix.'name' => $post['name'],
 							$this->meta_prefix.'image' => $post['image'],
 							$this->meta_prefix.'link' => $post['link'],

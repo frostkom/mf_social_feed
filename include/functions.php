@@ -21,6 +21,27 @@ function init_social_feed()
 
 	register_post_type('mf_social_feed', $args);
 
+	$labels = array(
+		'name' => _x(__("Posts", 'lang_social_feed'), 'post type general name'),
+		'singular_name' => _x(__("Post", 'lang_social_feed'), 'post type singular name'),
+		'menu_name' => __("Posts", 'lang_social_feed')
+	);
+
+	$args = array(
+		'labels' => $labels,
+		'public' => true,
+		'show_in_menu' => false,
+		'exclude_from_search' => true,
+		//'supports' => array('title'),
+		'hierarchical' => true,
+		'has_archive' => false,
+		'capabilities' => array(
+			'create_posts' => (is_multisite() ? 'do_not_allow' : false),
+		),
+	);
+
+	register_post_type('mf_social_feed_post', $args);
+
 	mf_enqueue_style('style_social_feed', plugin_dir_url(__FILE__)."style.css", get_plugin_version(__FILE__));
 }
 
@@ -44,6 +65,58 @@ function cron_social_feed()
 
 		$obj_social_feed->set_id($r->ID);
 		$obj_social_feed->fetch_feed();
+	}
+}
+
+function menu_social_feed()
+{
+	$menu_root = 'mf_social_feed/';
+	$menu_start = "edit.php?post_type=mf_social_feed";
+	$menu_capability = "edit_pages";
+
+	$menu_title = __("Posts", 'lang_social_feed');
+	add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=mf_social_feed_post");
+}
+
+function post_filter_select_social_feed()
+{
+    global $post_type, $wpdb;
+
+    if($post_type == 'mf_social_feed_post')
+	{
+		$strFilter = check_var('strFilter');
+
+		$arr_data = array();
+		get_post_children(array('post_type' => 'mf_social_feed', 'post_status' => ''), $arr_data);
+
+		if(count($arr_data) > 1)
+		{
+			echo show_select(array('data' => $arr_data, 'name' => "strFilter", 'value' => $strFilter));
+		}
+    }
+}
+
+function post_filter_query_social_feed($wp_query)
+{
+    global $post_type, $pagenow;
+
+    if($pagenow == 'edit.php')
+	{
+		if($post_type == 'mf_social_feed_post')
+		{
+			$strFilter = check_var('strFilter');
+
+			if($strFilter != '')
+			{
+				$wp_query->query_vars['meta_query'] = array(
+					array(
+						'key' => 'mf_social_feed_feed_id',
+						'value' => $strFilter,
+						'compare' => '=',
+					),
+				);
+			}
+		}
 	}
 }
 
@@ -316,7 +389,7 @@ function column_cell_social_feed($col, $id)
 			{
 				$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $id));
 
-				echo $amount
+				echo "<a href='".admin_url("edit.php?post_type=mf_social_feed_post&strFilter=".$id)."'>".$amount."</a>"
 				."<div class='row-actions'>"
 					.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
 				."</div>";

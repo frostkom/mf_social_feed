@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-31 10:36+0100\n"
+"POT-Creation-Date: 2017-06-01 12:56+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -51,7 +51,7 @@ msgid "Feeds"
 msgstr "Flöden"
 
 #: ../include/classes.php:747
-#: ../include/functions.php:166
+#: ../include/functions.php:269
 msgid "Amount"
 msgstr "Antal"
 
@@ -64,11 +64,13 @@ msgid "Show Likes"
 msgstr "Visa gilla"
 
 #: ../include/classes.php:755
+#: ../include/functions.php:253
 msgid "No"
 msgstr "Nej"
 
 #: ../include/classes.php:756
 #: ../include/classes.php:757
+#: ../include/functions.php:254
 msgid "Yes"
 msgstr "Ja"
 
@@ -86,154 +88,164 @@ msgstr "Visa filter"
 
 #: ../include/functions.php:6
 #: ../include/functions.php:8
-#: ../include/functions.php:74
+#: ../include/functions.php:147
+#: ../include/functions.php:250
 msgid "Social Feeds"
 msgstr "Sociala flöden"
 
-#: ../include/functions.php:58
+#: ../include/functions.php:25
+#: ../include/functions.php:27
+#: ../include/functions.php:77
+msgid "Posts"
+msgstr "Inlägg"
+
+#: ../include/functions.php:26
+msgid "Post"
+msgstr "Inlägg"
+
+#: ../include/functions.php:131
 msgid "Time Limit"
 msgstr "Tidsgräns"
 
-#: ../include/functions.php:59
+#: ../include/functions.php:132
 msgid "Facebook APP ID"
 msgstr ""
 
-#: ../include/functions.php:60
+#: ../include/functions.php:133
 msgid "Facebook Secret"
 msgstr ""
 
-#: ../include/functions.php:61
+#: ../include/functions.php:134
 msgid "Instagram Access Token"
 msgstr ""
 
-#: ../include/functions.php:62
+#: ../include/functions.php:135
 msgid "Twitter Key"
 msgstr ""
 
-#: ../include/functions.php:63
+#: ../include/functions.php:136
 msgid "Twitter Secret"
 msgstr ""
 
-#: ../include/functions.php:64
+#: ../include/functions.php:137
 msgid "Twitter Access Token"
 msgstr ""
 
-#: ../include/functions.php:65
+#: ../include/functions.php:138
 msgid "Twitter Access Token Secret"
 msgstr ""
 
-#: ../include/functions.php:82
+#: ../include/functions.php:155
 msgid "Minutes between each API request"
 msgstr "Minuter mellan varje API-anrop"
 
-#: ../include/functions.php:92
-#: ../include/functions.php:124
+#: ../include/functions.php:165
+#: ../include/functions.php:197
 #, php-format
 msgid "Go to %s and log in"
 msgstr "Gå till %s och logga in"
 
-#: ../include/functions.php:93
+#: ../include/functions.php:166
 #, php-format
 msgid "Create a new app and copy %s and %s to paste here"
 msgstr "Skapa en ny app och kopiera %s och %s för att klistra in här"
 
-#: ../include/functions.php:111
+#: ../include/functions.php:184
 #, php-format
 msgid "Go to %s and click on %s"
 msgstr "Gå till %s och klicka på %s"
 
-#: ../include/functions.php:112
+#: ../include/functions.php:185
 msgid "Make sure %s field is set to s%"
 msgstr "Se till att fältet %s innehåller %s"
 
-#: ../include/functions.php:113
+#: ../include/functions.php:186
 #, php-format
 msgid "Open a new browser tab and go to %s by replacing %s with your %s"
 msgstr "Öppna en ny tab i din webbläsare och go till %s genom att ersätta %s med din %s"
 
-#: ../include/functions.php:114
+#: ../include/functions.php:187
 msgid "Paste the returned token here"
 msgstr "Klistra in token som du får tillbaka här"
 
-#: ../include/functions.php:125
+#: ../include/functions.php:198
 #, php-format
 msgid "Click the tab %s"
 msgstr "Klicka på tabben %s"
 
-#: ../include/functions.php:126
+#: ../include/functions.php:199
 #, php-format
 msgid "Copy %s, %s, %s and %s to paste here"
 msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 
-#: ../include/functions.php:164
-#: ../include/functions.php:344
+#: ../include/functions.php:267
+#: ../include/functions.php:451
 msgid "Service"
 msgstr "Tjänst"
 
-#: ../include/functions.php:165
-#: ../include/functions.php:356
+#: ../include/functions.php:268
+#: ../include/functions.php:463
 msgid "Search for"
 msgstr "Sök efter"
 
-#: ../include/functions.php:229
-#: ../include/functions.php:238
-msgid "Fetched"
-msgstr "Hämtad"
-
-#: ../include/functions.php:238
+#: ../include/functions.php:339
 msgid "Fetch"
 msgstr "Hämta"
 
-#: ../include/functions.php:253
+#: ../include/functions.php:348
+msgid "Fetched"
+msgstr "Hämtad"
+
+#: ../include/functions.php:360
 msgid "I got an error when accessing the feed"
 msgstr "Jag fick ett fel när jag hämtade flödet"
 
-#: ../include/functions.php:270
+#: ../include/functions.php:377
 msgid "The feed does not seam to work. This might be due to that the feed you are trying to access is not public."
 msgstr "Flödet verkar inte fungera. Det kan t.ex. bero på att flödet som du försöker hämta från inte är publikt."
 
-#: ../include/functions.php:276
+#: ../include/functions.php:383
 msgid "I am waiting to get access to the feed"
 msgstr "Jag väntar på att få tillgång till flödet"
 
-#: ../include/functions.php:287
+#: ../include/functions.php:394
 msgid "Latest"
 msgstr "Senaste"
 
-#: ../include/functions.php:297
-#: ../include/functions.php:309
+#: ../include/functions.php:404
+#: ../include/functions.php:416
 msgid "Facebook"
 msgstr ""
 
-#: ../include/functions.php:298
-#: ../include/functions.php:310
+#: ../include/functions.php:405
+#: ../include/functions.php:417
 msgid "Instagram"
 msgstr ""
 
-#: ../include/functions.php:299
-#: ../include/functions.php:311
+#: ../include/functions.php:406
+#: ../include/functions.php:418
 msgid "RSS"
 msgstr ""
 
-#: ../include/functions.php:300
-#: ../include/functions.php:312
+#: ../include/functions.php:407
+#: ../include/functions.php:419
 msgid "Twitter"
 msgstr ""
 
-#: ../include/functions.php:309
+#: ../include/functions.php:416
 msgid "Posts can only be fetched from Facebook Pages, not personal Profiles"
 msgstr "Inlägg kan endast hämtas från sk. Facebook Pages, inte från personliga profiler"
 
-#: ../include/functions.php:310
-#: ../include/functions.php:312
+#: ../include/functions.php:417
+#: ../include/functions.php:419
 msgid "Posts can either be fetched from @users or #hashtags"
 msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
 
-#: ../include/functions.php:311
+#: ../include/functions.php:418
 msgid "Posts can only be fetched by entering the full URL to the feed"
 msgstr "Inlägg kan endast hämtas genom att fylla i fullständiga URLen till flödet"
 
-#: ../include/functions.php:338
+#: ../include/functions.php:445
 msgid "Settings"
 msgstr "Inställningar"
 
