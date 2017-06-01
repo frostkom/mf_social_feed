@@ -37,6 +37,7 @@ function init_social_feed()
 		'has_archive' => false,
 		'capabilities' => array(
 			'create_posts' => (is_multisite() ? 'do_not_allow' : false),
+			'delete_posts' => true,
 		),
 	);
 
