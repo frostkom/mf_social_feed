@@ -71,7 +71,7 @@ class mf_social_feed
 			$this->id = $id;
 		}
 
-		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d'", $this->id));
+		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt = '%d'", $this->id));
 	}
 
 	function fetch_feed()
@@ -138,9 +138,21 @@ class mf_social_feed
 		{
 			foreach($json['data'] as $post)
 			{
+				/*array (
+					'id' => '[id]_[id]',
+					'from' => array (
+						'name' => '[name]',
+						'id' => '[id]'
+					),
+					'message' => '[text]',
+					'full_picture' => '[url]',
+					'created_time' => '2017-06-06T18:58:29+0000'
+				)*/
+
 				$post_id = $post['id'];
 				$arr_post_id = explode("_", $post_id);
-				$post_link = "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1];
+
+				$post_author = $post['from']['id'];
 
 				$post_content = "";
 
@@ -154,18 +166,15 @@ class mf_social_feed
 					$post_content = $post['story'];
 				}
 
-				$post_image = isset($post['full_picture']) && $post['full_picture'] != '' ? $post['full_picture'] : "";
-				$post_date = date("Y-m-d H:i:s", strtotime($post['created_time']));
-
 				$this->arr_posts[] = array(
 					'type' => $this->type,
 					'id' => $post_id,
 					'name' => $this->search,
-					//'title' => $this->type." ".$post_id,
 					'text' => $post_content,
-					'link' => $post_link,
-					'image' => $post_image,
-					'created' => $post_date,
+					'link' => "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1],
+					'image' => isset($post['full_picture']) && $post['full_picture'] != '' ? $post['full_picture'] : "",
+					'created' => date("Y-m-d H:i:s", strtotime($post['created_time'])),
+					'is_owner' => ($arr_post_id[0] == $post_author),
 				);
 			}
 
@@ -254,7 +263,6 @@ class mf_social_feed
 						'type' => $this->type,
 						'id' => $post->id,
 						'name' => isset($post->caption->from->username) ? $post->caption->from->username : $this->search,
-						//'title' => $this->type." ".$post->id,
 						'text' => isset($post->caption->text) ? $post->caption->text : "",
 						'link' => $post->link,
 						'image' => $post->images->standard_resolution->url,
@@ -340,7 +348,6 @@ class mf_social_feed
 				'type' => $this->type,
 				'id' => $post->id,
 				'name' => isset($post->user->screen_name) ? $post->user->screen_name : $this->search,
-				//'title' => $this->type." ".$post->id,
 				'text' => $post->text,
 				'link' => "//twitter.com/".$this->search."/status/".$post->id,
 				'image' => (isset($post->entities->media[0]->media_url) ? $post->entities->media[0]->media_url : ""),
@@ -439,16 +446,19 @@ class mf_social_feed
 					),
 				);
 
-				$post_id = wp_insert_post($post_data);
-
-				if(isset($post['likes']))
+				if(!isset($post['is_owner']) || $post['is_owner'] == true)
 				{
-					update_post_meta($post_id, $this->meta_prefix.'likes', $post['likes']);
-				}
+					$post_id = wp_insert_post($post_data);
 
-				if(isset($post['comments']))
-				{
-					update_post_meta($post_id, $this->meta_prefix.'comments', $post['comments']);
+					if(isset($post['likes']))
+					{
+						update_post_meta($post_id, $this->meta_prefix.'likes', $post['likes']);
+					}
+
+					if(isset($post['comments']))
+					{
+						update_post_meta($post_id, $this->meta_prefix.'comments', $post['comments']);
+					}
 				}
 			}
 
@@ -470,16 +480,24 @@ class mf_social_feed
 						),
 					);
 
-					wp_update_post($post_data);
-
-					if(isset($post['likes']))
+					if(!isset($post['is_owner']) || $post['is_owner'] == true)
 					{
-						update_post_meta($r->ID, $this->meta_prefix.'likes', $post['likes']);
+						wp_update_post($post_data);
+
+						if(isset($post['likes']))
+						{
+							update_post_meta($r->ID, $this->meta_prefix.'likes', $post['likes']);
+						}
+
+						if(isset($post['comments']))
+						{
+							update_post_meta($r->ID, $this->meta_prefix.'comments', $post['comments']);
+						}
 					}
 
-					if(isset($post['comments']))
+					else
 					{
-						update_post_meta($r->ID, $this->meta_prefix.'comments', $post['comments']);
+						wp_trash_post($r->ID);
 					}
 				}
 			}
