@@ -423,7 +423,6 @@ function get_feed_info()
 	return $out;
 }
 
-
 function meta_boxes_social_feed($meta_boxes)
 {
 	global $wpdb;

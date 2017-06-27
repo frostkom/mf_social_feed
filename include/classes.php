@@ -536,6 +536,8 @@ class mf_social_feed
 
 			if($wpdb->num_rows > 0)
 			{
+				mf_enqueue_script('script_social_feed', plugin_dir_url(__FILE__)."script.js", array('read_more' => __("Read More", 'lang_social_feed')), get_plugin_version(__FILE__));
+
 				$arr_services = get_social_types_for_select();
 
 				$arr_post_feeds = $arr_post_posts = array();
@@ -597,8 +599,6 @@ class mf_social_feed
 
 				if(isset($data['social_filter']) && $data['social_filter'] != 'no' && count($arr_post_feeds) > 1)
 				{
-					mf_enqueue_script('script_social_feed', plugin_dir_url(__FILE__)."script.js", array('read_more' => __("Read More", 'lang_social_feed')), get_plugin_version(__FILE__));
-
 					$arr_post_feeds = array_sort(array('array' => $arr_post_feeds, 'keep_index' => true));
 
 					$out .= "<ul class='sf_feeds'>
