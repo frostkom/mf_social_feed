@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-09 10:11+0100\n"
+"POT-Creation-Date: 2017-08-24 09:58+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid "The JSON I got back was not correct. Have a look at %s"
 msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
 
-#: ../include/classes.php:600
+#: ../include/classes.php:539
 msgid "Read More"
 msgstr "Läs mer"
 
@@ -179,12 +179,12 @@ msgid "Copy %s, %s, %s and %s to paste here"
 msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 
 #: ../include/functions.php:268
-#: ../include/functions.php:452
+#: ../include/functions.php:451
 msgid "Service"
 msgstr "Tjänst"
 
 #: ../include/functions.php:269
-#: ../include/functions.php:464
+#: ../include/functions.php:463
 msgid "Search for"
 msgstr "Sök efter"
 
@@ -245,7 +245,7 @@ msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
 msgid "Posts can only be fetched by entering the full URL to the feed"
 msgstr "Inlägg kan endast hämtas genom att fylla i fullständiga URLen till flödet"
 
-#: ../include/functions.php:446
+#: ../include/functions.php:445
 msgid "Settings"
 msgstr "Inställningar"
 

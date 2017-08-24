@@ -55,7 +55,7 @@
 				text-align: left;
 				width: 32.333%;
 			}
-			
+
 				.widget.social_feed ul.sf_feeds + ul.sf_posts:first-child li:first-child
 				{
 					margin-top: 0;

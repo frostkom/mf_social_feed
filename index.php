@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 4.2.6
+Version: 4.2.7
 Author: Martin Fors
 Author URI: http://frostkom.se
 Text Domain: lang_social_feed
@@ -23,6 +23,7 @@ add_action('widgets_init', 'widgets_social_feed');
 if(is_admin())
 {
 	register_activation_hook(__FILE__, 'activate_social_feed');
+	register_uninstall_hook(__FILE__, 'uninstall_social_feed');
 
 	add_action('admin_init', 'settings_social_feed');
 
@@ -48,4 +49,11 @@ load_plugin_textdomain('lang_social_feed', false, dirname(plugin_basename(__FILE
 function activate_social_feed()
 {
 	require_plugin("meta-box/meta-box.php", "Meta Box");
+}
+
+function uninstall_social_feed()
+{
+	mf_uninstall_plugin(array(
+		'post_types' => array('mf_social_feed', 'mf_social_feed_post'),
+	));
 }

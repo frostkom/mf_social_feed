@@ -405,7 +405,7 @@ define('SIMPLEPIE_FILE_SOURCE_CURL', 8);
  */
 define('SIMPLEPIE_FILE_SOURCE_FILE_GET_CONTENTS', 16);
 
-list($upload_path, $upload_url) = get_uploads_folder("mf_form");
+list($upload_path, $upload_url) = get_uploads_folder('mf_form');
 define('SIMPLEPIE_CACHEDIR', $upload_path);
 
 /**

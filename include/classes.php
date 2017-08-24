@@ -235,27 +235,27 @@ class mf_social_feed
 			{
 				foreach($result->data as $post)
 				{
-					/*array('location' => NULL, 
-						'caption' => stdClass::__set_state(array('text' => 'Text #hashtag', 'created_time' => '[id]', 
+					/*array('location' => NULL,
+						'caption' => stdClass::__set_state(array('text' => 'Text #hashtag', 'created_time' => '[id]',
 							'from' => stdClass::__set_state(array('profile_picture' => 'https://instagram.com/x.jpg', 'username' => 'username', 'id' => '[id]', 'full_name' => 'Name'))
 							, 'id' => '[id]'
-						)), 
-						'id' => '[id]_[id]', 'tags' => array(0 => 'hashtags'), 'user_has_liked' => false, 
+						)),
+						'id' => '[id]_[id]', 'tags' => array(0 => 'hashtags'), 'user_has_liked' => false,
 						'users_in_photo' => array(0 => stdClass::__set_state(array(
 							'user' => stdClass::__set_state(array(
 								'profile_picture' => 'https://instagram.com/x.jpg', 'username' => 'username', 'id' => '[id]', 'full_name' => 'Name'
-							)), 
+							)),
 							'position' => stdClass::__set_state(array('y' => 0.435, 'x' => 0.237))
-						))), 
-						'created_time' => '1487162314', 'filter' => 'Valencia', 
-						'user' => stdClass::__set_state(array('profile_picture' => 'https://instagram.com/x.jpg', 'username' => 'username', 'id' => '[id]', 'full_name' => 'Name')), 
-						'type' => 'image', 'link' => 'https://www.instagram.com/p/[id]/', 'attribution' => NULL, 
+						))),
+						'created_time' => '1487162314', 'filter' => 'Valencia',
+						'user' => stdClass::__set_state(array('profile_picture' => 'https://instagram.com/x.jpg', 'username' => 'username', 'id' => '[id]', 'full_name' => 'Name')),
+						'type' => 'image', 'link' => 'https://www.instagram.com/p/[id]/', 'attribution' => NULL,
 						'images' => stdClass::__set_state(array(
-							'standard_resolution' => stdClass::__set_state(array('height' => 640, 'width' => 640, 'url' => 'https://instagram.com/x.jpg')), 
-							'thumbnail' => stdClass::__set_state(array('height' => 150, 'width' => 150, 'url' => 'https://instagram.com/x.jpg')), 
+							'standard_resolution' => stdClass::__set_state(array('height' => 640, 'width' => 640, 'url' => 'https://instagram.com/x.jpg')),
+							'thumbnail' => stdClass::__set_state(array('height' => 150, 'width' => 150, 'url' => 'https://instagram.com/x.jpg')),
 							'low_resolution' => stdClass::__set_state(array('height' => 320, 'width' => 320, 'url' => 'https://instagram.com/x.jpg'))
-						)), 
-						'likes' => stdClass::__set_state(array('count' => 51)), 
+						)),
+						'likes' => stdClass::__set_state(array('count' => 51)),
 						'comments' => stdClass::__set_state(array('count' => 3))
 					)*/
 
@@ -303,27 +303,27 @@ class mf_social_feed
 
 		foreach($results as $key => $post)
 		{
-			/*array('created_at' => 'Fri Feb 17 08:09:54 +0000 2017', 'id' => '[id]', 'id_str' => '[id]', 'text' => 'Text #hashtag', 'truncated' => false, 
+			/*array('created_at' => 'Fri Feb 17 08:09:54 +0000 2017', 'id' => '[id]', 'id_str' => '[id]', 'text' => 'Text #hashtag', 'truncated' => false,
 			'entities' => stdClass::__set_state(array(
-				'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))), 
-				'symbols' => array(), 'user_mentions' => array(), 'urls' => array(), 
+				'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))),
+				'symbols' => array(), 'user_mentions' => array(), 'urls' => array(),
 				'media' => array(0 => stdClass::__set_state(array(
-					'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo', 
+					'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
 					'sizes' => stdClass::__set_state(array(
-						'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')), 
-						'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')), 
-						'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')), 
+						'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
+						'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
+						'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
 						'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
 					))
 				)))
-			)), 
+			)),
 			'extended_entities' => stdClass::__set_state(array(
 				'media' => array(0 => stdClass::__set_state(array(
-					'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo', 
+					'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
 					'sizes' => stdClass::__set_state(array(
-						'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')), 
-						'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')), 
-						'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')), 
+						'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
+						'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
+						'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
 						'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
 					))
 				)))
@@ -402,7 +402,7 @@ class mf_social_feed
 
 			delete_post_meta($this->id, $this->meta_prefix.'error');
 		}
-		
+
 		else
 		{
 			update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
@@ -519,7 +519,7 @@ class mf_social_feed
 		{
 			$out .= "<div class='widget social_feed'>";
 		}
-		
+
 			if(isset($data['social_feeds']) && count($data['social_feeds']) > 0)
 			{
 				$query_where .= " AND ID IN('".implode("','", $data['social_feeds'])."')";
@@ -704,7 +704,7 @@ class widget_social_feed extends WP_Widget
 		global $wpdb;
 
 		extract($args);
-		
+
 		$obj_social_feed = new mf_social_feed();
 
 		echo $before_widget;
