@@ -412,7 +412,7 @@ function get_social_types_for_select()
 	);
 }
 
-function get_feed_info()
+function meta_feed_info()
 {
 	$meta_prefix = "mf_social_feed_";
 
@@ -470,7 +470,7 @@ function meta_boxes_social_feed($meta_boxes)
 			array(
 				'id' => $meta_prefix.'info',
 				'type' => 'custom_html',
-				'callback' => 'get_feed_info',
+				'callback' => 'meta_feed_info',
 			),
 		)
 	);

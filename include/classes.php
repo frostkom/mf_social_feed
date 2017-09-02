@@ -517,7 +517,8 @@ class mf_social_feed
 
 		if($data['social_type'] == 'shortcode')
 		{
-			$out .= "<div class='widget social_feed'>";
+			$out .= "<div class='widget social_feed'>
+				<div class='section'>"; // social_type='".$data['social_type']."' social_amount='".$data['social_amount']."' social_border='".$data['social_border']."'
 		}
 
 			if(isset($data['social_feeds']) && count($data['social_feeds']) > 0)
@@ -676,7 +677,8 @@ class mf_social_feed
 
 		if($data['social_type'] == 'shortcode')
 		{
-			$out .= "</div>";
+				$out .= "</div>
+			</div>";
 		}
 
 		return $out;
@@ -716,7 +718,7 @@ class widget_social_feed extends WP_Widget
 				.$after_title;
 			}
 
-			echo "<div class='section'>"
+			echo "<div class='section'>" // social_type='".$instance['social_type']."' social_amount='".$instance['social_amount']."' social_border='".$instance['social_border']."'
 				.$obj_social_feed->get_output($instance)
 			."</div>"
 		.$after_widget;
