@@ -694,24 +694,31 @@ class widget_social_feed extends WP_Widget
 			'description' => __("Display Social Feeds", 'lang_social_feed')
 		);
 
-		$control_ops = array('id_base' => 'social-feed-widget');
+		$this->arr_default = array(
+			'social_heading' => "",
+			'social_feeds' => array(),
+			'social_amount' => 18,
+			'social_filter' => 'no',
+			'social_border' => 'yes',
+			'social_likes' => 'no',
+		);
 
-		parent::__construct('social-feed-widget', __("Social Feed", 'lang_social_feed'), $widget_ops, $control_ops);
+		parent::__construct('social-feed-widget', __("Social Feed", 'lang_social_feed'), $widget_ops);
 
 		$this->meta_prefix = "mf_social_feed_";
 	}
 
 	function widget($args, $instance)
 	{
-		global $wpdb;
-
 		extract($args);
+
+		$instance = wp_parse_args((array)$instance, $this->arr_default);
 
 		$obj_social_feed = new mf_social_feed();
 
 		echo $before_widget;
 
-			if(isset($instance['social_heading']) && $instance['social_heading'] != '')
+			if($instance['social_heading'] != '')
 			{
 				echo $before_title
 					.$instance['social_heading']
@@ -728,29 +735,21 @@ class widget_social_feed extends WP_Widget
 	{
 		$instance = $old_instance;
 
+		$new_instance = wp_parse_args((array)$new_instance, $this->arr_default);
+
 		$instance['social_heading'] = strip_tags($new_instance['social_heading']);
-		$instance['social_feeds'] = isset($new_instance['social_feeds']) ? $new_instance['social_feeds'] : array();
+		$instance['social_feeds'] = $new_instance['social_feeds'];
 		$instance['social_amount'] = strip_tags($new_instance['social_amount']);
 		$instance['social_filter'] = strip_tags($new_instance['social_filter']);
-		$instance['social_border'] = isset($new_instance['social_border']) ? strip_tags($new_instance['social_border']) : 'yes';
-		$instance['social_likes'] = isset($new_instance['social_likes']) ? strip_tags($new_instance['social_likes']) : 'no';
+		$instance['social_border'] = strip_tags($new_instance['social_border']);
+		$instance['social_likes'] = strip_tags($new_instance['social_likes']);
 
 		return $instance;
 	}
 
 	function form($instance)
 	{
-		global $wpdb;
-
-		$defaults = array(
-			'social_heading' => "",
-			'social_feeds' => array(),
-			'social_amount' => 18,
-			'social_filter' => 'no',
-			'social_border' => 'yes',
-			'social_likes' => 'no',
-		);
-		$instance = wp_parse_args((array)$instance, $defaults);
+		$instance = wp_parse_args((array)$instance, $this->arr_default);
 
 		$arr_data_feeds = array();
 		get_post_children(array('post_type' => 'mf_social_feed'), $arr_data_feeds);
