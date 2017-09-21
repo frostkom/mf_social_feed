@@ -104,6 +104,8 @@ function post_filter_query_social_feed($wp_query)
 {
     global $post_type, $pagenow;
 
+	$meta_prefix = "mf_social_feed_";
+
     if($pagenow == 'edit.php')
 	{
 		if($post_type == 'mf_social_feed_post')
@@ -114,7 +116,7 @@ function post_filter_query_social_feed($wp_query)
 			{
 				$wp_query->query_vars['meta_query'] = array(
 					array(
-						'key' => 'mf_social_feed_feed_id',
+						'key' => $meta_prefix.'feed_id',
 						'value' => $strFilter,
 						'compare' => '=',
 					),
