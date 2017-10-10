@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-10 09:48+0100\n"
+"POT-Creation-Date: 2017-10-10 10:15+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -179,12 +179,12 @@ msgid "Copy %s, %s, %s and %s to paste here"
 msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 
 #: ../include/functions.php:273
-#: ../include/functions.php:456
+#: ../include/functions.php:493
 msgid "Service"
 msgstr "Tjänst"
 
 #: ../include/functions.php:274
-#: ../include/functions.php:468
+#: ../include/functions.php:505
 msgid "Search for"
 msgstr "Sök efter"
 
@@ -212,40 +212,52 @@ msgstr "Jag väntar på att få tillgång till flödet"
 msgid "Latest"
 msgstr "Senaste"
 
-#: ../include/functions.php:410
-#: ../include/functions.php:422
+#: ../include/functions.php:412
+msgid "Text"
+msgstr "Text"
+
+#: ../include/functions.php:413
+msgid "Image"
+msgstr "Bild"
+
+#: ../include/functions.php:414
+msgid "Date"
+msgstr "Datum"
+
+#: ../include/functions.php:447
+#: ../include/functions.php:459
 msgid "Facebook"
 msgstr ""
 
-#: ../include/functions.php:411
-#: ../include/functions.php:423
+#: ../include/functions.php:448
+#: ../include/functions.php:460
 msgid "Instagram"
 msgstr ""
 
-#: ../include/functions.php:412
-#: ../include/functions.php:424
+#: ../include/functions.php:449
+#: ../include/functions.php:461
 msgid "RSS"
 msgstr ""
 
-#: ../include/functions.php:413
-#: ../include/functions.php:425
+#: ../include/functions.php:450
+#: ../include/functions.php:462
 msgid "Twitter"
 msgstr ""
 
-#: ../include/functions.php:422
+#: ../include/functions.php:459
 msgid "Posts can only be fetched from Facebook Pages, not personal Profiles"
 msgstr "Inlägg kan endast hämtas från sk. Facebook Pages, inte från personliga profiler"
 
-#: ../include/functions.php:423
-#: ../include/functions.php:425
+#: ../include/functions.php:460
+#: ../include/functions.php:462
 msgid "Posts can either be fetched from @users or #hashtags"
 msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
 
-#: ../include/functions.php:424
+#: ../include/functions.php:461
 msgid "Posts can only be fetched by entering the full URL to the feed"
 msgstr "Inlägg kan endast hämtas genom att fylla i fullständiga URLen till flödet"
 
-#: ../include/functions.php:450
+#: ../include/functions.php:487
 msgid "Settings"
 msgstr "Inställningar"
 

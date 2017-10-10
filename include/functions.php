@@ -404,6 +404,43 @@ function column_cell_social_feed($col, $id)
 	}
 }
 
+function column_header_social_feed_post($cols)
+{
+	unset($cols['title']);
+	unset($cols['date']);
+
+	$cols['text'] = __("Text", 'lang_social_feed');
+	$cols['image'] = __("Image", 'lang_social_feed');
+	$cols['date'] = __("Date", 'lang_social_feed');
+
+	return $cols;
+}
+
+function column_cell_social_feed_post($col, $id)
+{
+	global $wpdb;
+
+	$obj_social_feed = new mf_social_feed();
+
+	switch($col)
+	{
+		case 'text':
+			$post_content = mf_get_post_content($id);
+
+			echo shorten_text(array('string' => $post_content, 'limit' => 50));
+		break;
+
+		case 'image':
+			$post_meta = get_post_meta($id, $obj_social_feed->meta_prefix.$col, true);
+
+			if($post_meta != '')
+			{
+				echo "<img src='".$post_meta."'>";
+			}
+		break;
+	}
+}
+
 function get_social_types_for_select()
 {
 	return array(
