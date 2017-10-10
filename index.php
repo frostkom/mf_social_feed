@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 4.3.1
+Version: 4.3.2
 Author: Martin Fors
 Author URI: http://frostkom.se
 Text Domain: lang_social_feed
@@ -39,7 +39,8 @@ if(is_admin())
 	add_filter('manage_mf_social_feed_posts_columns', 'column_header_social_feed', 5);
 	add_action('manage_mf_social_feed_posts_custom_column', 'column_cell_social_feed', 5, 2);
 
-	add_action('save_post', 'save_post_social_feed', 10, 3);
+	add_action('save_post', 'save_social_feed', 10, 3);
+	add_action('delete_post', 'delete_social_feed');
 }
 
 add_shortcode('mf_social_feed', 'shortcode_social_feed');

@@ -480,7 +480,7 @@ function meta_boxes_social_feed($meta_boxes)
 	return $meta_boxes;
 }
 
-function save_post_social_feed($post_id, $post, $update)
+function save_social_feed($post_id, $post, $update)
 {
 	global $wpdb;
 
@@ -491,6 +491,21 @@ function save_post_social_feed($post_id, $post, $update)
 		if(!($obj_social_feed->get_amount() > 0))
 		{
 			$obj_social_feed->fetch_feed();
+		}
+	}
+}
+
+function delete_social_feed($post_id)
+{
+	global $wpdb, $post_type;
+
+	if($post_type == 'mf_social_feed')
+	{
+		$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d'", $post_id));
+
+		foreach($result as $r)
+		{
+			wp_trash_post($r->ID);
 		}
 	}
 }

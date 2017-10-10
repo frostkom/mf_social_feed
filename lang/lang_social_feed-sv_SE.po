@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-21 10:42+0100\n"
+"POT-Creation-Date: 2017-10-10 09:48+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -29,60 +29,60 @@ msgstr "Läs mer"
 msgid "All"
 msgstr "Alla"
 
-#: ../include/classes.php:675
+#: ../include/classes.php:680
 msgid "I could not find any posts at the moment. Sorry!"
 msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
 
-#: ../include/classes.php:694
+#: ../include/classes.php:699
 msgid "Display Social Feeds"
 msgstr "Visa sociala flöden"
 
-#: ../include/classes.php:706
+#: ../include/classes.php:711
 #: ../include/functions.php:7
 msgid "Social Feed"
 msgstr "Socialt flöde"
 
-#: ../include/classes.php:758
+#: ../include/classes.php:763
 msgid "Heading"
 msgstr "Rubrik"
 
-#: ../include/classes.php:762
+#: ../include/classes.php:767
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:766
+#: ../include/classes.php:771
 #: ../include/functions.php:275
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:767
+#: ../include/classes.php:772
 msgid "Show Border"
 msgstr "Visa kant runt"
 
-#: ../include/classes.php:768
+#: ../include/classes.php:773
 msgid "Show Likes"
 msgstr "Visa gilla"
 
-#: ../include/classes.php:774
+#: ../include/classes.php:779
 #: ../include/functions.php:259
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:775
-#: ../include/classes.php:776
+#: ../include/classes.php:780
+#: ../include/classes.php:781
 #: ../include/functions.php:260
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:775
+#: ../include/classes.php:780
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:776
+#: ../include/classes.php:781
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:779
+#: ../include/classes.php:784
 msgid "Show Filter"
 msgstr "Visa filter"
 
