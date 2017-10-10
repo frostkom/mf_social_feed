@@ -632,12 +632,12 @@ class mf_social_feed
 						$out .= "<li class='sf_".$post['service']." sf_feed_".$post['feed']."'>
 							<i class='fa fa-".$post['service']."'></i>";
 
-							if($post['service'] == 'rss' && $post['title'] != '')
+							if($post['service'] == 'rss')
 							{
-								$out .= "<span class='title'>".$post['title']."</span>";
+								$out .= "<span class='name'>".get_post_title($post['feed'])."</span>";
 							}
 
-							else if($post['name'])
+							else if($post['name'] != '')
 							{
 								$out .= "<span class='name'>".$post['name']."</span>";
 							}
@@ -648,6 +648,11 @@ class mf_social_feed
 								if($post['image'] != '')
 								{
 									$out .= "<img src='".$post['image']."'>";
+								}
+
+								if($post['service'] == 'rss' && $post['title'] != '')
+								{
+									$out .= "<p>".$post['title']."</p>";
 								}
 
 								if($post['content'] != '')

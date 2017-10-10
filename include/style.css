@@ -146,6 +146,11 @@
 						margin-top: .5em;
 					}
 
+						.widget.social_feed p + p
+						{
+							font-size: .9em;
+						}
+
 						.shorten-shortened
 						{
 							position: relative;
