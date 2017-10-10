@@ -43,10 +43,7 @@ function init_social_feed()
 
 	register_post_type('mf_social_feed_post', $args);
 
-	if(!is_admin())
-	{
-		mf_enqueue_style('style_social_feed', plugin_dir_url(__FILE__)."style.css", get_plugin_version(__FILE__));
-	}
+	mf_enqueue_style('style_social_feed', plugin_dir_url(__FILE__)."style.css", get_plugin_version(__FILE__));
 }
 
 function cron_social_feed()
