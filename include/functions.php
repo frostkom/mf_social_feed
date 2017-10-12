@@ -35,10 +35,10 @@ function init_social_feed()
 		//'supports' => array('title'),
 		'hierarchical' => true,
 		'has_archive' => false,
-		'capabilities' => array(
+		//Works fine if you're a Superadmin but admins can only view posts after this change
+		/*'capabilities' => array(
 			'create_posts' => (is_multisite() ? 'do_not_allow' : false),
-			'delete_posts' => true,
-		),
+		),*/
 	);
 
 	register_post_type('mf_social_feed_post', $args);
