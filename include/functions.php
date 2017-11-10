@@ -55,7 +55,7 @@ function init_social_feed()
 		'public' => true,
 		'show_in_menu' => false,
 		'exclude_from_search' => true,
-		//'supports' => array('title'),
+		//'supports' => array('title', 'editor', 'excerpt'),
 		'hierarchical' => true,
 		'has_archive' => false,
 		//Works fine if you're a Superadmin but admins can only view posts after this change
@@ -75,50 +75,6 @@ function menu_social_feed()
 
 	$menu_title = __("Posts", 'lang_social_feed');
 	add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=mf_social_feed_post");
-}
-
-function post_filter_select_social_feed()
-{
-    global $post_type, $wpdb;
-
-    if($post_type == 'mf_social_feed_post')
-	{
-		$strFilter = check_var('strFilter');
-
-		$arr_data = array();
-		get_post_children(array('post_type' => 'mf_social_feed', 'post_status' => ''), $arr_data);
-
-		if(count($arr_data) > 1)
-		{
-			echo show_select(array('data' => $arr_data, 'name' => "strFilter", 'value' => $strFilter));
-		}
-    }
-}
-
-function post_filter_query_social_feed($wp_query)
-{
-    global $post_type, $pagenow;
-
-	$meta_prefix = "mf_social_feed_";
-
-    if($pagenow == 'edit.php')
-	{
-		if($post_type == 'mf_social_feed_post')
-		{
-			$strFilter = check_var('strFilter');
-
-			if($strFilter != '')
-			{
-				$wp_query->query_vars['meta_query'] = array(
-					array(
-						'key' => $meta_prefix.'feed_id',
-						'value' => $strFilter,
-						'compare' => '=',
-					),
-				);
-			}
-		}
-	}
 }
 
 function settings_social_feed()
@@ -408,11 +364,18 @@ function column_cell_social_feed($col, $id)
 
 function column_header_social_feed_post($cols)
 {
+	$plugin_include_url = plugin_dir_url(__FILE__);
+	$plugin_version = get_plugin_version(__FILE__);
+
+	mf_enqueue_script('script_social_feed', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')), $plugin_version);
+
 	unset($cols['title']);
 	unset($cols['date']);
 
+	$cols['username'] = __("Username", 'lang_social_feed');
 	$cols['text'] = __("Text", 'lang_social_feed');
 	$cols['image'] = __("Image", 'lang_social_feed');
+	//$cols['post_id'] = __("ID", 'lang_social_feed');
 	$cols['date'] = __("Date", 'lang_social_feed');
 
 	return $cols;
@@ -426,6 +389,25 @@ function column_cell_social_feed_post($col, $id)
 
 	switch($col)
 	{
+		case 'username':
+			$post_meta = get_post_meta($id, $obj_social_feed->meta_prefix.'name', true);
+
+			echo "@".$post_meta;
+
+			$post_status = get_post_status($id);
+
+			switch($post_status)
+			{
+				case 'pending':
+					echo "<span class='strong nowrap'> - ".__("Ignored", 'lang_social_feed')."</span>";
+				break;
+
+				case 'draft':
+					echo "<span class='strong nowrap'> - ".__("Hidden", 'lang_social_feed')."</span>";
+				break;
+			}
+		break;
+
 		case 'text':
 			$post_content = mf_get_post_content($id);
 
@@ -440,6 +422,10 @@ function column_cell_social_feed_post($col, $id)
 				echo "<img src='".$post_meta."'>";
 			}
 		break;
+
+		case 'post_id':
+			echo get_post_title($id);
+		break;
 	}
 }
 
@@ -451,72 +437,6 @@ function get_social_types_for_select()
 		'rss' => __("RSS", 'lang_social_feed'),
 		'twitter' => __("Twitter", 'lang_social_feed'),
 	);
-}
-
-function meta_feed_info()
-{
-	$meta_prefix = "mf_social_feed_";
-
-	$out = "<ul id='".$meta_prefix."info_facebook'>
-		<li><strong>".__("Facebook", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</li>
-		<li><strong>".__("Instagram", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
-		<li><strong>".__("RSS", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched by entering the full URL to the feed", 'lang_social_feed')."</li>
-		<li><strong>".__("Twitter", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
-	</ul>";
-
-	return $out;
-}
-
-function meta_boxes_social_feed($meta_boxes)
-{
-	global $wpdb;
-
-	$meta_prefix = "mf_social_feed_";
-
-	#####################
-	$default_type = "";
-
-	$post_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' ORDER BY post_modified DESC LIMIT 0, 1");
-
-	if($post_id > 0)
-	{
-		$default_type = get_post_meta($post_id, $meta_prefix.'type', true);
-	}
-	#####################
-
-	$meta_boxes[] = array(
-		'id' => $meta_prefix.'settings',
-		'title' => __("Settings", 'lang_social_feed'),
-		'post_types' => array('mf_social_feed'),
-		//'context' => 'side',
-		'priority' => 'low',
-		'fields' => array(
-			array(
-				'name' => __("Service", 'lang_social_feed'),
-				'id' => $meta_prefix.'type',
-				'type' => 'select',
-				'options' => get_social_types_for_select(),
-				'std' => $default_type,
-				/*'attributes' => array(
-					'condition_type' => 'show_if',
-					'condition_value' => 'facebook',
-					'condition_field' => $meta_prefix.'info_facebook',
-				),*/
-			),
-			array(
-				'name' => __("Search for", 'lang_social_feed'),
-				'id' => $meta_prefix.'search_for',
-				'type' => 'text',
-			),
-			array(
-				'id' => $meta_prefix.'info',
-				'type' => 'custom_html',
-				'callback' => 'meta_feed_info',
-			),
-		)
-	);
-
-	return $meta_boxes;
 }
 
 function save_social_feed($post_id, $post, $update)

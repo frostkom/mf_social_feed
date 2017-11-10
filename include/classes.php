@@ -10,6 +10,261 @@ class mf_social_feed
 		$this->meta_prefix = "mf_social_feed_";
 	}
 
+	// Admin
+	#########################
+	function meta_feed_info()
+	{
+		$out = "<ul id='".$this->meta_prefix."info_facebook'>
+			<li><strong>".__("Facebook", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</li>
+			<li><strong>".__("Instagram", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
+			<li><strong>".__("RSS", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched by entering the full URL to the feed", 'lang_social_feed')."</li>
+			<li><strong>".__("Twitter", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
+		</ul>";
+
+		return $out;
+	}
+
+	function meta_post_info()
+	{
+		global $post;
+
+		$post_id = $post->ID;
+		$post_date = $post->post_date;
+
+		$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
+		$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+		$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
+		$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
+		$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
+
+		$out = "<ul id='".$this->meta_prefix."info'>"
+			."<li><i class='fa fa-".$post_service."'></i> ".get_post_title($post_feed)."</li>"
+			."<li><a href='".$post_link."' rel='external'>@".$post_username."</a></li>"
+			.($post_image != '' ? "<li><img src='".$post_image."'></li>" : "")
+			."<li>".format_date($post_date)."</li>"
+		."</ul>";
+
+		return $out;
+	}
+
+	function meta_boxes($meta_boxes)
+	{
+		global $wpdb;
+
+		#####################
+		$arr_data_social_types = get_social_types_for_select();
+
+		$default_type = "";
+
+		$post_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' ORDER BY post_modified DESC LIMIT 0, 1");
+
+		if($post_id > 0)
+		{
+			$default_type = get_post_meta($post_id, $this->meta_prefix.'type', true);
+		}
+		#####################
+
+		$meta_boxes[] = array(
+			'id' => $this->meta_prefix.'settings',
+			'title' => __("Settings", 'lang_social_feed'),
+			'post_types' => array('mf_social_feed'),
+			//'context' => 'side',
+			'priority' => 'low',
+			'fields' => array(
+				array(
+					'name' => __("Service", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'type',
+					'type' => 'select',
+					'options' => $arr_data_social_types,
+					'std' => $default_type,
+					/*'attributes' => array(
+						'condition_type' => 'show_if',
+						'condition_value' => 'facebook',
+						'condition_field' => $this->meta_prefix.'info_facebook',
+					),*/
+				),
+				array(
+					'name' => __("Search for", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'search_for',
+					'type' => 'text',
+				),
+				array(
+					'id' => $this->meta_prefix.'info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_feed_info'),
+				),
+			)
+		);
+
+		$meta_boxes[] = array(
+			'id' => $this->meta_prefix.'info',
+			'title' => __("Information", 'lang_social_feed'),
+			'post_types' => array('mf_social_feed_post'),
+			'context' => 'side',
+			'priority' => 'high',
+			'fields' => array(
+				array(
+					'id' => $this->meta_prefix.'info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_post_info'),
+				),
+			)
+		);
+
+		return $meta_boxes;
+	}
+
+	function post_filter_select()
+	{
+		global $post_type, $wpdb;
+
+		if($post_type == 'mf_social_feed_post')
+		{
+			$strFilter = check_var('strFilter');
+
+			$arr_data = array();
+			get_post_children(array('post_type' => 'mf_social_feed', 'post_status' => '', 'add_choose_here' => true), $arr_data);
+
+			if(count($arr_data) > 1)
+			{
+				echo show_select(array('data' => $arr_data, 'name' => "strFilter", 'value' => $strFilter));
+			}
+		}
+	}
+
+	function post_filter_query($wp_query)
+	{
+		global $post_type, $pagenow;
+
+		if($pagenow == 'edit.php' && $post_type == 'mf_social_feed_post')
+		{
+			$strFilter = check_var('strFilter');
+
+			if($strFilter != '')
+			{
+				$wp_query->query_vars['meta_query'] = array(
+					array(
+						'key' => $this->meta_prefix.'feed_id',
+						'value' => $strFilter,
+						'compare' => '=',
+					),
+				);
+			}
+		}
+	}
+
+	function row_actions($actions, $post)
+	{
+		if($post->post_type == 'mf_social_feed_post')
+		{
+			unset($actions['inline hide-if-no-js']);
+			unset($actions['view']);
+
+			$post_id = $post->ID;
+
+			$feed_id = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+			$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
+
+			$post_username = "@".$post_username;
+			$feed_name = get_post_meta($feed_id, $this->meta_prefix.'search_for', true);
+
+			if($post->post_status == 'publish')
+			{
+				unset($actions['trash']);
+
+				$actions['action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; //draft
+
+				if($post_username != $feed_name)
+				{
+					$actions['action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!"), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
+				}
+			}
+		}
+
+		return $actions;
+	}
+
+	function action_hide()
+	{
+		global $wpdb, $done_text, $error_text;
+
+		$action_id = check_var('action_id', 'int');
+
+		$result = array();
+
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'draft' WHERE ID = '%d' AND post_type = 'mf_social_feed_post'", $action_id));
+		
+		if($wpdb->rows_affected > 0)
+		{
+			$done_text = __("I have hidden the post for you now", 'lang_social_feed');
+		}
+
+		else
+		{
+			$error_text = __("I could not hide the post for you. An admin has been notified about this issue", 'lang_social_feed');
+
+			do_log($error_text." (".$wpdb->last_query.")");
+		}
+
+		$out = get_notification();
+
+		if($done_text != '')
+		{
+			$result['success'] = true;
+			$result['message'] = $out;
+		}
+
+		else
+		{
+			$result['error'] = $out;
+		}
+
+		echo json_encode($result);
+		die();
+	}
+
+	function action_ignore()
+	{
+		global $wpdb, $done_text, $error_text;
+
+		$action_id = check_var('action_id', 'int');
+
+		$result = array();
+
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'pending' WHERE ID = '%d' AND post_type = 'mf_social_feed_post'", $action_id));
+		
+		if($wpdb->rows_affected > 0)
+		{
+			$done_text = __("I have ignored the post for you now. This means that all future posts by this user will be ignored aswell", 'lang_social_feed');
+		}
+
+		else
+		{
+			$error_text = __("I could not ignore the post for you. An admin has been notified about this issue", 'lang_social_feed');
+
+			do_log($error_text." (".$wpdb->last_query.")");
+		}
+
+		$out = get_notification();
+
+		if($done_text != '')
+		{
+			$result['success'] = true;
+			$result['message'] = $out;
+		}
+
+		else
+		{
+			$result['error'] = $out;
+		}
+
+		echo json_encode($result);
+		die();
+	}
+	#########################
+
+	// Fetch
+	#########################
 	function set_id($id)
 	{
 		$this->id = $id;
@@ -429,14 +684,22 @@ class mf_social_feed
 
 			if($wpdb->num_rows == 0)
 			{
+				$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' AND post_status = 'pending' AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $post_title, $post_name, $this->id, $post['name']));
+				$post_status = $wpdb->num_rows > 0 ? 'draft' : 'publish';
+
+				if($post_status == 'draft')
+				{
+					do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
+				}
+
 				$post_data = array(
 					'post_type' => 'mf_social_feed_post',
-					'post_status' => 'publish',
-					'post_name' => $post_name,
+					'post_status' => $post_status,
+					'post_name' => $post_name, //Can this be removed?
 					'post_title' => $post_title,
 					'post_content' => $post['text'],
 					'post_date' => $post['created'],
-					'post_excerpt' => $this->id,
+					'post_excerpt' => $this->id, //Can this be removed?
 					'meta_input' => array(
 						$this->meta_prefix.'service' => $post['type'],
 						$this->meta_prefix.'feed_id' => $this->id,
@@ -468,7 +731,7 @@ class mf_social_feed
 				{
 					$post_data = array(
 						'ID' => $r->ID,
-						'post_name' => $post_name,
+						'post_name' => $post_name, //Can this be removed?
 						'post_title' => $post_title,
 						'post_content' => $post['text'],
 						'meta_input' => array(
@@ -503,7 +766,10 @@ class mf_social_feed
 			}
 		}
 	}
+	#########################
 
+	// Public
+	#########################
 	function get_feeds_and_posts($data)
 	{
 		global $wpdb;
@@ -527,7 +793,7 @@ class mf_social_feed
 		{
 			$obj_social_feed = new mf_social_feed();
 
-			$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid, post_excerpt FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".$data['amount']);
+			$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".$data['amount']); //, post_excerpt
 
 			if($wpdb->num_rows > 0)
 			{
@@ -541,10 +807,11 @@ class mf_social_feed
 					$post_title = $r->post_title;
 					$post_content = $r->post_content;
 					$post_date = $r->post_date;
-					$post_feed = $r->post_excerpt;
+					//$post_feed = $r->post_excerpt;
 
 					$post_service = get_post_meta($post_id, $obj_social_feed->meta_prefix.'service', true);
-					$post_name = get_post_meta($post_id, $obj_social_feed->meta_prefix.'name', true);
+					$post_feed = get_post_meta($post_id, $obj_social_feed->meta_prefix.'feed_id', true);
+					$post_username = get_post_meta($post_id, $obj_social_feed->meta_prefix.'name', true);
 					$post_image = get_post_meta($post_id, $obj_social_feed->meta_prefix.'image', true);
 					$post_link = get_post_meta($post_id, $obj_social_feed->meta_prefix.'link', true);
 
@@ -593,7 +860,7 @@ class mf_social_feed
 							'feed' => $post_feed,
 							'feed_title' => get_post_title($post_feed),
 							'link' => $post_link,
-							'name' => $post_name,
+							'name' => $post_username,
 							'title' => $post_title,
 							'content' => $post_content,
 							'image' => $post_image,
@@ -715,168 +982,9 @@ class mf_social_feed
 			$out .= "<p>".__("I could not find any posts at the moment. Sorry!", 'lang_social_feed')."</p>";
 		}
 
-		/*$arr_public_feeds = array();
-		$out = $query_where = "";
-
-		if(isset($data['social_feeds']) && count($data['social_feeds']) > 0)
-		{
-			$query_where .= " AND ID IN('".implode("','", $data['social_feeds'])."')";
-		}
-
-		$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish'".$query_where);
-
-		foreach($result as $r)
-		{
-			$arr_public_feeds[] = $r->ID;
-		}
-
-		$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid, post_excerpt FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".$data['social_amount']);
-
-		if($wpdb->num_rows > 0)
-		{
-			$arr_services = get_social_types_for_select();
-
-			$arr_post_feeds = $arr_post_posts = array();
-
-			foreach($result as $r)
-			{
-				$post_id = $r->ID;
-				$post_title = $r->post_title;
-				$post_content = $r->post_content;
-				$post_date = $r->post_date;
-				$post_feed = $r->post_excerpt;
-
-				$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
-				$post_name = get_post_meta($post_id, $this->meta_prefix.'name', true);
-				$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
-				$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
-				$post_likes = get_post_meta($post_id, $this->meta_prefix.'likes', true);
-				$post_comments = get_post_meta($post_id, $this->meta_prefix.'comments', true);
-
-				if($post_service == '')
-				{
-					list($post_service, $service_id) = explode(" ", $r->post_title);
-				}
-
-				if($post_link == '')
-				{
-					$post_link = $r->guid;
-				}
-
-				if($post_content != '' || $post_image != '')
-				{
-					if(isset($data['social_filter']) && $data['social_filter'] != 'no')
-					{
-						if($data['social_filter'] == 'yes')
-						{
-							$arr_post_feeds[$post_feed] = get_post_title($post_feed);
-						}
-
-						else if($data['social_filter'] == 'group')
-						{
-							$arr_post_feeds[$post_service] = $arr_services[$post_service];
-						}
-					}
-
-					$arr_post_posts[] = array(
-						'service' => $post_service,
-						'feed' => $post_feed,
-						'link' => $post_link,
-						'name' => $post_name,
-						'title' => $post_title,
-						'content' => $post_content,
-						'image' => $post_image,
-						'date' => $post_date,
-						'likes' => $post_likes,
-						'comments' => $post_comments,
-					);
-				}
-			}
-
-			if(isset($data['social_filter']) && $data['social_filter'] != 'no' && count($arr_post_feeds) > 1)
-			{
-				$arr_post_feeds = array_sort(array('array' => $arr_post_feeds, 'keep_index' => true));
-
-				$out .= "<ul class='sf_feeds'>
-					<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>";
-
-					foreach($arr_post_feeds as $key => $value)
-					{
-						$out .= "<li><a href='#' id='".($data['social_filter'] == 'yes' ? "sf_feed_".$key : "sf_".$key)."'>".$value."</a></li>";
-					}
-
-				$out .= "</ul>";
-			}
-
-			$class_xtra = "";
-
-			if(count($arr_post_posts) < 3)
-			{
-				$class_xtra .= " one_column";
-			}
-
-			if($data['social_border'] == 'yes')
-			{
-				$class_xtra .= " show_border";
-			}
-
-			$out .= "<ul class='sf_posts".$class_xtra."'>";
-
-				foreach($arr_post_posts as $post)
-				{
-					$out .= "<li class='sf_".$post['service']." sf_feed_".$post['feed']."'>
-						<i class='fa fa-".$post['service']."'></i>";
-
-						if($post['service'] == 'rss')
-						{
-							$out .= "<span class='name'>".get_post_title($post['feed'])."</span>";
-						}
-
-						else if($post['name'] != '')
-						{
-							$out .= "<span class='name'>".$post['name']."</span>";
-						}
-
-						$out .= "<span class='date'>".format_date($post['date'])."</span>
-						<a href='".$post['link']."' class='content' rel='external'>";
-
-							if($post['image'] != '')
-							{
-								$out .= "<img src='".$post['image']."'>";
-							}
-
-							if($post['service'] == 'rss' && $post['title'] != '')
-							{
-								$out .= "<p>".$post['title']."</p>";
-							}
-
-							if($post['content'] != '')
-							{
-								$out .= "<p>".$post['content']."</p>";
-							}
-
-							if(isset($data['social_likes']) && $data['social_likes'] == 'yes' && ($post['likes'] != '' || $post['comments'] != ''))
-							{
-								$out .= "<div class='likes'>
-									<i class='fa fa-thumbs-up'></i><span>".$post['likes']."</span>
-									<i class='fa fa-comment-o'></i><span>".$post['comments']."</span>
-								</div>";
-							}
-
-						$out .= "</a>
-					</li>";
-				}
-
-			$out .= "</ul>";
-		}
-
-		else
-		{
-			$out .= "<p>".__("I could not find any posts at the moment. Sorry!", 'lang_social_feed')."</p>";
-		}*/
-
 		return $out;
 	}
+	#########################
 }
 
 class widget_social_feed extends WP_Widget

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-10 09:24+0100\n"
+"POT-Creation-Date: 2017-11-10 12:50+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -16,71 +16,155 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../include/classes.php:220
+#: ../include/classes.php:18
+#: ../include/functions.php:479
+msgid "Facebook"
+msgstr ""
+
+#: ../include/classes.php:18
+msgid "Posts can only be fetched from Facebook Pages, not personal Profiles"
+msgstr "Inlägg kan endast hämtas från sk. Facebook Pages, inte från personliga profiler"
+
+#: ../include/classes.php:19
+#: ../include/functions.php:480
+msgid "Instagram"
+msgstr ""
+
+#: ../include/classes.php:19
+#: ../include/classes.php:21
+msgid "Posts can either be fetched from @users or #hashtags"
+msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
+
+#: ../include/classes.php:20
+#: ../include/functions.php:481
+msgid "RSS"
+msgstr ""
+
+#: ../include/classes.php:20
+msgid "Posts can only be fetched by entering the full URL to the feed"
+msgstr "Inlägg kan endast hämtas genom att fylla i fullständiga URLen till flödet"
+
+#: ../include/classes.php:21
+#: ../include/functions.php:482
+msgid "Twitter"
+msgstr ""
+
+#: ../include/classes.php:69
+msgid "Settings"
+msgstr "Inställningar"
+
+#: ../include/classes.php:75
+#: ../include/functions.php:275
+msgid "Service"
+msgstr "Tjänst"
+
+#: ../include/classes.php:87
+#: ../include/functions.php:276
+msgid "Search for"
+msgstr "Sök efter"
+
+#: ../include/classes.php:101
+msgid "Information"
+msgstr "Information"
+
+#: ../include/classes.php:136
+msgid "Are you sure?"
+msgstr ""
+
+#: ../include/classes.php:136
+msgid "Hide"
+msgstr "Dölj"
+
+#: ../include/classes.php:140
+#, php-format
+msgid "Are you sure? This will make all future posts by %s to be ignored aswell!"
+msgstr "Är du säker? Detta kommer att göra så att alla framtida inlägg av %s också kommer att ignoreras!"
+
+#: ../include/classes.php:140
+msgid "Ignore Future Posts"
+msgstr "Ignorera framtida inlägg"
+
+#: ../include/classes.php:160
+msgid "I have hidden the post for you now"
+msgstr "Jag har dolt inlägget åt dig nu"
+
+#: ../include/classes.php:165
+msgid "I could not hide the post for you. An admin has been notified about this issue"
+msgstr "Jag lyckades inte dölja inlägget åt dig. En admin har fått info om detta problem"
+
+#: ../include/classes.php:199
+msgid "I have ignored the post for you now. This means that all future posts by this user will be ignored aswell"
+msgstr "Jag har ignorerat inlägget åt dig nu. Detta betyder att alla framtida inlägg av denna användare kommer att ignoreras"
+
+#: ../include/classes.php:204
+msgid "I could not ignore the post for you. An admin has been notified about this issue"
+msgstr "Jag lyckades inte ignorera inlägget åt dig. En admin har fått info om detta problem"
+
+#: ../include/classes.php:436
 #, php-format
 msgid "The JSON I got back was not correct. Have a look at %s"
 msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
 
-#: ../include/classes.php:641
-#: ../include/functions.php:574
+#: ../include/classes.php:861
+#: ../include/functions.php:538
 msgid "All"
 msgstr "Alla"
 
-#: ../include/classes.php:715
-#: ../include/functions.php:570
+#: ../include/classes.php:935
+#: ../include/functions.php:534
 msgid "I could not find any posts at the moment. Sorry!"
 msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
 
-#: ../include/classes.php:888
+#: ../include/classes.php:949
 msgid "Display Social Feeds"
 msgstr "Visa sociala flöden"
 
-#: ../include/classes.php:900
+#: ../include/classes.php:961
 #: ../include/functions.php:30
 msgid "Social Feed"
 msgstr "Socialt flöde"
 
-#: ../include/classes.php:973
+#: ../include/classes.php:1034
 msgid "Heading"
 msgstr "Rubrik"
 
-#: ../include/classes.php:977
+#: ../include/classes.php:1038
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:981
+#: ../include/classes.php:1042
 #: ../include/functions.php:277
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:982
+#: ../include/classes.php:1043
 msgid "Show Border"
 msgstr "Visa kant runt"
 
-#: ../include/classes.php:983
+#: ../include/classes.php:1044
 msgid "Show Likes"
 msgstr "Visa gilla"
 
-#: ../include/classes.php:989
+#: ../include/classes.php:1050
 #: ../include/functions.php:261
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:990
-#: ../include/classes.php:991
+#: ../include/classes.php:1051
+#: ../include/classes.php:1052
 #: ../include/functions.php:262
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:990
+#: ../include/classes.php:1051
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:991
+#: ../include/classes.php:1052
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:994
+#: ../include/classes.php:1055
 msgid "Show Filter"
 msgstr "Visa filter"
 
@@ -184,16 +268,6 @@ msgstr "Klicka på tabben %s"
 msgid "Copy %s, %s, %s and %s to paste here"
 msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 
-#: ../include/functions.php:275
-#: ../include/functions.php:495
-msgid "Service"
-msgstr "Tjänst"
-
-#: ../include/functions.php:276
-#: ../include/functions.php:507
-msgid "Search for"
-msgstr "Sök efter"
-
 #: ../include/functions.php:347
 msgid "Fetch"
 msgstr "Hämta"
@@ -218,60 +292,39 @@ msgstr "Jag väntar på att få tillgång till flödet"
 msgid "Latest"
 msgstr "Senaste"
 
-#: ../include/functions.php:414
+#: ../include/functions.php:419
+msgid "Username"
+msgstr "Användarnamn"
+
+#: ../include/functions.php:420
 msgid "Text"
 msgstr "Text"
 
-#: ../include/functions.php:415
+#: ../include/functions.php:421
 msgid "Image"
 msgstr "Bild"
 
-#: ../include/functions.php:416
+#: ../include/functions.php:422
+msgid "ID"
+msgstr "ID"
+
+#: ../include/functions.php:423
 msgid "Date"
 msgstr "Datum"
 
-#: ../include/functions.php:449
-#: ../include/functions.php:461
-msgid "Facebook"
-msgstr ""
+#: ../include/functions.php:446
+msgid "Ignored"
+msgstr "Ignorerad"
 
 #: ../include/functions.php:450
-#: ../include/functions.php:462
-msgid "Instagram"
-msgstr ""
+msgid "Hidden"
+msgstr "Dold"
 
-#: ../include/functions.php:451
-#: ../include/functions.php:463
-msgid "RSS"
-msgstr ""
-
-#: ../include/functions.php:452
-#: ../include/functions.php:464
-msgid "Twitter"
-msgstr ""
-
-#: ../include/functions.php:461
-msgid "Posts can only be fetched from Facebook Pages, not personal Profiles"
-msgstr "Inlägg kan endast hämtas från sk. Facebook Pages, inte från personliga profiler"
-
-#: ../include/functions.php:462
-#: ../include/functions.php:464
-msgid "Posts can either be fetched from @users or #hashtags"
-msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
-
-#: ../include/functions.php:463
-msgid "Posts can only be fetched by entering the full URL to the feed"
-msgstr "Inlägg kan endast hämtas genom att fylla i fullständiga URLen till flödet"
-
-#: ../include/functions.php:489
-msgid "Settings"
-msgstr "Inställningar"
-
-#: ../include/functions.php:562
+#: ../include/functions.php:526
 msgid "Read More"
 msgstr "Läs mer"
 
-#: ../include/functions.php:567
+#: ../include/functions.php:531
 msgid "Lost Connection"
 msgstr "Tappade uppkopplingen"
 
