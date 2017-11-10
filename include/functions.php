@@ -1,5 +1,28 @@
 <?php
 
+function cron_social_feed()
+{
+	global $wpdb;
+
+	$obj_cron = new mf_cron();
+	$obj_social_feed = new mf_social_feed();
+
+	$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
+
+	$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND post_modified < DATE_SUB(NOW(), INTERVAL ".$setting_social_time_limit." MINUTE) ORDER BY RAND()");
+
+	foreach($result as $r)
+	{
+		if($obj_cron->has_expired(array('margin' => .9)))
+		{
+			break;
+		}
+
+		$obj_social_feed->set_id($r->ID);
+		$obj_social_feed->fetch_feed();
+	}
+}
+
 function init_social_feed()
 {
 	$labels = array(
@@ -42,31 +65,6 @@ function init_social_feed()
 	);
 
 	register_post_type('mf_social_feed_post', $args);
-
-	mf_enqueue_style('style_social_feed', plugin_dir_url(__FILE__)."style.css", get_plugin_version(__FILE__));
-}
-
-function cron_social_feed()
-{
-	global $wpdb;
-
-	$obj_cron = new mf_cron();
-	$obj_social_feed = new mf_social_feed();
-
-	$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
-
-	$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND post_modified < DATE_SUB(NOW(), INTERVAL ".$setting_social_time_limit." MINUTE) ORDER BY RAND()");
-
-	foreach($result as $r)
-	{
-		if($obj_cron->has_expired(array('margin' => .9)))
-		{
-			break;
-		}
-
-		$obj_social_feed->set_id($r->ID);
-		$obj_social_feed->fetch_feed();
-	}
 }
 
 function menu_social_feed()
@@ -132,6 +130,7 @@ function settings_social_feed()
 	$arr_settings = array();
 
 	$arr_settings['setting_social_time_limit'] = __("Time Limit", 'lang_social_feed');
+	$arr_settings['setting_social_reload'] = __("Reload Time on Public Site", 'lang_social_feed');
 	$arr_settings['setting_facebook_api_id'] = __("Facebook APP ID", 'lang_social_feed');
 	$arr_settings['setting_facebook_api_secret'] = __("Facebook Secret", 'lang_social_feed');
 	$arr_settings['setting_instagram_api_token'] = __("Instagram Access Token", 'lang_social_feed');
@@ -155,9 +154,15 @@ function setting_social_time_limit_callback()
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option_or_default($setting_key, 30);
 
-	$description = __("Minutes between each API request", 'lang_social_feed');
+	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='10' max='1440'", 'suffix' => __("Minutes between each API request", 'lang_social_feed')));
+}
 
-	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='10' max='1440'", 'suffix' => $description));
+function setting_social_reload_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+	$option = get_option($setting_key);
+
+	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='600'", 'suffix' => __("s (< 30 = no reload)", 'lang_social_feed')));
 }
 
 function setting_facebook_api_id_callback()
@@ -544,6 +549,80 @@ function delete_social_feed($post_id)
 	}
 }
 
+function footer_social_feed()
+{
+	$plugin_include_url = plugin_dir_url(__FILE__);
+	$plugin_version = get_plugin_version(__FILE__);
+
+	mf_enqueue_style('style_social_feed', $plugin_include_url."style.css", $plugin_version);
+
+	mf_enqueue_script('underscore');
+	mf_enqueue_script('backbone');
+	//mf_enqueue_script('script_social_feed', $plugin_include_url."script.js", array('read_more' => __("Read More", 'lang_social_feed')), $plugin_version);
+	mf_enqueue_script('script_social_feed_plugins', $plugin_include_url."backbone/bb.plugins.js", array('read_more' => __("Read More", 'lang_social_feed')), $plugin_version);
+	mf_enqueue_script('script_social_feed_router', $plugin_include_url."backbone/bb.router.js", $plugin_version);
+	mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
+	mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", $plugin_version);
+
+	echo "<div id='overlay_lost_connection'><span>".__("Lost Connection", 'lang_webshop')."</span></div>
+
+	<script type='text/template' id='template_feed_message'>
+		<li>".__("I could not find any posts at the moment. Sorry!", 'lang_social_feed')."</li>
+	</script>
+
+	<script type='text/template' id='template_feed_all'>
+		<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>
+	</script>
+
+	<script type='text/template' id='template_feed'>
+		<li><a href='#<%= id %>' id='<%= id %>'><%= name %></a></li>
+	</script>
+
+	<script type='text/template' id='template_feed_post'>
+		<li class='sf_<%= service %> sf_feed_<%= feed %>'>
+			<i class='fa fa-<%= service %>'></i>
+
+			<% if(service == 'rss')
+			{ %>
+				<span class='name'><%= feed_title %></span>
+			<% }
+
+			else if(name != '')
+			{ %>
+				<span class='name'><%= name %></span>
+			<% } %>
+
+			<span class='date'><%= date %></span>
+			<a href='<%= link %>' class='content' rel='external'>
+
+				<% if(image != '')
+				{ %>
+					<img src='<%= image %>'>
+				<% }
+
+				if(service == 'rss' && title != '')
+				{ %>
+					<p><%= title %></p>
+				<% }
+
+				if(content != '')
+				{ %>
+					<p><%= content %></p>
+				<% }
+
+				if(likes != '' || comments != '')
+				{ %>
+					<div class='likes'>
+						<i class='fa fa-thumbs-up'></i><span><%= likes %></span>
+						<i class='fa fa-comment-o'></i><span><%= comments %></span>
+					</div>
+				<% } %>
+
+			</a>
+		</li>
+	</script>";
+}
+
 function shortcode_social_feed($atts)
 {
 	extract(shortcode_atts(array(
@@ -552,7 +631,30 @@ function shortcode_social_feed($atts)
 		'likes' => 'no',
 	), $atts));
 
-	$obj_social_feed = new mf_social_feed();
+	$setting_social_reload = get_option('setting_social_reload');
 
-	return $obj_social_feed->get_output(array('social_type' => 'shortcode', 'social_amount' => $amount, 'social_filter' => $filter, 'social_likes' => $likes));
+	$out = "<div class='widget social_feed'>
+		<div class='section'"
+			.($amount > 0 ? " data-social_amount='".$amount."'" : "")
+			.($filter != '' ? " data-social_filter='".$filter."'" : "")
+			.($likes != '' ? " data-social_likes='".$likes."'" : "")
+			.($setting_social_reload >= 30 ? " data-social_reload='".$setting_social_reload."'" : "")
+		.">";
+
+			if($setting_social_reload >= 30)
+			{
+				$out .= "<i class='fa fa-spinner fa-spin fa-3x'></i>
+				<ul class='sf_feeds hide'></ul>
+				<ul class='sf_posts hide'></ul>"; //".($data['social_border'] == 'yes' ? " show_border" : '')."
+			}
+
+			else
+			{
+				$obj_social_feed = new mf_social_feed();
+
+				$out .= $obj_social_feed->get_output(array('social_type' => 'shortcode', 'social_amount' => $amount, 'social_filter' => $filter, 'social_likes' => $likes));
+			}
+
+		$out .= "</div>
+	</div>";
 }
