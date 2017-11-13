@@ -1033,10 +1033,10 @@ class widget_social_feed extends WP_Widget
 				.($instance['social_filter'] != '' ? " data-social_filter='".$instance['social_filter']."'" : "")
 				//.($instance['social_border'] != '' ? " data-social_border='".$instance['social_border']."'" : "")
 				.($instance['social_likes'] != '' ? " data-social_likes='".$instance['social_likes']."'" : "")
-				.($setting_social_reload >= 30 ? " data-social_reload='".$setting_social_reload."'" : "")
+				.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
 			.">";
 
-				if($setting_social_reload >= 30)
+				if($setting_social_reload > 0)
 				{
 					echo "<i class='fa fa-spinner fa-spin fa-3x'></i>
 					<ul class='sf_feeds hide'></ul>

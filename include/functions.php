@@ -85,8 +85,11 @@ function settings_social_feed()
 
 	$arr_settings = array();
 
-	$arr_settings['setting_social_time_limit'] = __("Time Limit", 'lang_social_feed');
-	$arr_settings['setting_social_reload'] = __("Reload Time on Public Site", 'lang_social_feed');
+	$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
+	$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
+
+	//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", 'facebook'));
+
 	$arr_settings['setting_facebook_api_id'] = __("Facebook APP ID", 'lang_social_feed');
 	$arr_settings['setting_facebook_api_secret'] = __("Facebook Secret", 'lang_social_feed');
 	$arr_settings['setting_instagram_api_token'] = __("Instagram Access Token", 'lang_social_feed');
@@ -105,12 +108,39 @@ function settings_social_feed_callback()
 	echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed'));
 }
 
+function get_setting_min()
+{
+	$setting_base_cron = get_option('setting_base_cron');
+
+	switch($setting_base_cron)
+	{
+		case 'every_two_minutes':
+			return 2;
+		break;
+
+		case 'every_ten_minutes':
+			return 10;
+		break;
+
+		default:
+			return 60;
+		break;
+	}
+}
+
 function setting_social_time_limit_callback()
 {
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option_or_default($setting_key, 30);
 
-	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='10' max='1440'", 'suffix' => __("Minutes between each API request", 'lang_social_feed')));
+	$setting_min = get_setting_min();
+
+	if($option < $setting_min)
+	{
+		$option = $setting_min;
+	}
+
+	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='1440'", 'suffix' => __("min", 'lang_social_feed')." (".__("Between each API request", 'lang_social_feed').")"));
 }
 
 function setting_social_reload_callback()
@@ -118,7 +148,14 @@ function setting_social_reload_callback()
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option($setting_key);
 
-	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='600'", 'suffix' => __("s (< 30 = no reload)", 'lang_social_feed')));
+	$setting_min = (get_setting_min() / 2);
+
+	if($option < $setting_min)
+	{
+		$option = $setting_min;
+	}
+
+	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
 }
 
 function setting_facebook_api_id_callback()
@@ -558,10 +595,10 @@ function shortcode_social_feed($atts)
 			.($amount > 0 ? " data-social_amount='".$amount."'" : "")
 			.($filter != '' ? " data-social_filter='".$filter."'" : "")
 			.($likes != '' ? " data-social_likes='".$likes."'" : "")
-			.($setting_social_reload >= 30 ? " data-social_reload='".$setting_social_reload."'" : "")
+			.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
 		.">";
 
-			if($setting_social_reload >= 30)
+			if($setting_social_reload > 0)
 			{
 				$out .= "<i class='fa fa-spinner fa-spin fa-3x'></i>
 				<ul class='sf_feeds hide'></ul>

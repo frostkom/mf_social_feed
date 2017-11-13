@@ -37,7 +37,7 @@ var PageView = Backbone.View.extend(
 	loadFeeds: function()
 	{
 		var dom_obj = jQuery(".widget.social_feed .section"),
-			reload = dom_obj.attr('data-social_reload') || 0,
+			reload = (dom_obj.attr('data-social_reload') || 0) * 60 * 1000,
 			action_type = "type=posts&time=" + Date.now();
 
 		if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){	action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
@@ -56,7 +56,7 @@ var PageView = Backbone.View.extend(
 			feed_interval = setInterval(function()
 			{
 				self.loadFeeds();
-			}, reload * 1000);
+			}, reload);
 		}
 	},
 
