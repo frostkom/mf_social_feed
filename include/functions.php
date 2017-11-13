@@ -148,14 +148,7 @@ function setting_social_reload_callback()
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option($setting_key);
 
-	$setting_min = (get_setting_min() / 2);
-
-	if($option < $setting_min)
-	{
-		$option = $setting_min;
-	}
-
-	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
+	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
 }
 
 function setting_facebook_api_id_callback()
