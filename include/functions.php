@@ -65,6 +65,14 @@ function init_social_feed()
 	);
 
 	register_post_type('mf_social_feed_post', $args);
+
+	if(!is_admin())
+	{
+		$plugin_include_url = plugin_dir_url(__FILE__);
+		$plugin_version = get_plugin_version(__FILE__);
+
+		mf_enqueue_style('style_social_feed', $plugin_include_url."style.css", $plugin_version);
+	}
 }
 
 function menu_social_feed()
@@ -88,9 +96,11 @@ function settings_social_feed()
 	$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
 	$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
 
+	/*list($options_params, $options) = get_params();
 	$website_max_width = isset($options['website_max_width']) ? $options['website_max_width'] : 0;
 
 	$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed').($website_max_width > 0 ? " (> ".$website_max_width.")" : "");
+	$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");*/
 
 	//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", 'facebook'));
 
@@ -524,16 +534,15 @@ function footer_social_feed()
 	$plugin_include_url = plugin_dir_url(__FILE__);
 	$plugin_version = get_plugin_version(__FILE__);
 
-	mf_enqueue_style('style_social_feed', $plugin_include_url."style.css", $plugin_version);
-
 	mf_enqueue_script('underscore');
 	mf_enqueue_script('backbone');
+	mf_enqueue_script('script_base_plugins', plugins_url()."/mf_base/include/backbone/bb.plugins.js", $plugin_version);
 	mf_enqueue_script('script_social_feed_plugins', $plugin_include_url."backbone/bb.plugins.js", array('read_more' => __("Read More", 'lang_social_feed')), $plugin_version);
 	mf_enqueue_script('script_social_feed_router', $plugin_include_url."backbone/bb.router.js", $plugin_version);
 	mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
 	mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", $plugin_version);
 
-	echo "<div id='overlay_lost_connection'><span>".__("Lost Connection", 'lang_webshop')."</span></div>
+	echo "<div id='overlay_lost_connection'><span>".__("Lost Connection", 'lang_social_feed')."</span></div>
 
 	<script type='text/template' id='template_feed_message'>
 		<li>".__("I could not find any posts at the moment. Sorry!", 'lang_social_feed')."</li>
