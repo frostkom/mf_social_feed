@@ -684,7 +684,7 @@ class mf_social_feed
 
 			if($wpdb->num_rows == 0)
 			{
-				$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' AND post_status = 'pending' AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $post_title, $post_name, $this->id, $post['name']));
+				$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' AND post_status = 'pending' AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->id, $post['name']));
 				$post_status = $wpdb->num_rows > 0 ? 'draft' : 'publish';
 
 				if($post_status == 'draft')
