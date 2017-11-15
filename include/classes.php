@@ -895,6 +895,7 @@ class mf_social_feed
 		if(!isset($data['social_filter'])){										$data['social_filter'] = 'no';}
 		if(!isset($data['social_border'])){										$data['social_border'] = 'yes';}
 		if(!isset($data['social_likes'])){										$data['social_likes'] = 'no';}
+		if(!isset($data['social_read_more'])){									$data['social_read_more'] = 'yes';}
 		
 		$out = "";
 
@@ -917,15 +918,9 @@ class mf_social_feed
 
 			$class_xtra = "";
 
-			if(count($arr_post_posts) < 3)
-			{
-				$class_xtra .= " one_column";
-			}
-
-			if($data['social_border'] == 'yes')
-			{
-				$class_xtra .= " show_border";
-			}
+			if(count($arr_post_posts) < 3){				$class_xtra .= " one_column";}
+			if($data['social_border'] == 'yes'){		$class_xtra .= " show_border";}
+			if($data['social_read_more'] == 'yes'){		$class_xtra .= " show_read_more";}
 
 			$out .= "<ul class='sf_posts".$class_xtra."'>";
 
@@ -999,10 +994,11 @@ class widget_social_feed extends WP_Widget
 		$this->arr_default = array(
 			'social_heading' => "",
 			'social_feeds' => array(),
-			'social_amount' => 18,
 			'social_filter' => 'no',
+			'social_amount' => 18,
 			'social_border' => 'yes',
 			'social_likes' => 'no',
+			'social_read_more' => 'yes',
 		);
 
 		parent::__construct('social-feed-widget', __("Social Feed", 'lang_social_feed'), $widget_ops);
@@ -1031,9 +1027,8 @@ class widget_social_feed extends WP_Widget
 
 			echo "<div class='section'"
 				.(is_array($instance['social_feeds']) && count($instance['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $instance['social_feeds'])."'" : "")
-				.($instance['social_amount'] > 0 ? " data-social_amount='".$instance['social_amount']."'" : "")
 				.($instance['social_filter'] != '' ? " data-social_filter='".$instance['social_filter']."'" : "")
-				//.($instance['social_border'] != '' ? " data-social_border='".$instance['social_border']."'" : "")
+				.($instance['social_amount'] > 0 ? " data-social_amount='".$instance['social_amount']."'" : "")
 				.($instance['social_likes'] != '' ? " data-social_likes='".$instance['social_likes']."'" : "")
 				.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
 			.">";
@@ -1042,7 +1037,10 @@ class widget_social_feed extends WP_Widget
 				{
 					echo "<i class='fa fa-spinner fa-spin fa-3x'></i>
 					<ul class='sf_feeds hide'></ul>
-					<ul class='sf_posts hide".($instance['social_border'] == 'yes' ? " show_border" : '')."'></ul>";
+					<ul class='sf_posts"
+						.($instance['social_border'] == 'yes' ? " show_border" : '')
+						.($instance['social_read_more'] == 'yes' ? " show_read_more" : '')
+					." hide'></ul>";
 				}
 
 				else
@@ -1062,12 +1060,13 @@ class widget_social_feed extends WP_Widget
 
 		$new_instance = wp_parse_args((array)$new_instance, $this->arr_default);
 
-		$instance['social_heading'] = strip_tags($new_instance['social_heading']);
-		$instance['social_feeds'] = $new_instance['social_feeds'];
-		$instance['social_amount'] = strip_tags($new_instance['social_amount']);
-		$instance['social_filter'] = strip_tags($new_instance['social_filter']);
-		$instance['social_border'] = strip_tags($new_instance['social_border']);
-		$instance['social_likes'] = strip_tags($new_instance['social_likes']);
+		$instance['social_heading'] = sanitize_text_field($new_instance['social_heading']);
+		$instance['social_feeds'] = is_array($new_instance['social_feeds']) ? $new_instance['social_feeds'] : array();
+		$instance['social_filter'] = sanitize_text_field($new_instance['social_filter']);
+		$instance['social_amount'] = sanitize_text_field($new_instance['social_amount']);
+		$instance['social_border'] = sanitize_text_field($new_instance['social_border']);
+		$instance['social_likes'] = sanitize_text_field($new_instance['social_likes']);
+		$instance['social_read_more'] = sanitize_text_field($new_instance['social_read_more']);
 
 		return $instance;
 	}
@@ -1085,16 +1084,7 @@ class widget_social_feed extends WP_Widget
 			if(count($arr_data_feeds) > 1)
 			{
 				echo show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']));
-			}
-
-			echo "<div class='flex_flow'>"
-				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
-				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_border'), 'text' => __("Show Border", 'lang_social_feed'), 'value' => $instance['social_border']))
-				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Show Likes", 'lang_social_feed'), 'value' => $instance['social_likes']))
-			."</div>";
-
-			if(count($arr_data_feeds) > 1)
-			{
+				
 				$arr_data_filter = array(
 					'no' => __("No", 'lang_social_feed'),
 					'yes' => __("Yes", 'lang_social_feed')." (".__("Individually", 'lang_social_feed').")",
@@ -1104,6 +1094,14 @@ class widget_social_feed extends WP_Widget
 				echo show_select(array('data' => $arr_data_filter, 'name' => $this->get_field_name('social_filter'), 'text' => __("Show Filter", 'lang_social_feed'), 'value' => $instance['social_filter']));
 			}
 
-		echo "</div>";
+			echo "<div class='flex_flow'>"
+				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
+				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_border'), 'text' => __("Show Border", 'lang_social_feed'), 'value' => $instance['social_border']))
+			."</div>
+			<div class='flex_flow'>"
+				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_read_more'), 'text' => __("Show Read More", 'lang_social_feed'), 'value' => $instance['social_read_more']))
+				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Show Likes", 'lang_social_feed'), 'value' => $instance['social_likes']))
+			."</div>
+		</div>";
 	}
 }

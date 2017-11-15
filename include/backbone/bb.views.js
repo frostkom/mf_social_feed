@@ -2,11 +2,11 @@ var feed_interval;
 
 var PageView = Backbone.View.extend(
 {
-	el: jQuery('body'),
+	el: jQuery(".widget.social_feed"),
 
 	initialize: function()
 	{
-		if(jQuery(".widget.social_feed").length > 0)
+		if(jQuery(this.el).length > 0)
 		{
 			this.on_load_social_feed();
 
@@ -19,8 +19,8 @@ var PageView = Backbone.View.extend(
 
 	events:
 	{
-		"click .widget.social_feed ul.sf_feeds a" : 'change_tab',
-		"click .widget.social_feed .shorten-more-link" : 'show_more'
+		"click ul.sf_feeds a" : 'change_tab',
+		"click .shorten-more-link" : 'show_more'
 	},
 
 	on_load_social_feed: function()
@@ -28,7 +28,7 @@ var PageView = Backbone.View.extend(
 		this.model.on("change:response_feeds", this.show_feeds, this);
 		this.model.on("change:response_posts", this.show_posts, this);
 
-		if(jQuery(".widget.social_feed .sf_posts li").length == 0)
+		if(jQuery(this.el).find(".sf_posts li").length == 0)
 		{
 			this.loadFeeds();
 		}
@@ -36,7 +36,7 @@ var PageView = Backbone.View.extend(
 
 	loadFeeds: function()
 	{
-		var dom_obj = jQuery(".widget.social_feed .section"),
+		var dom_obj = jQuery(this.el).find(".section"),
 			reload = (dom_obj.attr('data-social_reload') || 0) * 60 * 1000,
 			action_type = "type=posts&time=" + Date.now();
 
@@ -69,7 +69,7 @@ var PageView = Backbone.View.extend(
 	{
 		var self = jQuery(e.currentTarget),
 			feed_id = self.attr('id'),
-			sf_posts = self.parents('.sf_feeds').siblings('.sf_posts');
+			sf_posts = self.parents(".sf_feeds").siblings(".sf_posts");
 
 		if(typeof feed_id != 'undefined')
 		{
@@ -78,24 +78,24 @@ var PageView = Backbone.View.extend(
 
 		else
 		{
-			sf_posts.children('li').removeClass('hide');
+			sf_posts.children("li").removeClass('hide');
 		}
 
-		self.parent('li').addClass('active').siblings('li').removeClass('active');
+		self.parent("li").addClass('active').siblings("li").removeClass('active');
 
 		return false;
 	},
 
 	show_more: function(e)
 	{
-		var dom_ellipsis = jQuery(e.currentTarget).parent('.shorten-ellipsis');
+		var dom_ellipsis = jQuery(e.currentTarget).parent(".shorten-ellipsis");
 
-		dom_ellipsis.addClass('hide').siblings('.shorten-clipped').removeClass('hide').animate(
+		dom_ellipsis.addClass('hide').siblings(".shorten-clipped").removeClass('hide').animate(
 		{
 			opacity: 1
 		}, 500, function()
 		{
-			dom_ellipsis.parent('.shorten-shortened').removeClass('shorten-shortened');
+			dom_ellipsis.parent(".shorten-shortened").removeClass('shorten-shortened');
 		});
 
 		return false;
@@ -103,12 +103,10 @@ var PageView = Backbone.View.extend(
 
 	show_feeds: function()
 	{
-		jQuery(".widget.social_feed .section .fa-spinner").addClass('hide');
-
 		var response = this.model.get('response_feeds'),
 			amount = response.length,
 			html = "",
-			dom_obj = jQuery(".widget.social_feed .section .sf_feeds");
+			dom_obj = jQuery(this.el).find(".section .sf_feeds");
 		
 		dom_obj.addClass('hide');
 
@@ -127,12 +125,12 @@ var PageView = Backbone.View.extend(
 
 	show_posts: function()
 	{
-		jQuery(".widget.social_feed .section .fa-spinner").addClass('hide');
+		jQuery(this.el).find(".section .fa-spinner").addClass('hide');
 
 		var response = this.model.get('response_posts'),
 			amount = response.length,
 			html = "",
-			dom_obj = jQuery(".widget.social_feed .section .sf_posts");
+			dom_obj = jQuery(this.el).find(".section .sf_posts");
 
 		if(amount < 3){		dom_obj.addClass('one_column');}
 		else{				dom_obj.removeClass('one_column');}
@@ -152,7 +150,7 @@ var PageView = Backbone.View.extend(
 
 		dom_obj.html(html).removeClass('hide');
 
-		dom_obj.find("p").shorten();
+		jQuery(this.el).find(".section .sf_posts.show_read_more p").shorten();
 	}
 });
 

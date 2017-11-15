@@ -1,11 +1,40 @@
-@media all
+<?php
+
+$is_standalone = !defined('ABSPATH');
+
+if($is_standalone)
+{
+	header("Content-Type: text/css; charset=utf-8");
+
+	$folder = str_replace("/wp-content/plugins/mf_social_feed/include", "/", dirname(__FILE__));
+
+	require_once($folder."wp-load.php");
+}
+
+$setting_social_full_width = get_option('setting_social_full_width');
+$setting_social_desktop_columns = get_option_or_default('setting_social_desktop_columns', 3);
+$setting_social_tablet_columns = get_option_or_default('setting_social_tablet_columns', 2);
+
+$column_width_desktop = (100 / $setting_social_desktop_columns) - 1;
+$column_width_tablet = (100 / $setting_social_tablet_columns) - 1;
+$column_width_mobile = 100;
+
+echo "@media all
 {
 	.widget.social_feed
 	{
 		overflow: hidden;
-	}
+	}";
 
-		.widget.social_feed ul.sf_feeds
+		if($setting_social_full_width == 'yes')
+		{
+			echo ".widget.social_feed .section
+			{
+				max-width: 100% !important;	
+			}";
+		}
+
+		echo ".widget.social_feed ul.sf_feeds
 		{
 			font-size: .8em;
 			list-style: none;
@@ -53,7 +82,7 @@
 				padding: .5em;
 				position: relative;
 				text-align: left;
-				width: 32.333%;
+				width: ".$column_width_desktop."%;
 			}
 
 				.widget.social_feed ul.sf_feeds + ul.sf_posts:first-child li:first-child
@@ -79,12 +108,12 @@
 
 			.is_tablet .widget.social_feed ul.sf_posts li
 			{
-				width: 49%;
+				width: ".$column_width_tablet."%;
 			}
 
 			.is_mobile .widget.social_feed ul.sf_posts li, .widget.social_feed ul.sf_posts.one_column li
 			{
-				width: 100%;
+				width: ".$column_width_mobile."%;
 			}
 
 				.widget.social_feed ul.sf_posts li > .fa
@@ -216,4 +245,4 @@
 			-webkit-transform: translateY(-50%);
 			transform: translateY(-50%);
 		}
-}
+}";

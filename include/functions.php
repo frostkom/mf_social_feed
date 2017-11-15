@@ -71,7 +71,7 @@ function init_social_feed()
 		$plugin_include_url = plugin_dir_url(__FILE__);
 		$plugin_version = get_plugin_version(__FILE__);
 
-		mf_enqueue_style('style_social_feed', $plugin_include_url."style.css", $plugin_version);
+		mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
 	}
 }
 
@@ -95,12 +95,13 @@ function settings_social_feed()
 
 	$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
 	$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
+	$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 
-	/*list($options_params, $options) = get_params();
+	list($options_params, $options) = get_params();
 	$website_max_width = isset($options['website_max_width']) ? $options['website_max_width'] : 0;
 
 	$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed').($website_max_width > 0 ? " (> ".$website_max_width.")" : "");
-	$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");*/
+	$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");
 
 	//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", 'facebook'));
 
@@ -163,6 +164,14 @@ function setting_social_reload_callback()
 	$option = get_option($setting_key);
 
 	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
+}
+
+function setting_social_full_width_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+	$option = get_option_or_default($setting_key, 'no');
+
+	echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
 }
 
 function setting_social_desktop_columns_callback()
@@ -623,7 +632,7 @@ function shortcode_social_feed($atts)
 			{
 				$out .= "<i class='fa fa-spinner fa-spin fa-3x'></i>
 				<ul class='sf_feeds hide'></ul>
-				<ul class='sf_posts hide'></ul>"; //".($data['social_border'] == 'yes' ? " show_border" : '')."
+				<ul class='sf_posts show_border show_read_more hide'></ul>";
 			}
 
 			else
