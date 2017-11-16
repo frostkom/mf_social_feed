@@ -150,10 +150,7 @@ function setting_social_time_limit_callback()
 
 	$setting_min = get_setting_min();
 
-	if($option < $setting_min)
-	{
-		$option = $setting_min;
-	}
+	$option = max($option, $setting_min);
 
 	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='1440'", 'suffix' => __("min", 'lang_social_feed')." (".__("Between each API request", 'lang_social_feed').")"));
 }
@@ -162,6 +159,13 @@ function setting_social_reload_callback()
 {
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option($setting_key);
+
+	if($option > 0)
+	{
+		$setting_min = get_setting_min() / 2;
+
+		$option = max($option, $setting_min, (get_option('setting_social_time_limit') / 2));
+	}
 
 	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
 }
