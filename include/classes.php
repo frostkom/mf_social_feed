@@ -1033,22 +1033,22 @@ class widget_social_feed extends WP_Widget
 				.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
 			.">";
 
-				if($setting_social_reload > 0)
-				{
+				/*if($setting_social_reload > 0)
+				{*/
 					echo "<i class='fa fa-spinner fa-spin fa-3x'></i>
 					<ul class='sf_feeds hide'></ul>
 					<ul class='sf_posts"
 						.($instance['social_border'] == 'yes' ? " show_border" : '')
 						.($instance['social_read_more'] == 'yes' ? " show_read_more" : '')
 					." hide'></ul>";
-				}
+				/*}
 
 				else
 				{
 					$obj_social_feed = new mf_social_feed();
 
 					echo $obj_social_feed->get_output($instance);
-				}
+				}*/
 
 			echo "</div>"
 		.$after_widget;

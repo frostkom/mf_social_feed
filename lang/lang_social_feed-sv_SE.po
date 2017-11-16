@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-15 12:00+0100\n"
+"POT-Creation-Date: 2017-11-16 11:42+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -105,68 +105,72 @@ msgstr "Jag lyckades inte ignorera inlägget åt dig. En admin har fått info om
 msgid "The JSON I got back was not correct. Have a look at %s"
 msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
 
-#: ../include/classes.php:908
+#: ../include/classes.php:909
 #: ../include/functions.php:561
 msgid "All"
 msgstr "Alla"
 
-#: ../include/classes.php:982
+#: ../include/classes.php:977
 #: ../include/functions.php:557
 msgid "I could not find any posts at the moment. Sorry!"
 msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
 
-#: ../include/classes.php:996
+#: ../include/classes.php:991
 msgid "Display Social Feeds"
 msgstr "Visa sociala flöden"
 
-#: ../include/classes.php:1008
+#: ../include/classes.php:1004
 #: ../include/functions.php:30
 msgid "Social Feed"
 msgstr "Socialt flöde"
 
-#: ../include/classes.php:1083
+#: ../include/classes.php:1082
 msgid "Heading"
 msgstr "Rubrik"
 
-#: ../include/classes.php:1087
+#: ../include/classes.php:1086
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:1091
-#: ../include/functions.php:302
-msgid "Amount"
-msgstr "Antal"
-
-#: ../include/classes.php:1092
-msgid "Show Border"
-msgstr "Visa ram"
-
-#: ../include/classes.php:1093
-msgid "Show Likes"
-msgstr "Visa gilla"
-
-#: ../include/classes.php:1099
+#: ../include/classes.php:1089
 #: ../include/functions.php:286
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:1100
-#: ../include/classes.php:1101
+#: ../include/classes.php:1090
+#: ../include/classes.php:1091
 #: ../include/functions.php:287
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:1100
+#: ../include/classes.php:1090
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:1101
+#: ../include/classes.php:1091
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:1104
+#: ../include/classes.php:1094
 msgid "Show Filter"
 msgstr "Visa filter"
+
+#: ../include/classes.php:1098
+#: ../include/functions.php:302
+msgid "Amount"
+msgstr "Antal"
+
+#: ../include/classes.php:1099
+msgid "Show Border"
+msgstr "Visa ram"
+
+#: ../include/classes.php:1102
+msgid "Show Read More"
+msgstr "Visa Läs mer"
+
+#: ../include/classes.php:1103
+msgid "Show Likes"
+msgstr "Visa gilla"
 
 #: ../include/functions.php:29
 #: ../include/functions.php:31

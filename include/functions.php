@@ -628,19 +628,19 @@ function shortcode_social_feed($atts)
 			.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
 		.">";
 
-			if($setting_social_reload > 0)
-			{
+			/*if($setting_social_reload > 0)
+			{*/
 				$out .= "<i class='fa fa-spinner fa-spin fa-3x'></i>
 				<ul class='sf_feeds hide'></ul>
 				<ul class='sf_posts show_border show_read_more hide'></ul>";
-			}
+			/*}
 
 			else
 			{
 				$obj_social_feed = new mf_social_feed();
 
 				$out .= $obj_social_feed->get_output(array('social_type' => 'shortcode', 'social_amount' => $amount, 'social_filter' => $filter, 'social_likes' => $likes));
-			}
+			}*/
 
 		$out .= "</div>
 	</div>";
