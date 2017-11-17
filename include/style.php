@@ -11,13 +11,60 @@ if($is_standalone)
 	require_once($folder."wp-load.php");
 }
 
+$setting_social_design = get_option('setting_social_design');
 $setting_social_full_width = get_option('setting_social_full_width');
 $setting_social_desktop_columns = get_option_or_default('setting_social_desktop_columns', 3);
 $setting_social_tablet_columns = get_option_or_default('setting_social_tablet_columns', 2);
+$setting_social_mobile_columns = 1;
 
-$column_width_desktop = (100 / $setting_social_desktop_columns) - 1;
-$column_width_tablet = (100 / $setting_social_tablet_columns) - 1;
-$column_width_mobile = 100;
+$post_container = $post_container_tablet = $post_container_mobile = "";$post_item = $post_item_tablet = $post_item_mobile = "";
+
+function calc_width($columns)
+{
+	return (100 / $columns) - ($columns > 1 ? 1 : 0);
+}
+
+switch($setting_social_design)
+{
+	case 'masonry':
+		$post_container = "-moz-column-count: ".$setting_social_desktop_columns.";
+		-webkit-column-count: ".$setting_social_desktop_columns.";
+		column-count: ".$setting_social_desktop_columns.";";
+
+		$post_container_tablet = "-moz-column-count: ".$setting_social_tablet_columns.";
+		-webkit-column-count: ".$setting_social_tablet_columns.";
+		column-count: ".$setting_social_tablet_columns.";";
+
+		$post_container_mobile = "-moz-column-count: ".$setting_social_mobile_columns.";
+		-webkit-column-count: ".$setting_social_mobile_columns.";
+		column-count: ".$setting_social_mobile_columns.";";
+	break;
+
+	default:
+		$column_width_desktop = calc_width($setting_social_desktop_columns);
+		$column_width_tablet = calc_width($setting_social_tablet_columns);
+		$column_width_mobile = calc_width($setting_social_mobile_columns);
+
+		$post_container = "display: -webkit-box;
+		display: -ms-flexbox;
+		display: -webkit-flex;
+		display: flex;
+		-webkit-box-flex-wrap: wrap;
+		-webkit-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;";
+
+		$post_item = "-webkit-box-flex: 0 1 auto;
+		-webkit-flex: 0 1 auto;
+		-ms-flex: 0 1 auto;
+		flex: 0 1 auto;
+		width: ".$column_width_desktop."%;";
+
+		$post_item_tablet = "width: ".$column_width_tablet."%;";
+
+		$post_item_mobile = "width: ".$column_width_mobile."%;";
+	break;
+}
 
 echo "@media all
 {
@@ -59,36 +106,35 @@ echo "@media all
 					}
 
 		.widget.social_feed ul.sf_posts
-		{
-			display: -webkit-box;
-			display: -ms-flexbox;
-			display: -webkit-flex;
-			display: flex;
-			-webkit-box-flex-wrap: wrap;
-			-webkit-flex-wrap: wrap;
-			-ms-flex-wrap: wrap;
-			flex-wrap: wrap;
-			list-style: none;
+		{"
+			.$post_container
+			."list-style: none;
 		}
 
-			.widget.social_feed ul.sf_posts li
+			.is_tablet .widget.social_feed ul.sf_posts
+			{"
+				.$post_container_tablet
+			."}
+
+			.is_mobile .widget.social_feed ul.sf_posts
+			{"
+				.$post_container_mobile
+			."}
+
+			.widget.social_feed ul.sf_feeds + ul.sf_posts
 			{
-				-webkit-box-flex: 0 1 auto;
-				-webkit-flex: 0 1 auto;
-				-ms-flex: 0 1 auto;
-				flex: 0 1 auto;
 				margin-top: 1em;
+			}
+
+			.widget.social_feed ul.sf_posts li
+			{"
+				.$post_item
+				."margin-bottom: 1em;
 				overflow: hidden;
 				padding: .5em;
 				position: relative;
 				text-align: left;
-				width: ".$column_width_desktop."%;
 			}
-
-				.widget.social_feed ul.sf_feeds + ul.sf_posts:first-child li:first-child
-				{
-					margin-top: 0;
-				}
 
 				.is_mobile .widget.social_feed ul.sf_posts li + li, .widget.social_feed ul.sf_posts.one_column li + li
 				{
@@ -107,14 +153,14 @@ echo "@media all
 				}
 
 			.is_tablet .widget.social_feed ul.sf_posts li
-			{
-				width: ".$column_width_tablet."%;
-			}
+			{"
+				.$post_item_tablet			
+			."}
 
 			.is_mobile .widget.social_feed ul.sf_posts li, .widget.social_feed ul.sf_posts.one_column li
-			{
-				width: ".$column_width_mobile."%;
-			}
+			{"
+				.$post_item_mobile
+			."}
 
 				.widget.social_feed ul.sf_posts li > .fa
 				{

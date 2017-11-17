@@ -95,6 +95,7 @@ function settings_social_feed()
 
 	$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
 	$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
+	$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
 	$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 
 	list($options_params, $options) = get_params();
@@ -168,6 +169,19 @@ function setting_social_reload_callback()
 	}
 
 	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
+}
+
+function setting_social_design_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+	$option = get_option($setting_key);
+
+	$arr_data = array(
+		'' => __("Square", 'lang_social_feed')." (".__("Default", 'lang_social_feed').")",
+		'masonry' => __("Masonry", 'lang_social_feed'),
+	);
+
+	echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option));
 }
 
 function setting_social_full_width_callback()
