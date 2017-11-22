@@ -538,22 +538,43 @@ class mf_social_feed
 
 		if(substr($this->search, 0, 1) == "#")
 		{
-			$results = $twitter->search($this->search);
+			try
+			{
+				$results = $twitter->search($this->search);
+			}
+			
+			catch(TwitterException $e)
+			{
+				do_log(__("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+			}
 		}
 
 		else if(substr($this->search, 0, 1) == "@")
 		{
-			if(substr($this->search, 0, 1) == "@")
-			{
-				$this->search = substr($this->search, 1);
-			}
+			$this->search = substr($this->search, 1);
 
-			$results = $twitter->search('from:'.$this->search);
+			try
+			{
+				$results = $twitter->search('from:'.$this->search);
+			}
+			
+			catch(TwitterException $e)
+			{
+				do_log(__("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+			}
 		}
 
 		else
 		{
-			$results = $twitter->load(Twitter::ME);
+			try
+			{
+				$results = $twitter->load(Twitter::ME);
+			}
+			
+			catch(TwitterException $e)
+			{
+				do_log(__("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+			}
 		}
 
 		foreach($results as $key => $post)
