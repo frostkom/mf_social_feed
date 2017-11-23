@@ -52,10 +52,10 @@ if(is_admin())
 	add_action('delete_post', 'delete_social_feed');
 }
 
-/*else
+else
 {
 	add_action('wp_footer', 'footer_social_feed', 0);
-}*/
+}
 
 add_shortcode('mf_social_feed', 'shortcode_social_feed');
 

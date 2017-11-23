@@ -296,17 +296,14 @@ function count_shortcode_button_social_feed($count)
 
 function get_shortcode_output_social_feed($out)
 {
-	/*if(has_feeds())
-	{*/
-		$out .= "<h3>".__("Social Feeds", 'lang_social_feed')."</h3>";
+	$arr_data = array();
+	get_post_children(array('add_choose_here' => true, 'post_type' => 'mf_social_feed'), $arr_data);
 
-		$arr_data = array(
-			'' => __("No", 'lang_social_feed'),
-			'yes' => __("Yes", 'lang_social_feed')
-		);
-
-		$out .= show_select(array('data' => $arr_data, 'xtra' => "rel='mf_social_feed amount=0 filter=group likes=no'"));
-	//}
+	if(count($arr_data) > 1)
+	{
+		$out .= "<h3>".__("Choose a Social Feed", 'lang_social_feed')."</h3>"
+		.show_select(array('data' => $arr_data, 'xtra' => "rel='mf_social_feed amount=3 filter=group likes=no'"));
+	}
 
 	return $out;
 }
@@ -631,8 +628,9 @@ function footer_social_feed()
 function shortcode_social_feed($atts)
 {
 	extract(shortcode_atts(array(
-		'amount' => 0,
+		'id' => 0,
 		'filter' => 'group',
+		'amount' => 3,
 		'likes' => 'no',
 	), $atts));
 
@@ -640,8 +638,9 @@ function shortcode_social_feed($atts)
 
 	$out = "<div class='widget social_feed'>
 		<div class='section'"
-			.($amount > 0 ? " data-social_amount='".$amount."'" : "")
+			.($id > 0 ? " data-social_feeds='".$id."'" : "")
 			.($filter != '' ? " data-social_filter='".$filter."'" : "")
+			.($amount > 0 ? " data-social_amount='".$amount."'" : "")
 			.($likes != '' ? " data-social_likes='".$likes."'" : "")
 			.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
 		.">";
@@ -662,4 +661,6 @@ function shortcode_social_feed($atts)
 
 		$out .= "</div>
 	</div>";
+
+	return $out;
 }

@@ -1033,7 +1033,7 @@ class widget_social_feed extends WP_Widget
 
 		$instance = wp_parse_args((array)$instance, $this->arr_default);
 
-		add_action('wp_footer', 'footer_social_feed', 0);
+		//add_action('wp_footer', 'footer_social_feed', 0);
 
 		$setting_social_reload = get_option('setting_social_reload');
 
