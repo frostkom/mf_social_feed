@@ -98,11 +98,23 @@ function settings_social_feed()
 	$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
 	$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 
-	list($options_params, $options) = get_params();
-	$website_max_width = isset($options['website_max_width']) ? $options['website_max_width'] : 0;
+	if(function_exists('get_params'))
+	{
+		list($options_params, $options) = get_params();
+		$website_max_width = isset($options['website_max_width']) ? $options['website_max_width'] : 0;
+	}
+
+	else
+	{
+		$website_max_width = 0;
+	}
 
 	$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed').($website_max_width > 0 ? " (> ".$website_max_width.")" : "");
-	$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");
+
+	if($website_max_width > 0)
+	{
+		$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");
+	}
 
 	//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", 'facebook'));
 
