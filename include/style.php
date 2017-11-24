@@ -105,28 +105,28 @@ echo "@media all
 						color: #fff;
 					}
 
-		.widget.social_feed ul.sf_posts
+		.widget.social_feed .sf_posts
 		{"
 			.$post_container
 			."list-style: none;
 		}
 
-			.is_tablet .widget.social_feed ul.sf_posts
+			.is_tablet .widget.social_feed .sf_posts
 			{"
 				.$post_container_tablet
 			."}
 
-			.is_mobile .widget.social_feed ul.sf_posts
+			.is_mobile .widget.social_feed .sf_posts
 			{"
 				.$post_container_mobile
 			."}
 
-			.widget.social_feed ul.sf_feeds + ul.sf_posts
+			.widget.social_feed ul.sf_feeds + .sf_posts
 			{
 				margin-top: 1em;
 			}
 
-			.widget.social_feed ul.sf_posts li
+			.widget.social_feed .sf_posts li
 			{"
 				.$post_item
 				."margin-bottom: 1em;
@@ -136,13 +136,29 @@ echo "@media all
 				text-align: left;
 			}
 
-				.is_mobile .widget.social_feed ul.sf_posts li + li, .widget.social_feed ul.sf_posts.one_column li + li
+				.is_mobile .widget.social_feed .sf_posts li + li, .widget.social_feed .sf_posts.one_column li + li
 				{
 					border-top: 1px solid #ccc;
 					padding-top: 1em;
 				}
 
-				.widget.social_feed ul.sf_posts.show_border li
+				.widget.social_feed .sf_posts.hide_text .fa, .widget.social_feed .sf_posts.hide_text .name, .widget.social_feed .sf_posts.hide_text .date, .widget.social_feed .sf_posts.hide_text .content p
+				{
+					display: none;
+				}
+
+					.widget.social_feed .sf_posts.hide_text .content
+					{
+						height: 100%;
+					}
+
+						.widget.social_feed .sf_posts.hide_text .content img
+						{
+							object-fit: cover;
+							height: 100%;
+						}
+
+				.widget.social_feed .sf_posts.show_border li
 				{
 					background: #fff;
 					box-shadow: 0 .5rem .75rem rgba(0, 0, 0, .15);
@@ -152,17 +168,17 @@ echo "@media all
 					padding: 1em;
 				}
 
-			.is_tablet .widget.social_feed ul.sf_posts li
+			.is_tablet .widget.social_feed .sf_posts li
 			{"
 				.$post_item_tablet			
 			."}
 
-			.is_mobile .widget.social_feed ul.sf_posts li, .widget.social_feed ul.sf_posts.one_column li
+			.is_mobile .widget.social_feed .sf_posts li, .widget.social_feed .sf_posts.one_column li
 			{"
 				.$post_item_mobile
 			."}
 
-				.widget.social_feed ul.sf_posts li > .fa
+				.widget.social_feed .sf_posts li > .fa
 				{
 					float: left;
 				}
