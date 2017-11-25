@@ -483,7 +483,9 @@ class mf_social_feed
 
 		if($filter != '')
 		{
-			$result = wp_remote_retrieve_body(wp_remote_get("https://api.instagram.com/v1/".$filter."?access_token=".$this->instagram_api_token)); //."&count=".$instagram_amount
+			$url = "https://api.instagram.com/v1/".$filter."?access_token=".$this->instagram_api_token; //."&count=".$instagram_amount
+
+			$result = wp_remote_retrieve_body(wp_remote_get($url));
 			$result = json_decode($result);
 
 			if(isset($result->data))
@@ -526,6 +528,13 @@ class mf_social_feed
 						'comments' => $post->comments->count,
 					);
 				}
+
+				delete_post_meta($this->id, $this->meta_prefix.'error');
+			}
+
+			else
+			{
+				update_post_meta($this->id, $this->meta_prefix.'error', sprintf(__("The JSON I got back was not correct. Have a look at %s", 'lang_social_feed'), $url));
 			}
 		}
 	}
@@ -545,7 +554,7 @@ class mf_social_feed
 			
 			catch(TwitterException $e)
 			{
-				do_log(__("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
 			}
 		}
 
@@ -560,7 +569,7 @@ class mf_social_feed
 			
 			catch(TwitterException $e)
 			{
-				do_log(__("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
 			}
 		}
 
@@ -573,62 +582,67 @@ class mf_social_feed
 			
 			catch(TwitterException $e)
 			{
-				do_log(__("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
 			}
 		}
 
-		foreach($results as $key => $post)
+		if(is_array($results))
 		{
-			/*array('created_at' => 'Fri Feb 17 08:09:54 +0000 2017', 'id' => '[id]', 'id_str' => '[id]', 'text' => 'Text #hashtag', 'truncated' => false,
-			'entities' => stdClass::__set_state(array(
-				'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))),
-				'symbols' => array(), 'user_mentions' => array(), 'urls' => array(),
-				'media' => array(0 => stdClass::__set_state(array(
-					'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
-					'sizes' => stdClass::__set_state(array(
-						'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
-						'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
-						'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
-						'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
-					))
-				)))
-			)),
-			'extended_entities' => stdClass::__set_state(array(
-				'media' => array(0 => stdClass::__set_state(array(
-					'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
-					'sizes' => stdClass::__set_state(array(
-						'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
-						'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
-						'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
-						'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
-					))
-				)))
-			)),
-			'metadata' => stdClass::__set_state(array('iso_language_code' => 'sv', 'result_type' => 'recent')),
-			'source' => 'Twitter for Dumbphone', 'in_reply_to_status_id' => NULL, 'in_reply_to_status_id_str' => NULL, 'in_reply_to_user_id' => NULL, 'in_reply_to_user_id_str' => NULL, 'in_reply_to_screen_name' => NULL,
-			'user' => stdClass::__set_state(array(
-				'id' => [id], 'id_str' => '[id]', 'name' => 'Name', 'screen_name' => 'username', 'location' => 'Sverige', 'description' => 'Description', 'url' => 'https://t.co/x',
+			foreach($results as $key => $post)
+			{
+				/*array('created_at' => 'Fri Feb 17 08:09:54 +0000 2017', 'id' => '[id]', 'id_str' => '[id]', 'text' => 'Text #hashtag', 'truncated' => false,
 				'entities' => stdClass::__set_state(array(
-					'url' => stdClass::__set_state(array(
-						'urls' => array(0 => stdClass::__set_state(array(
-							'url' => 'https://t.co/x', 'expanded_url' => 'http://domain.com', 'display_url' => 'domain.com', 'indices' => array(0 => 2)
-						)))
-					)),
-					'description' => stdClass::__set_state(array('urls' => array()))
+					'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))),
+					'symbols' => array(), 'user_mentions' => array(), 'urls' => array(),
+					'media' => array(0 => stdClass::__set_state(array(
+						'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
+						'sizes' => stdClass::__set_state(array(
+							'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
+							'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
+							'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
+							'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
+						))
+					)))
 				)),
-				'protected' => false, 'followers_count' => 78040, 'friends_count' => 4127, 'listed_count' => 594, 'created_at' => 'Tue Jan 20 10:19:51 +0000 2009', 'favourites_count' => 420, 'utc_offset' => 3600, 'time_zone' => 'Brantevik', 'geo_enabled' => true, 'verified' => true, 'statuses_count' => 12821, 'lang' => 'sv', 'contributors_enabled' => false, 'is_translator' => false, 'is_translation_enabled' => false, 'profile_background_color' => 'ffffff', 'profile_background_image_url' => 'http://pbs.twimg.com/profile_background_images/[id]/x.jpg', 'profile_background_image_url_https' => 'https://pbs.twimg.com/profile_background_images/[id]/x.jpeg', 'profile_background_tile' => false, 'profile_image_url' => 'http://pbs.twimg.com/profile_images/[id]/x.png', 'profile_image_url_https' => 'https://pbs.twimg.com/profile_images/[id]/x.png', 'profile_banner_url' => 'https://pbs.twimg.com/profile_banners/[id]/[id]', 'profile_link_color' => 'ffffff', 'profile_sidebar_border_color' => 'ffffff', 'profile_sidebar_fill_color' => 'ffffff', 'profile_text_color' => '333333', 'profile_use_background_image' => true, 'has_extended_profile' => false, 'default_profile' => false, 'default_profile_image' => false, 'following' => false, 'follow_request_sent' => false, 'notifications' => false, 'translator_type' => 'none'
-			)),
-			'geo' => NULL, 'coordinates' => NULL, 'place' => NULL, 'contributors' => NULL, 'is_quote_status' => false, 'retweet_count' => 9, 'favorite_count' => 27, 'favorited' => false, 'retweeted' => false, 'possibly_sensitive' => false, 'lang' => 'sv')*/
+				'extended_entities' => stdClass::__set_state(array(
+					'media' => array(0 => stdClass::__set_state(array(
+						'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
+						'sizes' => stdClass::__set_state(array(
+							'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
+							'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
+							'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
+							'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
+						))
+					)))
+				)),
+				'metadata' => stdClass::__set_state(array('iso_language_code' => 'sv', 'result_type' => 'recent')),
+				'source' => 'Twitter for Dumbphone', 'in_reply_to_status_id' => NULL, 'in_reply_to_status_id_str' => NULL, 'in_reply_to_user_id' => NULL, 'in_reply_to_user_id_str' => NULL, 'in_reply_to_screen_name' => NULL,
+				'user' => stdClass::__set_state(array(
+					'id' => [id], 'id_str' => '[id]', 'name' => 'Name', 'screen_name' => 'username', 'location' => 'Sverige', 'description' => 'Description', 'url' => 'https://t.co/x',
+					'entities' => stdClass::__set_state(array(
+						'url' => stdClass::__set_state(array(
+							'urls' => array(0 => stdClass::__set_state(array(
+								'url' => 'https://t.co/x', 'expanded_url' => 'http://domain.com', 'display_url' => 'domain.com', 'indices' => array(0 => 2)
+							)))
+						)),
+						'description' => stdClass::__set_state(array('urls' => array()))
+					)),
+					'protected' => false, 'followers_count' => 78040, 'friends_count' => 4127, 'listed_count' => 594, 'created_at' => 'Tue Jan 20 10:19:51 +0000 2009', 'favourites_count' => 420, 'utc_offset' => 3600, 'time_zone' => 'Brantevik', 'geo_enabled' => true, 'verified' => true, 'statuses_count' => 12821, 'lang' => 'sv', 'contributors_enabled' => false, 'is_translator' => false, 'is_translation_enabled' => false, 'profile_background_color' => 'ffffff', 'profile_background_image_url' => 'http://pbs.twimg.com/profile_background_images/[id]/x.jpg', 'profile_background_image_url_https' => 'https://pbs.twimg.com/profile_background_images/[id]/x.jpeg', 'profile_background_tile' => false, 'profile_image_url' => 'http://pbs.twimg.com/profile_images/[id]/x.png', 'profile_image_url_https' => 'https://pbs.twimg.com/profile_images/[id]/x.png', 'profile_banner_url' => 'https://pbs.twimg.com/profile_banners/[id]/[id]', 'profile_link_color' => 'ffffff', 'profile_sidebar_border_color' => 'ffffff', 'profile_sidebar_fill_color' => 'ffffff', 'profile_text_color' => '333333', 'profile_use_background_image' => true, 'has_extended_profile' => false, 'default_profile' => false, 'default_profile_image' => false, 'following' => false, 'follow_request_sent' => false, 'notifications' => false, 'translator_type' => 'none'
+				)),
+				'geo' => NULL, 'coordinates' => NULL, 'place' => NULL, 'contributors' => NULL, 'is_quote_status' => false, 'retweet_count' => 9, 'favorite_count' => 27, 'favorited' => false, 'retweeted' => false, 'possibly_sensitive' => false, 'lang' => 'sv')*/
 
-			$this->arr_posts[] = array(
-				'type' => $this->type,
-				'id' => $post->id,
-				'name' => isset($post->user->screen_name) ? $post->user->screen_name : $this->search,
-				'text' => $post->text,
-				'link' => "//twitter.com/".$this->search."/status/".$post->id,
-				'image' => (isset($post->entities->media[0]->media_url) ? $post->entities->media[0]->media_url : ""),
-				'created' => date("Y-m-d H:i:s", strtotime($post->created_at)),
-			);
+				$this->arr_posts[] = array(
+					'type' => $this->type,
+					'id' => $post->id,
+					'name' => isset($post->user->screen_name) ? $post->user->screen_name : $this->search,
+					'text' => $post->text,
+					'link' => "//twitter.com/".$this->search."/status/".$post->id,
+					'image' => (isset($post->entities->media[0]->media_url) ? $post->entities->media[0]->media_url : ""),
+					'created' => date("Y-m-d H:i:s", strtotime($post->created_at)),
+				);
+			}
+
+			delete_post_meta($this->id, $this->meta_prefix.'error');
 		}
 	}
 

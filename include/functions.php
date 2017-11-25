@@ -433,8 +433,10 @@ function column_cell_social_feed($col, $id)
 
 					if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime("-".$setting_social_time_limit." minute")))
 					{
-						echo "<i class='fa fa-close red fa-2x'></i>
-						<div class='row-actions'>".__("The feed does not seam to work. This might be due to that the feed you are trying to access is not public.", 'lang_social_feed')."</div>";
+						echo "0";
+
+						/*echo "<i class='fa fa-close red fa-2x'></i>
+						<div class='row-actions'>".__("The feed does not seam to work. This might be due to that the feed you are trying to access is not public.", 'lang_social_feed')."</div>";*/
 					}
 
 					else
