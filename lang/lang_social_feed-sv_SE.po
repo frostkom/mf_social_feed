@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-24 18:10+0100\n"
+"POT-Creation-Date: 2017-11-25 10:40+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -17,7 +17,7 @@ msgstr ""
 "X-Poedit-SearchPath-1: ..\n"
 
 #: ../include/classes.php:18
-#: ../include/functions.php:531
+#: ../include/functions.php:533
 msgid "Facebook"
 msgstr ""
 
@@ -26,7 +26,7 @@ msgid "Posts can only be fetched from Facebook Pages, not personal Profiles"
 msgstr "Inlägg kan endast hämtas från sk. Facebook Pages, inte från personliga profiler"
 
 #: ../include/classes.php:19
-#: ../include/functions.php:532
+#: ../include/functions.php:534
 msgid "Instagram"
 msgstr ""
 
@@ -36,7 +36,7 @@ msgid "Posts can either be fetched from @users or #hashtags"
 msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
 
 #: ../include/classes.php:20
-#: ../include/functions.php:533
+#: ../include/functions.php:535
 msgid "RSS"
 msgstr ""
 
@@ -45,7 +45,7 @@ msgid "Posts can only be fetched by entering the full URL to the feed"
 msgstr "Inlägg kan endast hämtas genom att fylla i fullständiga URLen till flödet"
 
 #: ../include/classes.php:21
-#: ../include/functions.php:534
+#: ../include/functions.php:536
 msgid "Twitter"
 msgstr ""
 
@@ -101,84 +101,85 @@ msgid "I could not ignore the post for you. An admin has been notified about thi
 msgstr "Jag lyckades inte ignorera inlägget åt dig. En admin har fått info om detta problem"
 
 #: ../include/classes.php:475
+#: ../include/classes.php:537
 #, php-format
 msgid "The JSON I got back was not correct. Have a look at %s"
 msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
 
-#: ../include/classes.php:548
-#: ../include/classes.php:563
-#: ../include/classes.php:576
+#: ../include/classes.php:557
+#: ../include/classes.php:572
+#: ../include/classes.php:585
 msgid "Twitter Error"
 msgstr ""
 
-#: ../include/classes.php:930
-#: ../include/functions.php:587
+#: ../include/classes.php:944
+#: ../include/functions.php:589
 msgid "All"
 msgstr "Alla"
 
-#: ../include/classes.php:998
-#: ../include/functions.php:583
+#: ../include/classes.php:1012
+#: ../include/functions.php:585
 msgid "I could not find any posts at the moment. Sorry!"
 msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
 
-#: ../include/classes.php:1012
+#: ../include/classes.php:1026
 msgid "Display Social Feeds"
 msgstr "Visa sociala flöden"
 
-#: ../include/classes.php:1026
+#: ../include/classes.php:1040
 #: ../include/functions.php:30
 msgid "Social Feed"
 msgstr "Socialt flöde"
 
-#: ../include/classes.php:1101
+#: ../include/classes.php:1115
 msgid "Heading"
 msgstr "Rubrik"
 
-#: ../include/classes.php:1105
+#: ../include/classes.php:1120
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:1108
+#: ../include/classes.php:1130
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:1109
-#: ../include/classes.php:1110
+#: ../include/classes.php:1131
+#: ../include/classes.php:1132
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:1109
+#: ../include/classes.php:1131
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:1110
+#: ../include/classes.php:1132
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:1113
-msgid "Show Filter"
+#: ../include/classes.php:1135
+msgid "Display Filter"
 msgstr "Visa filter"
 
-#: ../include/classes.php:1116
+#: ../include/classes.php:1141
 #: ../include/functions.php:329
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:1117
-msgid "Show Text"
+#: ../include/classes.php:1142
+msgid "Display Text"
 msgstr "Visa text"
 
-#: ../include/classes.php:1121
-msgid "Show Border"
+#: ../include/classes.php:1146
+msgid "Display Border"
 msgstr "Visa ram"
 
-#: ../include/classes.php:1123
-msgid "Show Read More"
+#: ../include/classes.php:1148
+msgid "Display Read More"
 msgstr "Visa Läs mer"
 
-#: ../include/classes.php:1124
-msgid "Show Likes"
-msgstr "Visa gilla"
+#: ../include/classes.php:1149
+msgid "Display Likes"
+msgstr "Visa Gilla"
 
 #: ../include/functions.php:29
 #: ../include/functions.php:31
@@ -328,47 +329,64 @@ msgstr "Hämtad"
 msgid "I got an error when accessing the feed"
 msgstr "Jag fick ett fel när jag hämtade flödet"
 
-#: ../include/functions.php:437
-msgid "The feed does not seam to work. This might be due to that the feed you are trying to access is not public."
-msgstr "Flödet verkar inte fungera. Det kan t.ex. bero på att flödet som du försöker hämta från inte är publikt."
-
-#: ../include/functions.php:443
+#: ../include/functions.php:445
 msgid "I am waiting to get access to the feed"
 msgstr "Jag väntar på att få tillgång till flödet"
 
-#: ../include/functions.php:454
+#: ../include/functions.php:456
 msgid "Latest"
 msgstr "Senaste"
 
-#: ../include/functions.php:471
+#: ../include/functions.php:473
 msgid "Username"
 msgstr "Användarnamn"
 
-#: ../include/functions.php:472
+#: ../include/functions.php:474
 msgid "Text"
 msgstr "Text"
 
-#: ../include/functions.php:473
+#: ../include/functions.php:475
 msgid "Image"
 msgstr "Bild"
 
-#: ../include/functions.php:475
+#: ../include/functions.php:477
 msgid "Date"
 msgstr "Datum"
 
-#: ../include/functions.php:498
+#: ../include/functions.php:500
 msgid "Ignored"
 msgstr "Ignorerad"
 
-#: ../include/functions.php:502
+#: ../include/functions.php:504
 msgid "Hidden"
 msgstr "Dold"
 
-#: ../include/functions.php:576
+#: ../include/functions.php:578
 msgid "Read More"
 msgstr "Läs mer"
 
-#: ../include/functions.php:580
+#: ../include/functions.php:582
 msgid "Lost Connection"
 msgstr "Tappade uppkopplingen"
 
+#~ msgid "Show Filter"
+#~ msgstr "Visa filter"
+
+#~ msgid "Show Text"
+#~ msgstr "Visa text"
+
+#~ msgid "Show Border"
+#~ msgstr "Visa ram"
+
+#~ msgid "Show Read More"
+#~ msgstr "Visa Läs mer"
+
+#~ msgid "Show Likes"
+#~ msgstr "Visa gilla"
+
+#~ msgid ""
+#~ "The feed does not seam to work. This might be due to that the feed you "
+#~ "are trying to access is not public."
+#~ msgstr ""
+#~ "Flödet verkar inte fungera. Det kan t.ex. bero på att flödet som du "
+#~ "försöker hämta från inte är publikt."

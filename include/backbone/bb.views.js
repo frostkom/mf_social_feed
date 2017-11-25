@@ -118,9 +118,9 @@ var PageView = Backbone.View.extend(
 			{
 				html += _.template(jQuery("#template_feed").html())(response[i]);
 			}
-		}
 
-		dom_obj.html(html).removeClass('hide');
+			dom_obj.html(html).removeClass('hide');
+		}
 	},
 
 	show_posts: function()

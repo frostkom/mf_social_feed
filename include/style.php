@@ -81,25 +81,26 @@ echo "@media all
 			}";
 		}
 
-		echo ".widget.social_feed ul.sf_feeds
+		echo ".widget.social_feed .sf_feeds
 		{
 			font-size: .8em;
 			list-style: none;
+			margin-bottom: 1em;
 		}
 
-			.widget.social_feed ul.sf_feeds li
+			.widget.social_feed .sf_feeds li
 			{
 				display: inline-block;
 				overflow: hidden;
 			}
 
-				.widget.social_feed ul.sf_feeds a
+				.widget.social_feed .sf_feeds a
 				{
 					display: block;
 					padding: 1.5em 1em .5em;
 				}
 
-					.widget.social_feed ul.sf_feeds li.active a
+					.widget.social_feed .sf_feeds li.active a
 					{
 						background: #ff993d;
 						color: #fff;
@@ -121,15 +122,10 @@ echo "@media all
 				.$post_container_mobile
 			."}
 
-			.widget.social_feed ul.sf_feeds + .sf_posts
-			{
-				margin-top: 1em;
-			}
-
 			.widget.social_feed .sf_posts li
 			{"
 				.$post_item
-				."margin-bottom: 1em;
+				."margin: 0 0 1em;
 				overflow: hidden;
 				padding: .5em;
 				position: relative;
@@ -154,8 +150,9 @@ echo "@media all
 
 						.widget.social_feed .sf_posts.hide_text .content img
 						{
-							object-fit: cover;
 							height: 100%;
+							margin-top: 0;
+							object-fit: cover;
 						}
 
 				.widget.social_feed .sf_posts.show_border li

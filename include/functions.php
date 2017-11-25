@@ -314,7 +314,7 @@ function get_shortcode_output_social_feed($out)
 	if(count($arr_data) > 1)
 	{
 		$out .= "<h3>".__("Choose a Social Feed", 'lang_social_feed')."</h3>"
-		.show_select(array('data' => $arr_data, 'xtra' => "rel='mf_social_feed amount=3 filter=group likes=no'"));
+		.show_select(array('data' => $arr_data, 'xtra' => "rel='mf_social_feed amount=3 filter=group border=no text=yes likes=no'"));
 	}
 
 	return $out;
@@ -644,7 +644,10 @@ function shortcode_social_feed($atts)
 		'id' => 0,
 		'filter' => 'group',
 		'amount' => 3,
+		'text' => 'yes',
+		'border' => 'yes',
 		'likes' => 'no',
+		'read_more' => 'yes',
 	), $atts));
 
 	$setting_social_reload = get_option('setting_social_reload');
@@ -656,23 +659,26 @@ function shortcode_social_feed($atts)
 			.($amount > 0 ? " data-social_amount='".$amount."'" : "")
 			.($likes != '' ? " data-social_likes='".$likes."'" : "")
 			.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
-		.">";
+		.">
+			<i class='fa fa-spinner fa-spin fa-3x'></i>
+			<ul class='sf_feeds hide'></ul>
+			<ul class='sf_posts";
 
-			/*if($setting_social_reload > 0)
-			{*/
-				$out .= "<i class='fa fa-spinner fa-spin fa-3x'></i>
-				<ul class='sf_feeds hide'></ul>
-				<ul class='sf_posts show_border show_read_more hide'></ul>";
-			/*}
+				if($text == 'yes')
+				{
+					$out .= ($border == 'yes' ? " show_border" : '')
+					.($read_more == 'yes' ? " show_read_more" : '');
+				}
 
-			else
-			{
-				$obj_social_feed = new mf_social_feed();
+				else
+				{
+					$out .= " hide_text";
+				}
 
-				$out .= $obj_social_feed->get_output(array('social_type' => 'shortcode', 'social_amount' => $amount, 'social_filter' => $filter, 'social_likes' => $likes));
-			}*/
-
-		$out .= "</div>
+				//$out .= " show_border show_read_more";
+				
+			$out .= " hide'></ul>
+		</div>
 	</div>";
 
 	return $out;

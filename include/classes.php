@@ -1116,34 +1116,37 @@ class widget_social_feed extends WP_Widget
 
 			if(count($arr_data_feeds) > 1)
 			{
-				echo show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']));
+				echo "<div class='flex_flow'>"
+					.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']));
 
-				if(count($instance['social_feeds']) == 1)
-				{
-					echo input_hidden(array('name' => $this->get_field_name('social_filter'), 'value' => 'no'));
-				}
+					if(count($instance['social_feeds']) == 1)
+					{
+						echo input_hidden(array('name' => $this->get_field_name('social_filter'), 'value' => 'no'));
+					}
 
-				else
-				{
-					$arr_data_filter = array(
-						'no' => __("No", 'lang_social_feed'),
-						'yes' => __("Yes", 'lang_social_feed')." (".__("Individually", 'lang_social_feed').")",
-						'group' => __("Yes", 'lang_social_feed')." (".__("Grouped", 'lang_social_feed').")",
-					);
+					else
+					{
+						$arr_data_filter = array(
+							'no' => __("No", 'lang_social_feed'),
+							'yes' => __("Yes", 'lang_social_feed')." (".__("Individually", 'lang_social_feed').")",
+							'group' => __("Yes", 'lang_social_feed')." (".__("Grouped", 'lang_social_feed').")",
+						);
 
-					echo show_select(array('data' => $arr_data_filter, 'name' => $this->get_field_name('social_filter'), 'text' => __("Show Filter", 'lang_social_feed'), 'value' => $instance['social_filter']));
-				}
+						echo show_select(array('data' => $arr_data_filter, 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']));
+					}
+
+				echo "</div>";
 			}
 
 			echo show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
-			.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_text'), 'text' => __("Show Text", 'lang_social_feed'), 'value' => $instance['social_text']));
+			.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_text'), 'text' => __("Display Text", 'lang_social_feed'), 'value' => $instance['social_text']));
 
 			if('yes' == $instance['social_text'])
 			{
-				echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_border'), 'text' => __("Show Border", 'lang_social_feed'), 'value' => $instance['social_border']))
+				echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_border'), 'text' => __("Display Border", 'lang_social_feed'), 'value' => $instance['social_border']))
 				."<div class='flex_flow'>"
-					.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_read_more'), 'text' => __("Show Read More", 'lang_social_feed'), 'value' => $instance['social_read_more']))
-					.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Show Likes", 'lang_social_feed'), 'value' => $instance['social_likes']))
+					.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_read_more'), 'text' => __("Display Read More", 'lang_social_feed'), 'value' => $instance['social_read_more']))
+					.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Display Likes", 'lang_social_feed'), 'value' => $instance['social_likes']))
 				."</div>";
 			}
 
