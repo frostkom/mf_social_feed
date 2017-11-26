@@ -17,7 +17,7 @@ $setting_social_desktop_columns = get_option_or_default('setting_social_desktop_
 $setting_social_tablet_columns = get_option_or_default('setting_social_tablet_columns', 2);
 $setting_social_mobile_columns = 1;
 
-$post_container = $post_container_tablet = $post_container_mobile = "";$post_item = $post_item_tablet = $post_item_mobile = "";
+$post_container_desktop = $post_container_tablet = $post_container_mobile = $post_item_desktop = $post_item_tablet = $post_item_mobile = "";
 
 function calc_width($columns)
 {
@@ -27,7 +27,7 @@ function calc_width($columns)
 switch($setting_social_design)
 {
 	case 'masonry':
-		$post_container = "-moz-column-count: ".$setting_social_desktop_columns.";
+		$post_container_desktop = "-moz-column-count: ".$setting_social_desktop_columns.";
 		-webkit-column-count: ".$setting_social_desktop_columns.";
 		column-count: ".$setting_social_desktop_columns.";";
 
@@ -38,6 +38,10 @@ switch($setting_social_design)
 		$post_container_mobile = "-moz-column-count: ".$setting_social_mobile_columns.";
 		-webkit-column-count: ".$setting_social_mobile_columns.";
 		column-count: ".$setting_social_mobile_columns.";";
+
+		$post_item_desktop = "-webkit-column-break-inside: avoid;
+		page-break-inside: avoid;
+		break-inside: avoid;";
 	break;
 
 	default:
@@ -45,7 +49,7 @@ switch($setting_social_design)
 		$column_width_tablet = calc_width($setting_social_tablet_columns);
 		$column_width_mobile = calc_width($setting_social_mobile_columns);
 
-		$post_container = "display: -webkit-box;
+		$post_container_desktop = "display: -webkit-box;
 		display: -ms-flexbox;
 		display: -webkit-flex;
 		display: flex;
@@ -54,7 +58,7 @@ switch($setting_social_design)
 		-ms-flex-wrap: wrap;
 		flex-wrap: wrap;";
 
-		$post_item = "-webkit-box-flex: 0 1 auto;
+		$post_item_desktop = "-webkit-box-flex: 0 1 auto;
 		-webkit-flex: 0 1 auto;
 		-ms-flex: 0 1 auto;
 		flex: 0 1 auto;
@@ -108,23 +112,29 @@ echo "@media all
 
 		.widget.social_feed .sf_posts
 		{"
-			.$post_container
+			.$post_container_desktop
 			."list-style: none;
-		}
+		}";
 
-			.is_tablet .widget.social_feed .sf_posts
-			{"
-				.$post_container_tablet
-			."}
+			if($post_container_tablet != '')
+			{
+				echo ".is_tablet .widget.social_feed .sf_posts
+				{"
+					.$post_container_tablet
+				."}";
+			}
 
-			.is_mobile .widget.social_feed .sf_posts
-			{"
-				.$post_container_mobile
-			."}
+			if($post_container_mobile != '')
+			{
+				echo ".is_mobile .widget.social_feed .sf_posts
+				{"
+					.$post_container_mobile
+				."}";
+			}
 
-			.widget.social_feed .sf_posts li
+			echo ".widget.social_feed .sf_posts li
 			{"
-				.$post_item
+				.$post_item_desktop
 				."margin: 0 0 1em;
 				overflow: hidden;
 				padding: .5em;
@@ -163,19 +173,25 @@ echo "@media all
 					margin-right: .5%;
 					margin-left: .5%;
 					padding: 1em;
-				}
+				}";
 
-			.is_tablet .widget.social_feed .sf_posts li
-			{"
-				.$post_item_tablet			
-			."}
+			if($post_item_tablet != '')
+			{
+				echo ".is_tablet .widget.social_feed .sf_posts li
+				{"
+					.$post_item_tablet			
+				."}";
+			}
 
-			.is_mobile .widget.social_feed .sf_posts li, .widget.social_feed .sf_posts.one_column li
-			{"
-				.$post_item_mobile
-			."}
+			if($post_item_mobile != '')
+			{
+				echo ".is_mobile .widget.social_feed .sf_posts li, .widget.social_feed .sf_posts.one_column li
+				{"
+					.$post_item_mobile
+				."}";
+			}
 
-				.widget.social_feed .sf_posts li > .fa
+				echo ".widget.social_feed .sf_posts li > .fa
 				{
 					float: left;
 				}

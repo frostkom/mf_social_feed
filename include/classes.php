@@ -1119,12 +1119,7 @@ class widget_social_feed extends WP_Widget
 				echo "<div class='flex_flow'>"
 					.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']));
 
-					if(count($instance['social_feeds']) == 1)
-					{
-						echo input_hidden(array('name' => $this->get_field_name('social_filter'), 'value' => 'no'));
-					}
-
-					else
+					if(count($instance['social_feeds']) != 1)
 					{
 						$arr_data_filter = array(
 							'no' => __("No", 'lang_social_feed'),
