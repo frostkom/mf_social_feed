@@ -98,10 +98,12 @@ function settings_social_feed()
 	$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
 	$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 
-	if(function_exists('get_params'))
+	if(class_exists('mf_theme_core'))
 	{
-		list($options_params, $options) = get_params();
-		$website_max_width = isset($options['website_max_width']) ? $options['website_max_width'] : 0;
+		$obj_theme_core = new mf_theme_core();
+		$obj_theme_core->get_params();
+
+		$website_max_width = isset($obj_theme_core->options['website_max_width']) ? $obj_theme_core->options['website_max_width'] : 0;
 	}
 
 	else
