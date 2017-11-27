@@ -921,7 +921,7 @@ class mf_social_feed
 		return array($arr_post_feeds, $arr_post_posts);
 	}
 
-	function get_output($data)
+	/*function get_output($data)
 	{
 		global $wpdb;
 
@@ -1013,7 +1013,7 @@ class mf_social_feed
 		}
 
 		return $out;
-	}
+	}*/
 	#########################
 }
 

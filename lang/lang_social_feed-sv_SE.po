@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-25 10:40+0100\n"
+"POT-Creation-Date: 2017-11-27 09:06+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -112,16 +112,6 @@ msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
 msgid "Twitter Error"
 msgstr ""
 
-#: ../include/classes.php:944
-#: ../include/functions.php:589
-msgid "All"
-msgstr "Alla"
-
-#: ../include/classes.php:1012
-#: ../include/functions.php:585
-msgid "I could not find any posts at the moment. Sorry!"
-msgstr "Jag kunde inte hitta några meddelanden just nu. Förlåt!"
-
 #: ../include/classes.php:1026
 msgid "Display Social Feeds"
 msgstr "Visa sociala flöden"
@@ -139,45 +129,45 @@ msgstr "Rubrik"
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:1130
+#: ../include/classes.php:1125
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:1131
-#: ../include/classes.php:1132
+#: ../include/classes.php:1126
+#: ../include/classes.php:1127
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:1131
+#: ../include/classes.php:1126
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:1132
+#: ../include/classes.php:1127
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:1135
+#: ../include/classes.php:1130
 msgid "Display Filter"
 msgstr "Visa filter"
 
-#: ../include/classes.php:1141
+#: ../include/classes.php:1136
 #: ../include/functions.php:329
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:1142
+#: ../include/classes.php:1137
 msgid "Display Text"
 msgstr "Visa text"
 
-#: ../include/classes.php:1146
+#: ../include/classes.php:1141
 msgid "Display Border"
 msgstr "Visa ram"
 
-#: ../include/classes.php:1148
+#: ../include/classes.php:1143
 msgid "Display Read More"
 msgstr "Visa Läs mer"
 
-#: ../include/classes.php:1149
+#: ../include/classes.php:1144
 msgid "Display Likes"
 msgstr "Visa Gilla"
 
@@ -361,32 +351,19 @@ msgstr "Ignorerad"
 msgid "Hidden"
 msgstr "Dold"
 
-#: ../include/functions.php:578
+#: ../include/functions.php:579
 msgid "Read More"
 msgstr "Läs mer"
 
-#: ../include/functions.php:582
+#: ../include/functions.php:584
 msgid "Lost Connection"
 msgstr "Tappade uppkopplingen"
 
-#~ msgid "Show Filter"
-#~ msgstr "Visa filter"
+#: ../include/functions.php:587
+msgid "There are no posts to display"
+msgstr "Det finns inga inlägg att visa"
 
-#~ msgid "Show Text"
-#~ msgstr "Visa text"
+#: ../include/functions.php:591
+msgid "All"
+msgstr "Alla"
 
-#~ msgid "Show Border"
-#~ msgstr "Visa ram"
-
-#~ msgid "Show Read More"
-#~ msgstr "Visa Läs mer"
-
-#~ msgid "Show Likes"
-#~ msgstr "Visa gilla"
-
-#~ msgid ""
-#~ "The feed does not seam to work. This might be due to that the feed you "
-#~ "are trying to access is not public."
-#~ msgstr ""
-#~ "Flödet verkar inte fungera. Det kan t.ex. bero på att flödet som du "
-#~ "försöker hämta från inte är publikt."

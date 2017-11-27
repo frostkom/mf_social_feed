@@ -155,5 +155,3 @@ var PageView = Backbone.View.extend(
 });
 
 var myPageView = new PageView({model: new PageModel()});
-
-Backbone.history.start();
