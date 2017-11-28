@@ -15,6 +15,8 @@ $setting_social_desktop_columns = get_option_or_default('setting_social_desktop_
 $setting_social_tablet_columns = get_option_or_default('setting_social_tablet_columns', 2);
 $setting_social_mobile_columns = 1;
 
+$setting_social_display_border = get_option('setting_social_display_border', 'yes');
+
 $post_container_desktop = $post_container_tablet = $post_container_mobile = $post_item_desktop = $post_item_tablet = $post_item_mobile = "";
 
 function calc_width($columns)
@@ -161,17 +163,20 @@ echo "@media all
 							height: 100%;
 							margin-top: 0;
 							object-fit: cover;
-						}
+						}";
 
-				.widget.social_feed .sf_posts.show_border li
+				if($setting_social_display_border == 'yes')
 				{
-					background: #fff;
-					box-shadow: 0 .5rem .75rem rgba(0, 0, 0, .15);
-					border-top: 0;
-					margin-right: .5%;
-					margin-left: .5%;
-					padding: 1em;
-				}";
+					echo ".widget.social_feed .sf_posts li
+					{
+						background: #fff;
+						box-shadow: 0 .5rem .75rem rgba(0, 0, 0, .15);
+						border-top: 0;
+						margin-right: .5%;
+						margin-left: .5%;
+						padding: 1em;
+					}";
+				}
 
 			if($post_item_tablet != '')
 			{

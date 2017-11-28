@@ -920,100 +920,6 @@ class mf_social_feed
 
 		return array($arr_post_feeds, $arr_post_posts);
 	}
-
-	/*function get_output($data)
-	{
-		global $wpdb;
-
-		if(!isset($data['social_type'])){										$data['social_type'] = 'widget';}
-		if(!isset($data['social_amount']) || $data['social_amount'] < 1){		$data['social_amount'] = 18;}
-		if(!isset($data['social_filter'])){										$data['social_filter'] = 'no';}
-		if(!isset($data['social_border'])){										$data['social_border'] = 'yes';}
-		if(!isset($data['social_likes'])){										$data['social_likes'] = 'no';}
-		if(!isset($data['social_read_more'])){									$data['social_read_more'] = 'yes';}
-		
-		$out = "";
-
-		list($arr_post_feeds, $arr_post_posts) = $this->get_feeds_and_posts(array('feeds' => $data['social_feeds'], 'amount' => $data['social_amount'], 'filter' => $data['social_filter'], 'likes' => $data['social_likes']));
-
-		if(count($arr_post_posts) > 0)
-		{
-			if($data['social_filter'] != 'no' && count($arr_post_feeds) > 1)
-			{
-				$out .= "<ul class='sf_feeds'>
-					<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>";
-
-					foreach($arr_post_feeds as $value)
-					{
-						$out .= "<li><a href='#' id='".$value['id']."'>".$value['name']."</a></li>";
-					}
-
-				$out .= "</ul>";
-			}
-
-			$class_xtra = "";
-
-			if(count($arr_post_posts) < 3){				$class_xtra .= " one_column";}
-			if($data['social_border'] == 'yes'){		$class_xtra .= " show_border";}
-			if($data['social_read_more'] == 'yes'){		$class_xtra .= " show_read_more";}
-
-			$out .= "<ul class='sf_posts".$class_xtra."'>";
-
-				foreach($arr_post_posts as $post)
-				{
-					$out .= "<li class='sf_".$post['service']." sf_feed_".$post['feed']."'>
-						<i class='fa fa-".$post['service']."'></i>";
-
-						if($post['service'] == 'rss')
-						{
-							$out .= "<span class='name'>".$post['feed_title']."</span>";
-						}
-
-						else if($post['name'] != '')
-						{
-							$out .= "<span class='name'>".$post['name']."</span>";
-						}
-
-						$out .= "<span class='date'>".$post['date']."</span>
-						<a href='".$post['link']."' class='content' rel='external'>";
-
-							if($post['image'] != '')
-							{
-								$out .= "<img src='".$post['image']."'>";
-							}
-
-							if($post['service'] == 'rss' && $post['title'] != '')
-							{
-								$out .= "<p>".$post['title']."</p>";
-							}
-
-							if($post['content'] != '')
-							{
-								$out .= "<p>".$post['content']."</p>";
-							}
-
-							if($post['likes'] != '' || $post['comments'] != '')
-							{
-								$out .= "<div class='likes'>
-									<i class='fa fa-thumbs-up'></i><span>".$post['likes']."</span>
-									<i class='fa fa-comment-o'></i><span>".$post['comments']."</span>
-								</div>";
-							}
-
-						$out .= "</a>
-					</li>";
-				}
-
-			$out .= "</ul>";
-		}
-
-		else
-		{
-			$out .= "<p>".__("I could not find any posts at the moment. Sorry!", 'lang_social_feed')."</p>";
-		}
-
-		return $out;
-	}*/
 	#########################
 }
 
@@ -1032,7 +938,7 @@ class widget_social_feed extends WP_Widget
 			'social_filter' => 'no',
 			'social_amount' => 18,
 			'social_text' => 'yes',
-			'social_border' => 'yes',
+			//'social_border' => 'yes',
 			'social_likes' => 'no',
 			'social_read_more' => 'yes',
 		);
@@ -1072,8 +978,8 @@ class widget_social_feed extends WP_Widget
 
 					if($instance['social_text'] == 'yes')
 					{
-						echo ($instance['social_border'] == 'yes' ? " show_border" : '')
-						.($instance['social_read_more'] == 'yes' ? " show_read_more" : '');
+						//($instance['social_border'] == 'yes' ? " show_border" : '')
+						echo ($instance['social_read_more'] == 'yes' ? " show_read_more" : '');
 					}
 
 					else
@@ -1097,7 +1003,7 @@ class widget_social_feed extends WP_Widget
 		$instance['social_filter'] = sanitize_text_field($new_instance['social_filter']);
 		$instance['social_amount'] = sanitize_text_field($new_instance['social_amount']);
 		$instance['social_text'] = sanitize_text_field($new_instance['social_text']);
-		$instance['social_border'] = sanitize_text_field($new_instance['social_border']);
+		//$instance['social_border'] = sanitize_text_field($new_instance['social_border']);
 		$instance['social_likes'] = sanitize_text_field($new_instance['social_likes']);
 		$instance['social_read_more'] = sanitize_text_field($new_instance['social_read_more']);
 
@@ -1138,8 +1044,8 @@ class widget_social_feed extends WP_Widget
 
 			if('yes' == $instance['social_text'])
 			{
-				echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_border'), 'text' => __("Display Border", 'lang_social_feed'), 'value' => $instance['social_border']))
-				."<div class='flex_flow'>"
+				//show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_border'), 'text' => __("Display Border", 'lang_social_feed'), 'value' => $instance['social_border']))
+				echo "<div class='flex_flow'>"
 					.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_read_more'), 'text' => __("Display Read More", 'lang_social_feed'), 'value' => $instance['social_read_more']))
 					.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Display Likes", 'lang_social_feed'), 'value' => $instance['social_likes']))
 				."</div>";

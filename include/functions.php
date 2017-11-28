@@ -118,6 +118,8 @@ function settings_social_feed()
 		$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");
 	}
 
+	$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
+
 	//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", 'facebook'));
 
 	$arr_settings['setting_facebook_api_id'] = __("Facebook APP ID", 'lang_social_feed');
@@ -220,6 +222,14 @@ function setting_social_tablet_columns_callback()
 	$option = get_option_or_default($setting_key, 2);
 
 	echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='3'"));
+}
+
+function setting_social_display_border_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+	$option = get_option_or_default($setting_key, 'yes');
+
+	echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
 }
 
 function setting_facebook_api_id_callback()
@@ -649,7 +659,7 @@ function shortcode_social_feed($atts)
 		'filter' => 'group',
 		'amount' => 3,
 		'text' => 'yes',
-		'border' => 'yes',
+		//'border' => 'yes',
 		'likes' => 'no',
 		'read_more' => 'yes',
 	), $atts));
@@ -670,16 +680,14 @@ function shortcode_social_feed($atts)
 
 				if($text == 'yes')
 				{
-					$out .= ($border == 'yes' ? " show_border" : '')
-					.($read_more == 'yes' ? " show_read_more" : '');
+					//($border == 'yes' ? " show_border" : '')
+					$out .= ($read_more == 'yes' ? " show_read_more" : '');
 				}
 
 				else
 				{
 					$out .= " hide_text";
 				}
-
-				//$out .= " show_border show_read_more";
 				
 			$out .= " hide'></ul>
 		</div>
