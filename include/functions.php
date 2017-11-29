@@ -626,7 +626,7 @@ function footer_social_feed()
 
 				<% if(image != '')
 				{ %>
-					<img src='<%= image %>'>
+					<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
 				<% }
 
 				if(service == 'rss' && title != '')
