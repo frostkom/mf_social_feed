@@ -39,7 +39,7 @@ class mf_social_feed
 
 		$out = "<ul id='".$this->meta_prefix."info'>"
 			."<li><i class='fa fa-".$post_service."'></i> ".get_post_title($post_feed)."</li>"
-			."<li><a href='".$post_link."' rel='external'>@".$post_username."</a></li>"
+			."<li><a href='".$post_link."'>@".$post_username."</a></li>"
 			.($post_image != '' ? "<li><img src='".$post_image."'></li>" : "")
 			."<li>".format_date($post_date)."</li>"
 		."</ul>";
@@ -1042,7 +1042,7 @@ class widget_social_feed extends WP_Widget
 			echo show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
 			.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_text'), 'text' => __("Display Text", 'lang_social_feed'), 'value' => $instance['social_text']));
 
-			if('yes' == $instance['social_text'])
+			if($instance['social_text'] == 'yes')
 			{
 				//show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_border'), 'text' => __("Display Border", 'lang_social_feed'), 'value' => $instance['social_border']))
 				echo "<div class='flex_flow'>"

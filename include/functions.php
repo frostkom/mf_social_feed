@@ -388,7 +388,7 @@ function column_cell_social_feed($col, $id)
 				break;
 			}
 
-			echo "<a href='".$feed_url."' rel='external'>".$post_meta."</a>";
+			echo "<a href='".$feed_url."'>".$post_meta."</a>";
 
 			$fetch_link = "";
 
@@ -622,7 +622,7 @@ function footer_social_feed()
 			<% } %>
 
 			<span class='date'><%= date %></span>
-			<a href='<%= link %>' class='content' rel='external'>
+			<a href='<%= link %>' class='content'>
 
 				<% if(image != '')
 				{ %>
