@@ -7,7 +7,7 @@ if(!defined('ABSPATH'))
 	require_once($folder."wp-load.php");
 }
 
-$json_output = "";
+$json_output = array();
 
 $type = check_var('type', 'char');
 $feeds = check_var('feeds', 'char');

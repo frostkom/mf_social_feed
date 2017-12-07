@@ -107,7 +107,7 @@ var PageView = Backbone.View.extend(
 			amount = response.length,
 			html = "",
 			dom_obj = jQuery(this.el).find(".section .sf_feeds");
-		
+
 		dom_obj.addClass('hide');
 
 		if(amount > 0)

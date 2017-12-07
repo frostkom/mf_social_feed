@@ -688,7 +688,7 @@ function shortcode_social_feed($atts)
 				{
 					$out .= " hide_text";
 				}
-				
+
 			$out .= " hide'></ul>
 		</div>
 	</div>";

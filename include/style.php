@@ -81,7 +81,7 @@ echo "@media all
 		{
 			echo ".widget.social_feed .section
 			{
-				max-width: 100% !important;	
+				max-width: 100% !important;
 			}";
 		}
 
@@ -182,7 +182,7 @@ echo "@media all
 			{
 				echo ".is_tablet .widget.social_feed .sf_posts li
 				{"
-					.$post_item_tablet			
+					.$post_item_tablet
 				."}";
 			}
 

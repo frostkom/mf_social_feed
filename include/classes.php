@@ -193,7 +193,7 @@ class mf_social_feed
 		$result = array();
 
 		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'draft' WHERE ID = '%d' AND post_type = 'mf_social_feed_post'", $action_id));
-		
+
 		if($wpdb->rows_affected > 0)
 		{
 			$done_text = __("I have hidden the post for you now", 'lang_social_feed');
@@ -232,7 +232,7 @@ class mf_social_feed
 		$result = array();
 
 		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'pending' WHERE ID = '%d' AND post_type = 'mf_social_feed_post'", $action_id));
-		
+
 		if($wpdb->rows_affected > 0)
 		{
 			$done_text = __("I have ignored the post for you now. This means that all future posts by this user will be ignored aswell", 'lang_social_feed');
@@ -551,7 +551,7 @@ class mf_social_feed
 			{
 				$results = $twitter->search($this->search);
 			}
-			
+
 			catch(TwitterException $e)
 			{
 				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
@@ -566,7 +566,7 @@ class mf_social_feed
 			{
 				$results = $twitter->search('from:'.$this->search);
 			}
-			
+
 			catch(TwitterException $e)
 			{
 				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
@@ -579,7 +579,7 @@ class mf_social_feed
 			{
 				$results = $twitter->load(Twitter::ME);
 			}
-			
+
 			catch(TwitterException $e)
 			{
 				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
