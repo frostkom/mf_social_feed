@@ -203,7 +203,7 @@ class mf_social_feed
 		{
 			$error_text = __("I could not hide the post for you. An admin has been notified about this issue", 'lang_social_feed');
 
-			do_log($error_text." (".$wpdb->last_query.")");
+			error_log($error_text." (".$wpdb->last_query.")");
 		}
 
 		$out = get_notification();
@@ -219,6 +219,7 @@ class mf_social_feed
 			$result['error'] = $out;
 		}
 
+		header('Content-Type: application/json');
 		echo json_encode($result);
 		die();
 	}
@@ -242,7 +243,7 @@ class mf_social_feed
 		{
 			$error_text = __("I could not ignore the post for you. An admin has been notified about this issue", 'lang_social_feed');
 
-			do_log($error_text." (".$wpdb->last_query.")");
+			error_log($error_text." (".$wpdb->last_query.")");
 		}
 
 		$out = get_notification();
@@ -258,6 +259,7 @@ class mf_social_feed
 			$result['error'] = $out;
 		}
 
+		header('Content-Type: application/json');
 		echo json_encode($result);
 		die();
 	}
@@ -724,7 +726,7 @@ class mf_social_feed
 
 				if($post_status == 'draft')
 				{
-					do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
+					error_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
 				}
 
 				$post_data = array(
