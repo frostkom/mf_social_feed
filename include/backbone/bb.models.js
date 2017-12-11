@@ -7,7 +7,7 @@ var PageModel = Backbone.Model.extend(
 
 		jQuery().callAPI(
 		{
-			base_url: script_social_feed_models.plugin_url + 'ajax.php',
+			base_url: script_social_feed_models.plugin_url + 'api/',
 			url: url,
 			send_type: 'get',
 			onSuccess: function(data)

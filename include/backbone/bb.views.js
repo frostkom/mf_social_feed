@@ -38,7 +38,7 @@ var PageView = Backbone.View.extend(
 	{
 		var dom_obj = jQuery(this.el).find(".section"),
 			reload = (dom_obj.attr('data-social_reload') || 0) * 60 * 1000,
-			action_type = "type=posts&time=" + Date.now();
+			action_type = "type=posts"; /*&time=" + Date.now()*/
 
 		if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){	action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
 		if(typeof dom_obj.attr('data-social_amount') != 'undefined'){	action_type += "&amount=" + dom_obj.attr('data-social_amount');}
