@@ -389,8 +389,6 @@ function column_cell_social_feed($col, $id)
 				break;
 			}
 
-			echo "<a href='".$feed_url."'>".$post_meta."</a>";
-
 			$fetch_link = "";
 
 			if(IS_SUPER_ADMIN)
@@ -416,7 +414,8 @@ function column_cell_social_feed($col, $id)
 
 			$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
 
-			echo "<div class='row-actions'>"
+			echo "<a href='".$feed_url."'>".$post_meta."</a>
+			<div class='row-actions'>"
 				.$fetch_link
 				.__("Fetched", 'lang_social_feed').": ".format_date($post_modified)
 			."</div>";
@@ -447,9 +446,6 @@ function column_cell_social_feed($col, $id)
 					if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime("-".$setting_social_time_limit." minute")))
 					{
 						echo "0";
-
-						/*echo "<i class='fa fa-close red fa-2x'></i>
-						<div class='row-actions'>".__("The feed does not seam to work. This might be due to that the feed you are trying to access is not public.", 'lang_social_feed')."</div>";*/
 					}
 
 					else
