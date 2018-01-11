@@ -588,7 +588,7 @@ class mf_social_feed
 			}
 		}
 
-		if(is_array($results))
+		if(isset($results) && is_array($results))
 		{
 			foreach($results as $key => $post)
 			{
