@@ -209,6 +209,11 @@ echo "@media all
 						color: #c02f2e;
 					}
 
+					.sf_linkedin .fa, .column-type .fa-linkedin-square
+					{
+						color: #0077b5;
+					}
+
 					.sf_rss .fa, .column-type .fa-rss
 					{
 						color: #e9bb63;

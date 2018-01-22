@@ -24,19 +24,21 @@ $amount = check_var('amount', 'int');
 $filter = check_var('filter', 'char');
 $likes = check_var('likes', 'char');
 
-if($type == 'posts')
+switch($type)
 {
-	if($feeds != '')
-	{
-		$feeds = explode(",", $feeds);
-	}
+	case 'posts':
+		if($feeds != '')
+		{
+			$feeds = explode(",", $feeds);
+		}
 
-	$obj_social_feed = new mf_social_feed();
-	list($arr_post_feeds, $arr_post_posts) = $obj_social_feed->get_feeds_and_posts(array('feeds' => $feeds, 'amount' => $amount, 'filter' => $filter, 'likes' => $likes));
+		$obj_social_feed = new mf_social_feed();
+		list($arr_post_feeds, $arr_post_posts) = $obj_social_feed->get_feeds_and_posts(array('feeds' => $feeds, 'amount' => $amount, 'filter' => $filter, 'likes' => $likes));
 
-	$json_output['response_feeds'] = $arr_post_feeds;
-	$json_output['response_posts'] = $arr_post_posts;
-	$json_output['success'] = true;
+		$json_output['response_feeds'] = $arr_post_feeds;
+		$json_output['response_posts'] = $arr_post_posts;
+		$json_output['success'] = true;
+	break;
 }
 
 echo json_encode($json_output);

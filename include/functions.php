@@ -88,12 +88,13 @@ function menu_social_feed()
 
 function settings_social_feed()
 {
-	$options_area = __FUNCTION__;
+	$options_area_orig = $options_area = __FUNCTION__;
 
+	//Generic
+	############################
 	add_settings_section($options_area, "", $options_area."_callback", BASE_OPTIONS_PAGE);
 
 	$arr_settings = array();
-
 	$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
 	$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
 	$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
@@ -121,17 +122,68 @@ function settings_social_feed()
 
 	$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
 
-	//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", 'facebook'));
+	show_settings_fields(array('area' => $options_area, 'settings' => $arr_settings));
+	############################
 
-	$arr_settings['setting_facebook_api_id'] = __("Facebook APP ID", 'lang_social_feed');
-	$arr_settings['setting_facebook_api_secret'] = __("Facebook Secret", 'lang_social_feed');
-	$arr_settings['setting_instagram_api_token'] = __("Instagram Access Token", 'lang_social_feed');
-	$arr_settings['setting_twitter_api_key'] = __("Twitter Key", 'lang_social_feed');
-	$arr_settings['setting_twitter_api_secret'] = __("Twitter Secret", 'lang_social_feed');
-	$arr_settings['setting_twitter_api_token'] = __("Twitter Access Token", 'lang_social_feed');
-	$arr_settings['setting_twitter_api_token_secret'] = __("Twitter Access Token Secret", 'lang_social_feed');
+	//Facebook //$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", 'facebook'));
+	############################
+	$options_area = $options_area_orig."_facebook";
+
+	add_settings_section($options_area, "", $options_area."_callback", BASE_OPTIONS_PAGE);
+
+	$arr_settings = array();
+	$arr_settings['setting_facebook_api_id'] = __("App ID", 'lang_social_feed');
+	$arr_settings['setting_facebook_api_secret'] = __("Secret", 'lang_social_feed');
 
 	show_settings_fields(array('area' => $options_area, 'settings' => $arr_settings));
+	############################
+
+	//Instagram
+	############################
+	$options_area = $options_area_orig."_instagram";
+
+	add_settings_section($options_area, "", $options_area."_callback", BASE_OPTIONS_PAGE);
+
+	$arr_settings = array();
+	$arr_settings['setting_instagram_api_token'] = __("Access Token", 'lang_social_feed');
+
+	show_settings_fields(array('area' => $options_area, 'settings' => $arr_settings));
+	############################
+
+	//LinkedIn
+	############################
+	$options_area = $options_area_orig."_linkedin";
+
+	add_settings_section($options_area, "", $options_area."_callback", BASE_OPTIONS_PAGE);
+
+	$arr_settings = array();
+	$arr_settings['setting_linkedin_api_id'] = __("Client ID", 'lang_social_feed');
+	$arr_settings['setting_linkedin_api_secret'] = __("Client Secret", 'lang_social_feed');
+
+	if(get_option('setting_linkedin_api_id') != '' && get_option('setting_linkedin_api_secret') != '')
+	{
+		$arr_settings['setting_linkedin_redirect_url'] = __("Redirect URL", 'lang_social_feed');
+		$arr_settings['setting_linkedin_authorize'] = __("Authorize", 'lang_social_feed');
+		$arr_settings['setting_linkedin_email_when_expired'] = __("Email when Expired", 'lang_social_feed');
+	}
+
+	show_settings_fields(array('area' => $options_area, 'settings' => $arr_settings));
+	############################
+
+	//Twitter
+	############################
+	$options_area = $options_area_orig."_twitter";
+
+	add_settings_section($options_area, "", $options_area."_callback", BASE_OPTIONS_PAGE);
+
+	$arr_settings = array();
+	$arr_settings['setting_twitter_api_key'] = __("Key", 'lang_social_feed');
+	$arr_settings['setting_twitter_api_secret'] = __("Secret", 'lang_social_feed');
+	$arr_settings['setting_twitter_api_token'] = __("Access Token", 'lang_social_feed');
+	$arr_settings['setting_twitter_api_token_secret'] = __("Access Token Secret", 'lang_social_feed');
+
+	show_settings_fields(array('area' => $options_area, 'settings' => $arr_settings));
+	############################
 }
 
 function settings_social_feed_callback()
@@ -139,6 +191,34 @@ function settings_social_feed_callback()
 	$setting_key = get_setting_key(__FUNCTION__);
 
 	echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed'));
+}
+
+function settings_social_feed_facebook_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+
+	echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("Facebook", 'lang_social_feed'));
+}
+
+function settings_social_feed_instagram_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+
+	echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("Instagram", 'lang_social_feed'));
+}
+
+function settings_social_feed_linkedin_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+
+	echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("LinkedIn", 'lang_social_feed'));
+}
+
+function settings_social_feed_twitter_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+
+	echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("Twitter", 'lang_social_feed'));
 }
 
 function get_setting_min()
@@ -238,8 +318,10 @@ function setting_facebook_api_id_callback()
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option($setting_key);
 
-	$description = "1. ".sprintf(__("Go to %s and log in", 'lang_social_feed'), "developers.facebook.com")."<br>"
-	."2. ".sprintf(__("Create a new app and copy %s and %s to paste here", 'lang_social_feed'), "App ID", "App Secret");
+	$description = "<ol>
+		<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='//developers.facebook.com'>Facebook</a>")."</li>
+		<li>".sprintf(__("Create a new app and copy %s and %s to paste here", 'lang_social_feed'), "App ID", "App Secret")."</li>
+	</ol>";
 
 	echo show_textfield(array('name' => $setting_key, 'value' => $option, 'description' => $description));
 }
@@ -257,12 +339,73 @@ function setting_instagram_api_token_callback()
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option($setting_key);
 
-	$description = "1. ".sprintf(__("Go to %s and click on %s", 'lang_social_feed'), "instagram.com/developer", "Login -> Manage Clients -> Register a new Client")."<br>"
-	."2. ".sprintf(__("Make sure %s field is set to s%", 'lang_social_feed'), "OAuth redirect_uri", "http://localhost")."<br>"
-	."3. ".sprintf(__("Open a new browser tab and go to %s by replacing %s with your %s", 'lang_social_feed'), "https://instagram.com/oauth/authorize/?client_id=[CLIENT_ID_HERE]&redirect_uri=http://localhost&response_type=token", "[CLIENT_ID_HERE]", "Client ID")."<br>" //&scope=public_content
-	."4. ".__("Paste the returned token here", 'lang_social_feed');
+	$description = "<ol>
+		<li>".sprintf(__("Go to %s and click on %s", 'lang_social_feed'), "<a href='//instagram.com/developer'>Instagram</a>", "Login -> Manage Clients -> Register a new Client")."</li>
+		<li>".sprintf(__("Make sure %s field is set to s%", 'lang_social_feed'), "OAuth redirect_uri", "http://localhost")."</li>
+		<li>".sprintf(__("Open a new browser tab and go to %s by replacing %s with your %s", 'lang_social_feed'), "<em>https://instagram.com/oauth/authorize/?client_id=[CLIENT_ID_HERE]&redirect_uri=http://localhost&response_type=token</em>", "[CLIENT_ID_HERE]", "Client ID")."</li>
+		<li>".__("Paste the returned token here", 'lang_social_feed')."</li>
+	</ol>";
 
 	echo show_textfield(array('name' => $setting_key, 'value' => $option, 'description' => $description));
+}
+
+function setting_linkedin_api_id_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+	$option = get_option($setting_key);
+
+	echo show_textfield(array('name' => $setting_key, 'value' => $option));
+}
+
+function setting_linkedin_api_secret_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+	$option = get_option($setting_key);
+
+	if($option == '')
+	{
+		$description = "<ol>
+			<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='//linkedin.com/developer/apps/'>LinkedIn</a>")."</li>
+			<li>".__("Create a new app if you don't have one already and edit the app", 'lang_social_feed')."</li>
+			<li>".sprintf(__("Copy %s and %s to these fields", 'lang_social_feed'), "Client ID", "Client Secret")."</li>
+			<li>".sprintf(__("Make sure that %s is checked", 'lang_social_feed'), "<em>rw_company_admin</em>")."</li>
+		</ol>";
+	}
+
+	else
+	{
+		$description = '';
+	}
+
+	echo show_textfield(array('name' => $setting_key, 'value' => $option, 'description' => $description));
+}
+
+function setting_linkedin_redirect_url_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+
+	$obj_social_feed = new mf_social_feed();
+	$obj_social_feed->init_linkedin_auth();
+	$option = $obj_social_feed->settings_url;
+
+	echo show_textfield(array('name' => $setting_key, 'value' => $option, 'xtra' => "readonly onclick='this.select()'", 'description' => sprintf(__("Add this URL to your App's %s", 'lang_social_feed'), "<a href='//www.linkedin.com/developer/apps/'>Authorized Redirect URLs</a>")));
+}
+
+function setting_linkedin_authorize_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+
+	$obj_social_feed = new mf_social_feed();
+	echo $obj_social_feed->check_access_token();
+	echo $obj_social_feed->get_access_token_button();
+}
+
+function setting_linkedin_email_when_expired_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+	$option = get_option($setting_key, 'yes');
+
+	echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
 }
 
 function setting_twitter_api_key_callback()
@@ -270,9 +413,11 @@ function setting_twitter_api_key_callback()
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option($setting_key);
 
-	$description = "1. ".sprintf(__("Go to %s and log in", 'lang_social_feed'), "apps.twitter.com")."<br>"
-	."2. ".sprintf(__("Click the tab %s", 'lang_social_feed'), "Keys and Access Tokens")."<br>"
-	."3. ".sprintf(__("Copy %s, %s, %s and %s to paste here", 'lang_social_feed'), "Consumer Key (API Key)", "Consumer Secret (API Secret)", "Access Token", "Access Token Secret");
+	$description = "<ol>
+		<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "apps.twitter.com")."</li>
+		<li>".sprintf(__("Click the tab %s", 'lang_social_feed'), "Keys and Access Tokens")."</li>
+		<li>".sprintf(__("Copy %s, %s, %s and %s to paste here", 'lang_social_feed'), "Consumer Key (API Key)", "Consumer Secret (API Secret)", "Access Token", "Access Token Secret")."</li>
+	</ol>";
 
 	echo show_textfield(array('name' => $setting_key, 'value' => $option, 'description' => $description));
 }
@@ -371,6 +516,10 @@ function column_cell_social_feed($col, $id)
 
 				case 'instagram':
 					$feed_url = "//instagram.com/".$post_meta_filtered;
+				break;
+
+				case 'linkedin':
+					$feed_url = "//linkedin.com/company/".$post_meta_filtered;
 				break;
 
 				case 'rss':
@@ -538,12 +687,22 @@ function column_cell_social_feed_post($col, $id)
 
 function get_social_types_for_select()
 {
-	return array(
-		'facebook' => __("Facebook", 'lang_social_feed'),
-		'instagram' => __("Instagram", 'lang_social_feed'),
-		'rss' => __("RSS", 'lang_social_feed'),
-		'twitter' => __("Twitter", 'lang_social_feed'),
-	);
+	$arr_data = array();
+
+	$arr_data['facebook'] = __("Facebook", 'lang_social_feed');
+	$arr_data['instagram'] = __("Instagram", 'lang_social_feed');
+
+	$obj_social_feed = new mf_social_feed();
+
+	if($obj_social_feed->check_token_life())
+	{
+		$arr_data['linkedin'] = __("LinkedIn", 'lang_social_feed');
+	}
+
+	$arr_data['rss'] = __("RSS", 'lang_social_feed');
+	$arr_data['twitter'] = __("Twitter", 'lang_social_feed');
+
+	return $arr_data;
 }
 
 function save_social_feed($post_id, $post, $update)

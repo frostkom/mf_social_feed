@@ -3,7 +3,8 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 4.5.11
+Version: 4.6.7
+Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: http://frostkom.se
 Text Domain: lang_social_feed
@@ -17,6 +18,7 @@ include_once("include/functions.php");
 
 $obj_social_feed = new mf_social_feed();
 
+add_action('cron_base', 'activate_social_feed', mt_rand(1, 10));
 add_action('cron_base', 'cron_social_feed', mt_rand(1, 10));
 
 add_action('init', 'init_social_feed');
@@ -66,12 +68,20 @@ load_plugin_textdomain('lang_social_feed', false, dirname(plugin_basename(__FILE
 
 function activate_social_feed()
 {
-	require_plugin("meta-box/meta-box.php", "Meta Box");
+	if(is_admin())
+	{
+		require_plugin("meta-box/meta-box.php", "Meta Box");
+	}
+
+	mf_uninstall_plugin(array(
+		'options' => array('setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize'),
+	));
 }
 
 function uninstall_social_feed()
 {
 	mf_uninstall_plugin(array(
+		'options' => array('setting_social_time_limit', 'setting_social_reload', 'setting_social_design', 'setting_social_full_width', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_display_border', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_api_token', 'setting_linkedin_api_id', 'setting_linkedin_api_secret', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_linkedin_email_when_expired', 'option_linkedin_emailed', 'option_linkedin_authkey', 'setting_twitter_api_key', 'setting_twitter_api_secret', 'setting_twitter_api_token', 'setting_twitter_api_token_secret'),
 		'post_types' => array('mf_social_feed', 'mf_social_feed_post'),
 	));
 }

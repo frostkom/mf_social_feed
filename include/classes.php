@@ -17,6 +17,7 @@ class mf_social_feed
 		$out = "<ul id='".$this->meta_prefix."info_facebook'>
 			<li><strong>".__("Facebook", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</li>
 			<li><strong>".__("Instagram", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
+			<li><strong>".__("LinkedIn", 'lang_social_feed')."</strong>: ".__("Posts can be fetched with company ID as seen in the URL when visiting the page", 'lang_social_feed')."</li>
 			<li><strong>".__("RSS", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched by entering the full URL to the feed", 'lang_social_feed')."</li>
 			<li><strong>".__("Twitter", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
 		</ul>";
@@ -265,6 +266,181 @@ class mf_social_feed
 	}
 	#########################
 
+	//LinkedIn Auth
+	#########################
+	function init_linkedin_auth()
+	{
+		$this->client_id = get_option('setting_linkedin_api_id');
+		$this->auth_options = get_option('option_linkedin_authkey');
+		$this->settings_url = admin_url('options-general.php?page=settings_mf_base');
+	}
+
+	function get_access_token_button()
+	{
+		$this->check_token_life();
+
+		$_SESSION['state'] = $state = substr(md5(rand()), 0, 7);
+
+		$params = array(
+			'response_type' => 'code',
+			'client_id'     => $this->client_id,
+			'state'         => $state,
+			'redirect_uri'  => $this->settings_url,
+		);
+
+		if($this->auth_options)
+		{
+			$authorize_string = __("Generate new Access Token", 'lang_social_feed');
+			$authorization_message = "<p>".$this->get_auth_expiration_string($this->auth_options['expires_in'])."</p>";
+		}
+		
+		else
+		{
+			$authorize_string = __("Generate Access Token", 'lang_social_feed');
+			$authorization_message = "<p>".__("You must authorize in order to use the API", 'lang_social_feed')."</p>";
+		}
+
+		$out = "<a href='https://www.linkedin.com/uas/oauth2/authorization?".http_build_query($params)."' class='button-secondary'>"
+			.$authorize_string
+		."</a>"
+		.$authorization_message;
+
+		return $out;
+	}
+
+	function check_token_life()
+	{
+		$this->init_linkedin_auth();
+
+		$this->token_life = intval($this->auth_options['expires_in']) - strtotime(date('Y-m-d H:m:s'));
+
+		if($this->token_life < 0)
+		{
+			$this->token_life = false;
+
+			if(get_option('setting_linkedin_email_when_expired') == 'yes' && !get_option('option_linkedin_emailed'))
+			{
+				$this->email_when_expired();
+				
+				update_option('option_linkedin_emailed', 1);
+			}
+
+			else
+			{
+				//add_action('admin_notices', '');
+			}
+		}
+
+		return $this->token_life;
+	}
+
+	function email_when_expired()
+	{
+		$mail_to = get_bloginfo('admin_email');
+		$mail_subject = __("Access Token has Expired", 'lang_social_feed');
+		$mail_content = sprintf(__("Please generate a new Access Token %sHere%s", 'lang_social_feed'), "<a href='".$this->settings_url."#settings_social_feed_linkedin'>", "</a>");
+
+		$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
+	}
+
+	function get_auth_expiration_string($time)
+	{
+		if($this->token_life)
+		{
+			$datetime = new DateTime('@'.$this->token_life, new DateTimeZone('UTC'));
+			$date = new DateTime();
+			$times = array(
+				'days' => $datetime->format('z'),
+				'hours' => $datetime->format('G'),
+			);
+			$date->modify('+'.$times['days'].' days');
+
+			return sprintf(
+				__("Expires in %s days, %s hours (%s)", 'lang_social_feed'),
+				$times['days'],
+				$times['hours'],
+				"<em>".$date->format('Y-m-d')."</em>"
+			);
+		}
+		
+		else
+		{
+			return __("The Access Token has expired. Please generate a new", 'lang_social_feed');
+		}
+	}
+
+	function get_access_token($code)
+	{
+		$this->init_linkedin_auth();
+
+		$params = array(
+			'grant_type'    => 'authorization_code',
+			'client_id'     => $this->client_id,
+			'client_secret' => get_option('setting_linkedin_api_secret'),
+			'code'          => $code,
+			'redirect_uri'  => $this->settings_url,
+		);
+
+		$url = "https://www.linkedin.com/uas/oauth2/accessToken?".http_build_query($params);
+		$result = wp_remote_retrieve_body(wp_remote_get($url));
+		$json = json_decode($result);
+
+		if(!isset($json->access_token) || 5 >= strlen($json->access_token))
+		{
+			do_log(__("I did not recieve an access token", 'lang_social_feed')." (".var_export($json, true).")");
+
+			return false;
+		}
+
+		else
+		{
+			return $json;
+		}
+	}
+
+	function check_access_token()
+	{
+		global $done_text, $error_text;
+
+		if(isset($_GET['code']))
+		{
+			$this->init_linkedin_auth();
+
+			$token = $this->get_access_token($_GET['code']);
+
+			if(false === $token)
+			{
+				$error_text = __("I could not update the Access Token for you", 'lang_social_feed');
+			}
+
+			else
+			{
+				$end_date = time() + $token->expires_in;
+
+				$_SESSION['access_token'] = $token->access_token;
+				$_SESSION['expires_in'] = $token->expires_in;
+				$_SESSION['expires_at'] = $end_date;
+
+				$this->auth_options = $auth_options = array(
+					'access_token' => $token->access_token,
+					'expires_in' => $end_date
+				);
+
+				update_option('option_linkedin_authkey', $auth_options);
+				delete_option('option_linkedin_emailed');
+
+				$done_text = __("I updated the Access Token for you", 'lang_social_feed');
+			}
+
+			return get_notification()
+			."<script>location.hash = 'settings_social_feed_linkedin';</script>";
+
+		}
+		
+		/*else if(isset($_GET['new_token'])){}*/
+	}
+	#########################
+
 	// Fetch
 	#########################
 	function set_id($id)
@@ -299,7 +475,7 @@ class mf_social_feed
 
 	function get_api_credentials()
 	{
-		switch($this->type) //$this->get_type()
+		switch($this->type)
 		{
 			case 'facebook':
 				$this->facebook_api_id = get_option_or_default('setting_facebook_api_id', '218056055327780');
@@ -308,6 +484,11 @@ class mf_social_feed
 
 			case 'instagram':
 				$this->instagram_api_token = get_option_or_default('setting_instagram_api_token', '1080170513.3a81a9f.43201f5429d443b4ae063cd77dbea968');
+			break;
+
+			case 'linkedin':
+				$this->linkedin_api_id = get_option('setting_linkedin_api_id');
+				$this->linkedin_api_secret = get_option('setting_linkedin_api_secret');
 			break;
 
 			case 'twitter':
@@ -347,6 +528,10 @@ class mf_social_feed
 
 				case 'instagram':
 					$this->fetch_instagram();
+				break;
+
+				case 'linkedin':
+					$this->fetch_linkedin();
 				break;
 
 				case 'rss':
@@ -458,11 +643,11 @@ class mf_social_feed
 			$url = "https://api.instagram.com/v1/users/search?q=".substr($this->search, 1)."&access_token=".$this->instagram_api_token;
 
 			$result = wp_remote_retrieve_body(wp_remote_get($url));
-			$result = json_decode($result);
+			$json = json_decode($result);
 
-			if(isset($result->data))
+			if(isset($json->data))
 			{
-				foreach($result->data as $user)
+				foreach($json->data as $user)
 				{
 					$filter = "users/".$user->id."/media/recent";
 
@@ -488,11 +673,11 @@ class mf_social_feed
 			$url = "https://api.instagram.com/v1/".$filter."?access_token=".$this->instagram_api_token; //."&count=".$instagram_amount
 
 			$result = wp_remote_retrieve_body(wp_remote_get($url));
-			$result = json_decode($result);
+			$json = json_decode($result);
 
-			if(isset($result->data))
+			if(isset($json->data))
 			{
-				foreach($result->data as $post)
+				foreach($json->data as $post)
 				{
 					/*array('location' => NULL,
 						'caption' => stdClass::__set_state(array('text' => 'Text #hashtag', 'created_time' => '[id]',
@@ -541,6 +726,144 @@ class mf_social_feed
 		}
 	}
 
+	function linkedin_api_call($path, $key, $params = array())
+	{
+		$default_params = array(
+			'format' => 'json',
+			'oauth2_access_token' => $this->auth_options['access_token']
+		);
+
+		$url = "https://api.linkedin.com/v1/companies/".$path."?".http_build_query(array_merge($default_params, $params));
+		$result = wp_remote_retrieve_body(wp_remote_get($url));
+		$json = json_decode($result, true);
+
+		if(false === $json || !isset($json[$key]) || empty($json[$key]))
+		{
+			return false;
+		}
+
+		return $json[$key];
+	}
+	
+	function fetch_linkedin()
+	{
+		$feed_limit = 20;
+
+		if($this->check_token_life())
+		{
+			$results = $this->linkedin_api_call($this->search."/updates", 'values', array('count' => $feed_limit, 'event-type' => 'status-update'));
+
+			if(isset($results) && is_array($results))
+			{
+				foreach($results as $post)
+				{
+					/*array ( 'isCommentable' => true, 'isLikable' => true, 'isLiked' => false, 'numLikes' => 0, 'timestamp' => [timestamp], 'updateComments' => array ( '_total' => 0, ), 'updateContent' => array ( 'company' => array ( 'id' => [id], 'name' => '[text]', ), 'companyStatusUpdate' => array ( 'share' => array ( 'comment' => '[text]', 'id' => 's[id]', 'source' => array ( 'serviceProvider' => array ( 'name' => 'LINKEDIN', ), 'serviceProviderShareId' => 's[id]', ), 'timestamp' => [timestamp], 'visibility' => array ( 'code' => 'anyone', ), ), ), ), 'updateKey' => 'UPDATE-c18432292-[id]', 'updateType' => 'CMPY', )*/
+
+					//do_log("LinkedIn: ".var_export($post, true));
+
+					$post_share = $post['updateContent']['companyStatusUpdate']['share'];
+
+					//do_log("LinkedIn Timestamp: ".$post_share['timestamp']." -> ".date("Y-m-d H:i:s", ($post_share['timestamp'] / 1000)));
+
+					$post_image_url = $post_image_link = '';
+
+					if(array_key_exists('content', $post_share))
+					{
+						$shared_content = $post_share['content'];
+
+						if(array_key_exists('submittedImageUrl', $shared_content) && 'https://static.licdn.com/scds/common/u/img/spacer.gif' !== $shared_content['submittedImageUrl'])
+						{
+							$post_image_url = $shared_content['submittedImageUrl'];
+							$post_image_link = $shared_content['submittedUrl'];
+						}
+					}
+
+					// Filter the content for links
+					$post_content = preg_replace('!(((f|ht)tp(s)?://)[-a-zA-Z?-??-?()0-9@:%_+.~#?&;//=]+)!i', "<a href='$1'>$1</a>", $post_share['comment']);
+
+					$post_pieces = explode('-', $post['updateKey']);
+					$post_id = end($post_pieces);
+
+					$this->arr_posts[] = array(
+						'type' => $this->type,
+						'id' => $post_id,
+						'name' => $post['updateContent']['company']['name'],
+						'text' => $post_content,
+						//'link' => "//www.linkedin.com/company/".$this->search,
+						'link' => "//linkedin.com/nhome/updates?topic=".$post_id,
+						'image' => $post_image_url,
+						'created' => date("Y-m-d H:i:s", ($post_share['timestamp'] / 1000)),
+					);
+				}
+
+				delete_post_meta($this->id, $this->meta_prefix.'error');
+			}
+			
+			else
+			{
+				update_post_meta($this->id, $this->meta_prefix.'error', __("LinkedIn", 'lang_social_feed').": ".var_export($results, true));
+			}
+		}
+
+		else
+		{
+			update_post_meta($this->id, $this->meta_prefix.'error', __("LinkedIn", 'lang_social_feed').": ".__("Token has expired", 'lang_social_feed'));
+		}
+	}
+
+	function fetch_rss()
+	{
+		include_once("simplepie_1.3.1.compiled.php");
+
+		$feed = new SimplePie();
+		$feed->set_feed_url(validate_url($this->search, false));
+		//$feed->set_cache_location($globals['server_temp_cache']);
+		//$feed->enable_cache(false);
+		//$feed->handle_content_type(); // text/html utf-8 character encoding
+		//$feed->set_output_encoding('ISO-8859-1');
+		//$feed->enable_order_by_date(false);
+		$feed->strip_htmltags(array('a', 'b', 'div', 'p', 'span'));
+		$feed->strip_attributes(array('class', 'target', 'style', 'align'));
+		$check = $feed->init();
+
+		if($check)
+		{
+			foreach($feed->get_items() as $item)
+			{
+				$post_link = $item->get_permalink();
+				$post_title = $item->get_title();
+				$post_content = $item->get_description();
+
+				$post_image = "";
+
+				/*if($enclosure = $item->get_enclosure())
+				{
+					$post_image = $enclosure->get_link();
+				}*/
+
+				$post_date = $item->get_date('Y-m-d H:i:s');
+
+				$this->arr_posts[] = array(
+					'type' => $this->type,
+					//'id' => md5($post_title.$post_link),
+					'name' => $this->search,
+					'title' => $post_title,
+					'text' => $post_content,
+					'link' => $post_link,
+					'image' => $post_image,
+					'created' => $post_date,
+				);
+			}
+
+			delete_post_meta($this->id, $this->meta_prefix.'error');
+		}
+
+		else
+		{
+			update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
+		}
+	}
+
 	function fetch_twitter()
 	{
 		include_once("twitter/twitter.class.php");
@@ -556,7 +879,7 @@ class mf_social_feed
 
 			catch(TwitterException $e)
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter", 'lang_social_feed').": ".var_export($e->getMessage(), true));
 			}
 		}
 
@@ -571,7 +894,7 @@ class mf_social_feed
 
 			catch(TwitterException $e)
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter", 'lang_social_feed').": ".var_export($e->getMessage(), true));
 			}
 		}
 
@@ -584,7 +907,7 @@ class mf_social_feed
 
 			catch(TwitterException $e)
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter Error", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter", 'lang_social_feed').": ".var_export($e->getMessage(), true));
 			}
 		}
 
@@ -645,59 +968,6 @@ class mf_social_feed
 			}
 
 			delete_post_meta($this->id, $this->meta_prefix.'error');
-		}
-	}
-
-	function fetch_rss()
-	{
-		include_once("simplepie_1.3.1.compiled.php");
-
-		$feed = new SimplePie();
-		$feed->set_feed_url(validate_url($this->search, false));
-		//$feed->set_cache_location($globals['server_temp_cache']);
-		//$feed->enable_cache(false);
-		//$feed->handle_content_type(); // text/html utf-8 character encoding
-		//$feed->set_output_encoding('ISO-8859-1');
-		//$feed->enable_order_by_date(false);
-		$feed->strip_htmltags(array('a', 'b', 'div', 'p', 'span'));
-		$feed->strip_attributes(array('class', 'target', 'style', 'align'));
-		$check = $feed->init();
-
-		if($check)
-		{
-			foreach($feed->get_items() as $item)
-			{
-				$post_link = $item->get_permalink();
-				$post_title = $item->get_title();
-				$post_content = $item->get_description();
-
-				$post_image = "";
-
-				/*if($enclosure = $item->get_enclosure())
-				{
-					$post_image = $enclosure->get_link();
-				}*/
-
-				$post_date = $item->get_date('Y-m-d H:i:s');
-
-				$this->arr_posts[] = array(
-					'type' => $this->type,
-					//'id' => md5($post_title.$post_link),
-					'name' => $this->search,
-					'title' => $post_title,
-					'text' => $post_content,
-					'link' => $post_link,
-					'image' => $post_image,
-					'created' => $post_date,
-				);
-			}
-
-			delete_post_meta($this->id, $this->meta_prefix.'error');
-		}
-
-		else
-		{
-			update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
 		}
 	}
 
