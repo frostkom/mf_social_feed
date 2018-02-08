@@ -1,4 +1,4 @@
-var PageModel = Backbone.Model.extend(
+var SocialModel = Backbone.Model.extend(
 {
 	getPage: function(dom_href)
 	{

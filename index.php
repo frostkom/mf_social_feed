@@ -3,13 +3,14 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 4.6.7
+Version: 4.6.9
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: http://frostkom.se
 Text Domain: lang_social_feed
 Domain Path: /lang
 
+Depends: Meta Box, MF Base
 GitHub Plugin URI: frostkom/mf_social_feed
 */
 

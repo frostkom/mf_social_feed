@@ -1,18 +1,19 @@
-var feed_interval;
-
-var PageView = Backbone.View.extend(
+var SocialView = Backbone.View.extend(
 {
 	el: jQuery(".widget.social_feed"),
 
 	initialize: function()
 	{
+		var feed_interval;
+
 		if(jQuery(this.el).length > 0)
 		{
-			this.on_load_social_feed();
+			this.model.on("change:response_feeds", this.show_feeds, this);
+			this.model.on("change:response_posts", this.show_posts, this);
 
-			if(typeof collect_on_load == 'function')
+			if(jQuery(this.el).find(".sf_posts li").length == 0)
 			{
-				collect_on_load('myPageView.on_load_social_feed');
+				this.loadFeeds();
 			}
 		}
 	},
@@ -23,22 +24,11 @@ var PageView = Backbone.View.extend(
 		"click .shorten-more-link" : 'show_more'
 	},
 
-	on_load_social_feed: function()
-	{
-		this.model.on("change:response_feeds", this.show_feeds, this);
-		this.model.on("change:response_posts", this.show_posts, this);
-
-		if(jQuery(this.el).find(".sf_posts li").length == 0)
-		{
-			this.loadFeeds();
-		}
-	},
-
 	loadFeeds: function()
 	{
 		var dom_obj = jQuery(this.el).find(".section"),
 			reload = (dom_obj.attr('data-social_reload') || 0) * 60 * 1000,
-			action_type = "type=posts"; /*&time=" + Date.now()*/
+			action_type = "type=posts";
 
 		if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){	action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
 		if(typeof dom_obj.attr('data-social_amount') != 'undefined'){	action_type += "&amount=" + dom_obj.attr('data-social_amount');}
@@ -154,4 +144,4 @@ var PageView = Backbone.View.extend(
 	}
 });
 
-var myPageView = new PageView({model: new PageModel()});
+var mySocialView = new SocialView({model: new SocialModel()});
