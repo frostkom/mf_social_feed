@@ -55,7 +55,6 @@ function init_social_feed()
 		'public' => true,
 		'show_in_menu' => false,
 		'exclude_from_search' => true,
-		//'supports' => array('title', 'editor', 'excerpt'),
 		'hierarchical' => true,
 		'has_archive' => false,
 		//Works fine if you're a Superadmin but admins can only view posts after this change
