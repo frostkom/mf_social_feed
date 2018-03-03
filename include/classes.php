@@ -173,11 +173,11 @@ class mf_social_feed
 			{
 				unset($actions['trash']);
 
-				$actions['action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; //draft
+				$actions['social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; //draft
 
 				if($post_username != $feed_name)
 				{
-					$actions['action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!"), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
+					$actions['social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!"), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
 				}
 			}
 		}

@@ -6,14 +6,14 @@ jQuery(function($)
 			action_type = '',
 			action_id = dom_obj.attr('href').replace('#id_', '');
 
-		if(dom_obj.hasClass('action_hide'))
+		if(dom_obj.hasClass('social_feed_action_hide'))
 		{
-			action_type = 'action_hide';
+			action_type = 'social_feed_action_hide';
 		}
 
-		else if(dom_obj.hasClass('action_ignore'))
+		else if(dom_obj.hasClass('social_feed_action_ignore'))
 		{
-			action_type = 'action_ignore';
+			action_type = 'social_feed_action_ignore';
 		}
 
 		if(action_type != '')
