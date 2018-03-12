@@ -594,7 +594,7 @@ class mf_social_feed
 				$post_id = $post['id'];
 				$arr_post_id = explode("_", $post_id);
 
-				$post_author = $post['from']['id'];
+				$post_author = isset($post['from']) ? $post['from']['id'] : 0;
 
 				$post_content = "";
 
