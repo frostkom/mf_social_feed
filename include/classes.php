@@ -1020,12 +1020,12 @@ class mf_social_feed
 				{
 					$post_id = wp_insert_post($post_data);
 
-					if(isset($post['likes']))
+					if(isset($post['likes']) && $post['likes'] > 0)
 					{
 						update_post_meta($post_id, $this->meta_prefix.'likes', $post['likes']);
 					}
 
-					if(isset($post['comments']))
+					if(isset($post['comments']) && $post['comments'] > 0)
 					{
 						update_post_meta($post_id, $this->meta_prefix.'comments', $post['comments']);
 					}
@@ -1054,12 +1054,12 @@ class mf_social_feed
 					{
 						wp_update_post($post_data);
 
-						if(isset($post['likes']))
+						if(isset($post['likes']) && $post['likes'] > 0)
 						{
 							update_post_meta($r->ID, $this->meta_prefix.'likes', $post['likes']);
 						}
 
-						if(isset($post['comments']))
+						if(isset($post['comments']) && $post['comments'] > 0)
 						{
 							update_post_meta($r->ID, $this->meta_prefix.'comments', $post['comments']);
 						}
