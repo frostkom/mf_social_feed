@@ -293,7 +293,7 @@ class mf_social_feed
 			$authorize_string = __("Generate new Access Token", 'lang_social_feed');
 			$authorization_message = "<p>".$this->get_auth_expiration_string($this->auth_options['expires_in'])."</p>";
 		}
-		
+
 		else
 		{
 			$authorize_string = __("Generate Access Token", 'lang_social_feed');
@@ -321,7 +321,7 @@ class mf_social_feed
 			if(get_option('setting_linkedin_email_when_expired') == 'yes' && !get_option('option_linkedin_emailed'))
 			{
 				$this->email_when_expired();
-				
+
 				update_option('option_linkedin_emailed', 1);
 			}
 
@@ -362,7 +362,7 @@ class mf_social_feed
 				"<em>".$date->format('Y-m-d')."</em>"
 			);
 		}
-		
+
 		else
 		{
 			return __("The Access Token has expired. Please generate a new", 'lang_social_feed');
@@ -436,7 +436,7 @@ class mf_social_feed
 			."<script>location.hash = 'settings_social_feed_linkedin';</script>";
 
 		}
-		
+
 		/*else if(isset($_GET['new_token'])){}*/
 	}
 	#########################
@@ -744,7 +744,7 @@ class mf_social_feed
 
 		return $json[$key];
 	}
-	
+
 	function fetch_linkedin()
 	{
 		$feed_limit = 20;
@@ -798,7 +798,7 @@ class mf_social_feed
 
 				delete_post_meta($this->id, $this->meta_prefix.'error');
 			}
-			
+
 			else
 			{
 				update_post_meta($this->id, $this->meta_prefix.'error', __("LinkedIn", 'lang_social_feed').": ".var_export($results, true));

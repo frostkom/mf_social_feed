@@ -120,6 +120,7 @@ function settings_social_feed()
 	}
 
 	$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
+	$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
 
 	show_settings_fields(array('area' => $options_area, 'settings' => $arr_settings));
 	############################
@@ -308,6 +309,14 @@ function setting_social_display_border_callback()
 {
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option_or_default($setting_key, 'yes');
+
+	echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
+}
+
+function setting_social_debug_callback()
+{
+	$setting_key = get_setting_key(__FUNCTION__);
+	$option = get_option_or_default($setting_key, 'no');
 
 	echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
 }
@@ -740,16 +749,23 @@ function footer_social_feed()
 	$plugin_include_url = plugin_dir_url(__FILE__);
 	$plugin_version = get_plugin_version(__FILE__);
 
+	$setting_social_debug = get_option('setting_social_debug');
+
 	mf_enqueue_script('underscore');
 	mf_enqueue_script('backbone');
 	mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
 	mf_enqueue_script('script_social_feed_plugins', $plugin_include_url."backbone/bb.plugins.js", array('read_more' => __("Read More", 'lang_social_feed')), $plugin_version);
 	mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
-	mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", $plugin_version);
+	mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
 	mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
 
 	$obj_base = new mf_base();
 	echo $obj_base->get_templates(array('lost_connection'));
+
+	if($setting_social_debug == 'yes')
+	{
+		echo "<div class='social_debug'></div>";
+	}
 
 	echo "<script type='text/template' id='template_feed_message'>
 		<li>".__("There are no posts to display", 'lang_social_feed')."</li>
@@ -765,19 +781,21 @@ function footer_social_feed()
 
 	<script type='text/template' id='template_feed_post'>
 		<li class='sf_<%= service %> sf_feed_<%= feed %>'>
-			<i class='fa fa-<%= service %>'></i>
+			<div class='meta'>
+				<i class='fa fa-<%= service %>'></i>
 
-			<% if(service == 'rss')
-			{ %>
-				<span class='name'><%= feed_title %></span>
-			<% }
+				<% if(service == 'rss')
+				{ %>
+					<span class='name'><%= feed_title %></span>
+				<% }
 
-			else if(name != '')
-			{ %>
-				<span class='name'><%= name %></span>
-			<% } %>
+				else if(name != '')
+				{ %>
+					<span class='name'><%= name %></span>
+				<% } %>
 
-			<span class='date'><%= date %></span>
+				<span class='date'><%= date %></span>
+			</div>
 			<a href='<%= link %>' class='content'>
 
 				<% if(image != '')

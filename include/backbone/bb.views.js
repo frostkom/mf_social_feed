@@ -1,10 +1,15 @@
+var feed_interval;
+
 var SocialView = Backbone.View.extend(
 {
 	el: jQuery(".widget.social_feed"),
 
 	initialize: function()
 	{
-		var feed_interval;
+		if(script_social_feed_views.debug == 'yes')
+		{
+			this.displayDebug("Initiated");
+		}
 
 		if(jQuery(this.el).length > 0)
 		{
@@ -24,8 +29,25 @@ var SocialView = Backbone.View.extend(
 		"click .shorten-more-link" : 'show_more'
 	},
 
+	displayDebug: function(text)
+	{
+		if(script_social_feed_views.debug == 'yes')
+		{
+			jQuery(".social_debug").append("<p>" + text + " " + this.getTime() + "</p>").show();
+		}
+	},
+
+	getTime: function()
+	{
+		var now = new Date();
+
+		return now.getHours() + ':' + (now.getMinutes() < 10 ? "0" + now.getMinutes() : now.getMinutes()) + ':' + (now.getSeconds() < 10 ? "0" + now.getSeconds() : now.getSeconds());
+	},
+
 	loadFeeds: function()
 	{
+		this.displayDebug("Loading Feeds");
+
 		var dom_obj = jQuery(this.el).find(".section"),
 			reload = (dom_obj.attr('data-social_reload') || 0) * 60 * 1000,
 			action_type = "type=posts";
@@ -115,6 +137,8 @@ var SocialView = Backbone.View.extend(
 
 	show_posts: function()
 	{
+		this.displayDebug("Display Posts");
+
 		jQuery(this.el).find(".section .fa-spinner").addClass('hide');
 
 		var response = this.model.get('response_posts'),

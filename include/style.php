@@ -194,51 +194,72 @@ echo "@media all
 				."}";
 			}
 
-				echo ".widget.social_feed .sf_posts li > .fa
+				echo ".widget.social_feed .meta
 				{
-					float: left;
+					display: -webkit-box;
+					display: -ms-flexbox;
+					display: -webkit-flex;
+					display: flex;
 				}
-
-					.sf_facebook .fa, .column-type .fa-facebook
+				
+					.widget.social_feed .sf_posts li .meta .fa
 					{
-						color: #3b5998;
+						-webkit-box-flex: 0 0 0;
+						-webkit-flex: 0 0 0;
+						-ms-flex: 0 0 0;
+						flex: 0 0 0;
 					}
 
-					.sf_instagram .fa, .column-type .fa-instagram
+						.sf_facebook .fa, .column-type .fa-facebook
+						{
+							color: #3b5998;
+						}
+
+						.sf_instagram .fa, .column-type .fa-instagram
+						{
+							color: #c02f2e;
+						}
+
+						.sf_linkedin .fa, .column-type .fa-linkedin-square
+						{
+							color: #0077b5;
+						}
+
+						.sf_rss .fa, .column-type .fa-rss
+						{
+							color: #e9bb63;
+						}
+
+						.sf_twitter .fa, .column-type .fa-twitter
+						{
+							color: #55acee;
+						}
+
+					.widget.social_feed .title, .widget.social_feed .name
 					{
-						color: #c02f2e;
+						-webkit-box-flex: 0 auto auto;
+						-webkit-flex: 0 auto auto;
+						-ms-flex: 0 auto auto;
+						flex: 0 auto auto;
+						font-size: .7em;
+						line-height: 1.5;
+						margin: 0 .5em;
+						overflow: hidden;
+						text-overflow: ellipsis;
+						white-space: nowrap;
 					}
 
-					.sf_linkedin .fa, .column-type .fa-linkedin-square
+					.widget.social_feed .date
 					{
-						color: #0077b5;
+						color: #ccc;
+						-webkit-box-flex: 1 0 0;
+						-webkit-flex: 1 0 0;
+						-ms-flex: 1 0 0;
+						flex: 1 0 0;
+						font-size: .6em;
+						line-height: 2;
+						text-align: right;
 					}
-
-					.sf_rss .fa, .column-type .fa-rss
-					{
-						color: #e9bb63;
-					}
-
-					.sf_twitter .fa, .column-type .fa-twitter
-					{
-						color: #55acee;
-					}
-
-				.widget.social_feed .title, .widget.social_feed .name
-				{
-					float: left;
-					font-size: .8em;
-					line-height: 1.5;
-					margin-left: .5em;
-				}
-
-				.widget.social_feed .date
-				{
-					color: #ccc;
-					float: right;
-					font-size: .8em;
-					line-height: 1.5;
-				}
 
 				.widget.social_feed .content
 				{
@@ -305,4 +326,15 @@ echo "@media all
 						display: inline-block;
 						margin-right: .5em;
 					}
+
+	.social_debug
+	{
+		background: rgba(0, 0, 0, .5);
+		bottom: 0;
+		color: #fff;
+		display: none;
+		left: 0;
+		padding: .5em;
+		position: fixed;
+	}
 }";
