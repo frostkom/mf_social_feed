@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-22 14:32+0100\n"
+"POT-Creation-Date: 2018-03-24 13:25+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: ../include/classes.php:18
 #: ../include/functions.php:200
-#: ../include/functions.php:692
+#: ../include/functions.php:700
 msgid "Facebook"
 msgstr ""
 
@@ -28,7 +28,7 @@ msgstr "Inlägg kan endast hämtas från sk. Facebook Pages, inte från personli
 
 #: ../include/classes.php:19
 #: ../include/functions.php:207
-#: ../include/functions.php:693
+#: ../include/functions.php:701
 msgid "Instagram"
 msgstr ""
 
@@ -41,7 +41,7 @@ msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
 #: ../include/classes.php:804
 #: ../include/classes.php:810
 #: ../include/functions.php:214
-#: ../include/functions.php:699
+#: ../include/functions.php:707
 msgid "LinkedIn"
 msgstr ""
 
@@ -50,7 +50,7 @@ msgid "Posts can be fetched with company ID as seen in the URL when visiting the
 msgstr "Inlägg kan hämtas med företags-ID som kan hittas i URLen när man besöker sidan"
 
 #: ../include/classes.php:21
-#: ../include/functions.php:702
+#: ../include/functions.php:710
 msgid "RSS"
 msgstr ""
 
@@ -63,7 +63,7 @@ msgstr "Inlägg kan endast hämtas genom att fylla i fullständiga URLen till fl
 #: ../include/classes.php:897
 #: ../include/classes.php:910
 #: ../include/functions.php:221
-#: ../include/functions.php:703
+#: ../include/functions.php:711
 msgid "Twitter"
 msgstr ""
 
@@ -72,12 +72,12 @@ msgid "Settings"
 msgstr "Inställningar"
 
 #: ../include/classes.php:76
-#: ../include/functions.php:485
+#: ../include/functions.php:493
 msgid "Service"
 msgstr "Tjänst"
 
 #: ../include/classes.php:88
-#: ../include/functions.php:486
+#: ../include/functions.php:494
 msgid "Search for"
 msgstr "Sök efter"
 
@@ -131,13 +131,13 @@ msgid "You must authorize in order to use the API"
 msgstr "Du måste auktorisera för att kunna använda APIet"
 
 #: ../include/classes.php:340
-msgid "Access Token has Expired"
-msgstr "Behörighets-token har gått ut"
+msgid "LinkedIn Access Token has Expired"
+msgstr "LinkedIn behörighets-token har gått ut"
 
 #: ../include/classes.php:341
 #, php-format
-msgid "Please generate a new Access Token %sHere%s"
-msgstr "Var vänlig generera en ny behörighets-token %shär%s"
+msgid "Please generate a new Access Token for LinkedIn %sHere%s"
+msgstr "Var vänlig generera en ny behörighets-token för LinkedIn %shär%s"
 
 #: ../include/classes.php:359
 #, php-format
@@ -209,7 +209,7 @@ msgid "Display Filter"
 msgstr "Visa filter"
 
 #: ../include/classes.php:1314
-#: ../include/functions.php:487
+#: ../include/functions.php:495
 msgid "Amount"
 msgstr "Antal"
 
@@ -237,7 +237,7 @@ msgstr "Sociala flöden"
 
 #: ../include/functions.php:48
 #: ../include/functions.php:50
-#: ../include/functions.php:85
+#: ../include/functions.php:84
 msgid "Posts"
 msgstr "Inlägg"
 
@@ -245,33 +245,37 @@ msgstr "Inlägg"
 msgid "Post"
 msgstr "Inlägg"
 
-#: ../include/functions.php:98
+#: ../include/functions.php:97
 msgid "Interval to Fetch New"
 msgstr "Intervall för att hämta nytt"
 
-#: ../include/functions.php:99
+#: ../include/functions.php:98
 msgid "Interval to Reload Site"
 msgstr "Intervall för att ladda om sidan"
 
-#: ../include/functions.php:100
+#: ../include/functions.php:99
 msgid "Design"
 msgstr "Utseende"
 
-#: ../include/functions.php:101
+#: ../include/functions.php:100
 msgid "Display Full Width on Large Screens"
 msgstr "Visa fullbredd på stora skärmar"
 
-#: ../include/functions.php:116
+#: ../include/functions.php:115
 msgid "Columns on Desktop"
 msgstr "Kolumner på dator"
 
-#: ../include/functions.php:120
+#: ../include/functions.php:119
 msgid "Columns on Tablets"
 msgstr "Kolumner på plattor"
 
-#: ../include/functions.php:123
+#: ../include/functions.php:122
 msgid "Display Border"
 msgstr "Visa ram"
+
+#: ../include/functions.php:123
+msgid "Debug"
+msgstr ""
 
 #: ../include/functions.php:135
 msgid "App ID"
@@ -340,126 +344,126 @@ msgstr "Standard"
 msgid "Masonry"
 msgstr "Murverk"
 
-#: ../include/functions.php:322
-#: ../include/functions.php:368
-#: ../include/functions.php:417
+#: ../include/functions.php:330
+#: ../include/functions.php:376
+#: ../include/functions.php:425
 #, php-format
 msgid "Go to %s and log in"
 msgstr "Gå till %s och logga in"
 
-#: ../include/functions.php:323
+#: ../include/functions.php:331
 #, php-format
 msgid "Create a new app and copy %s and %s to paste here"
 msgstr "Skapa en ny app och kopiera %s och %s för att klistra in här"
 
-#: ../include/functions.php:343
+#: ../include/functions.php:351
 #, php-format
 msgid "Go to %s and click on %s"
 msgstr "Gå till %s och klicka på %s"
 
-#: ../include/functions.php:344
+#: ../include/functions.php:352
 msgid "Make sure %s field is set to s%"
 msgstr "Se till att fältet %s innehåller %s"
 
-#: ../include/functions.php:345
+#: ../include/functions.php:353
 #, php-format
 msgid "Open a new browser tab and go to %s by replacing %s with your %s"
 msgstr "Öppna en ny tab i din webbläsare och go till %s genom att ersätta %s med din %s"
 
-#: ../include/functions.php:346
+#: ../include/functions.php:354
 msgid "Paste the returned token here"
 msgstr "Klistra in token som du får tillbaka här"
 
-#: ../include/functions.php:369
+#: ../include/functions.php:377
 msgid "Create a new app if you don't have one already and edit the app"
 msgstr "Lägg till en ny app om du inte redan har en och redigera appen"
 
-#: ../include/functions.php:370
+#: ../include/functions.php:378
 #, php-format
 msgid "Copy %s and %s to these fields"
 msgstr "Kopiera %s och %s till dessa fält"
 
-#: ../include/functions.php:371
+#: ../include/functions.php:379
 #, php-format
 msgid "Make sure that %s is checked"
 msgstr "Se till så att %s är markerad"
 
-#: ../include/functions.php:391
+#: ../include/functions.php:399
 #, php-format
 msgid "Add this URL to your App's %s"
 msgstr "Lägg till denna URL till din apps %s"
 
-#: ../include/functions.php:418
+#: ../include/functions.php:426
 #, php-format
 msgid "Click the tab %s"
 msgstr "Klicka på tabben %s"
 
-#: ../include/functions.php:419
+#: ../include/functions.php:427
 #, php-format
 msgid "Copy %s, %s, %s and %s to paste here"
 msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 
-#: ../include/functions.php:474
+#: ../include/functions.php:482
 msgid "Choose a Social Feed"
 msgstr "Välj ett socialt flöde"
 
-#: ../include/functions.php:559
+#: ../include/functions.php:567
 msgid "Fetch"
 msgstr "Hämta"
 
-#: ../include/functions.php:569
+#: ../include/functions.php:577
 msgid "Fetched"
 msgstr "Hämtad"
 
-#: ../include/functions.php:581
+#: ../include/functions.php:589
 msgid "I got an error when accessing the feed"
 msgstr "Jag fick ett fel när jag hämtade flödet"
 
-#: ../include/functions.php:603
+#: ../include/functions.php:611
 msgid "I am waiting to get access to the feed"
 msgstr "Jag väntar på att få tillgång till flödet"
 
-#: ../include/functions.php:614
+#: ../include/functions.php:622
 msgid "Latest"
 msgstr "Senaste"
 
-#: ../include/functions.php:631
+#: ../include/functions.php:639
 msgid "Username"
 msgstr "Användarnamn"
 
-#: ../include/functions.php:632
+#: ../include/functions.php:640
 msgid "Text"
 msgstr "Text"
 
-#: ../include/functions.php:633
+#: ../include/functions.php:641
 msgid "Image"
 msgstr "Bild"
 
-#: ../include/functions.php:635
+#: ../include/functions.php:643
 msgid "Date"
 msgstr "Datum"
 
-#: ../include/functions.php:658
+#: ../include/functions.php:666
 msgid "Ignored"
 msgstr "Ignorerad"
 
-#: ../include/functions.php:662
+#: ../include/functions.php:670
 msgid "Hidden"
 msgstr "Dold"
 
-#: ../include/functions.php:747
+#: ../include/functions.php:757
 msgid "Read More"
 msgstr "Läs mer"
 
-#: ../include/functions.php:756
+#: ../include/functions.php:771
 msgid "There are no posts to display"
 msgstr "Det finns inga inlägg att visa"
 
-#: ../include/functions.php:760
+#: ../include/functions.php:775
 msgid "All"
 msgstr "Alla"
 
-#: ../include/functions.php:786
+#: ../include/functions.php:803
 #, php-format
 msgid "Image for the post %s"
 msgstr "Bild till inlägget %s"

@@ -337,14 +337,16 @@ class mf_social_feed
 	function email_when_expired()
 	{
 		$mail_to = get_bloginfo('admin_email');
-		$mail_subject = __("Access Token has Expired", 'lang_social_feed');
-		$mail_content = sprintf(__("Please generate a new Access Token %sHere%s", 'lang_social_feed'), "<a href='".$this->settings_url."#settings_social_feed_linkedin'>", "</a>");
+		$mail_subject = "[".get_bloginfo('name')."] ".__("LinkedIn Access Token has Expired", 'lang_social_feed');
+		$mail_content = sprintf(__("Please generate a new Access Token for LinkedIn %sHere%s", 'lang_social_feed'), "<a href='".$this->settings_url."#settings_social_feed_linkedin'>", "</a>");
 
 		$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
 	}
 
 	function get_auth_expiration_string($time)
 	{
+		$out = "";
+
 		if($this->token_life)
 		{
 			$datetime = new DateTime('@'.$this->token_life, new DateTimeZone('UTC'));
@@ -355,18 +357,24 @@ class mf_social_feed
 			);
 			$date->modify('+'.$times['days'].' days');
 
-			return sprintf(
-				__("Expires in %s days, %s hours (%s)", 'lang_social_feed'),
+			if($times['days'] < 10)
+			{
+				$out .= "<i class='fa fa-warning yellow display_warning'></i> ";
+			}
+
+			$out .= sprintf(
+				__("Expires in %s days, %s hours", 'lang_social_feed'),
 				$times['days'],
-				$times['hours'],
-				"<em>".$date->format('Y-m-d')."</em>"
+				$times['hours']
 			);
 		}
 
 		else
 		{
-			return __("The Access Token has expired. Please generate a new", 'lang_social_feed');
+			$out .= __("The Access Token has expired. Please generate a new", 'lang_social_feed');
 		}
+
+		return $out;
 	}
 
 	function get_access_token($code)
