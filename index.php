@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 4.6.22
+Version: 4.6.23
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: http://frostkom.se
@@ -31,7 +31,6 @@ if(is_admin())
 	register_uninstall_hook(__FILE__, 'uninstall_social_feed');
 
 	add_action('admin_init', 'settings_social_feed');
-
 	add_action('admin_menu', 'menu_social_feed');
 
 	add_action('rwmb_meta_boxes', array($obj_social_feed, 'meta_boxes'));

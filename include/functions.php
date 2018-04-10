@@ -35,6 +35,7 @@ function init_social_feed()
 		'labels' => $labels,
 		'public' => true,
 		'exclude_from_search' => true,
+		'capability_type' => 'page',
 		'menu_position' => 99,
 		'menu_icon' => 'dashicons-megaphone',
 		'supports' => array('title'),
