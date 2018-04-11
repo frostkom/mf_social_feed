@@ -536,7 +536,7 @@ function column_cell_social_feed($col, $id)
 					$feed_url = $post_meta;
 
 					$post_meta_parts = parse_url($post_meta);
-					$post_meta = $post_meta_parts['host'];
+					$post_meta = isset($post_meta_parts['host']) ? $post_meta_parts['host'] : "(".__("unknown", 'lang_social_feed').")";
 				break;
 
 				case 'twitter':

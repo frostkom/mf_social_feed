@@ -12,17 +12,71 @@ class mf_social_feed
 
 	// Admin
 	#########################
-	function meta_feed_info()
+	function meta_feed_facebook_info()
 	{
-		$out = "<ul id='".$this->meta_prefix."info_facebook'>
-			<li><strong>".__("Facebook", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</li>
-			<li><strong>".__("Instagram", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
-			<li><strong>".__("LinkedIn", 'lang_social_feed')."</strong>: ".__("Posts can be fetched with company ID as seen in the URL when visiting the page", 'lang_social_feed')."</li>
-			<li><strong>".__("RSS", 'lang_social_feed')."</strong>: ".__("Posts can only be fetched by entering the full URL to the feed", 'lang_social_feed')."</li>
-			<li><strong>".__("Twitter", 'lang_social_feed')."</strong>: ".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</li>
-		</ul>";
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='facebook'>".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</p>";
+	}
+
+	function meta_feed_instagram_info()
+	{
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</p>";
+	}
+
+	function meta_feed_instagram_access_token_info()
+	{
+		global $post;
+
+		$post_id = $post->ID;
+		
+		$edit_url = admin_url("post.php?post=".$post_id."&action=edit");
+
+		$instagram_client_id = get_post_meta($post_id, $this->meta_prefix.'instagram_client_id', true);
+
+		if($instagram_client_id != '')
+		{
+			$instagram_access_token = get_post_meta($post_id, $this->meta_prefix.'instagram_access_token', true);
+
+			if($instagram_access_token != '')
+			{
+				$out = "<strong><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
+			}
+
+			else
+			{
+				$out = "<ol condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>"
+					."<li><a href='https://www.instagram.com/oauth/authorize/?client_id=".$instagram_client_id."&redirect_uri=".$edit_url."&response_type=token&scope=public_content'>".__("Authorize Here", 'lang_social_feed')."</a></li>"
+					."<li>".sprintf(__("When you arrive back here after authorization, just copy the access token from the address bar and paste it in the %s field above", 'lang_social_feed'), __("Access Token", 'lang_social_feed'))."</li>"
+				."</ol>";
+			}
+		}
+
+		else
+		{
+			$out = "<ol condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>"
+				."<li>".sprintf(__("Go to %sInstagram for Developers%s and Log in. It is important that you log in with the account that you want to fetch posts from", 'lang_social_feed'), "<a href='//instagram.com/developer/'>", "</a>")."</li>"
+				."<li>".sprintf(__("Enter the fields in the form %s and press %s", 'lang_social_feed'), "Developer Signup", "Sign up")."</li>" //Your website, Phone number, What do you want to build with API
+				."<li>".sprintf(__("Click on %s or %s and then %s", 'lang_social_feed'), "Register Your Application", "Manage Clients", "Register a New Client")."</li>"
+				."<li>".sprintf(__("Enter the fields in the form %s and press %s. It is important that you enter all the fields and that %s is set to %s. You should also uncheck %s", 'lang_social_feed'), "Register new Client ID", "Register", "Valid redirect URIs", $edit_url, "Disable implicit OAuth")."</li>"
+				."<li>".sprintf(__("Copy %s and enter into the %s field above", 'lang_social_feed'), "CLIENT ID", __("Client ID", 'lang_social_feed'))."</li>"
+			."</ol>";
+		}
 
 		return $out;
+	}
+
+	function meta_feed_linkedin_info()
+	{
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='linkedin'>".__("Posts can be fetched with company ID as seen in the URL when visiting the page", 'lang_social_feed')."</p>";
+	}
+
+	function meta_feed_rss_info()
+	{
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='rss'>".__("Posts can only be fetched by entering the full URL to the feed", 'lang_social_feed')."</p>";
+	}
+
+	function meta_feed_twitter_info()
+	{
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='twitter'>".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</p>";
 	}
 
 	function meta_post_info()
@@ -78,11 +132,6 @@ class mf_social_feed
 					'type' => 'select',
 					'options' => $arr_data_social_types,
 					'std' => $default_type,
-					/*'attributes' => array(
-						'condition_type' => 'show_if',
-						'condition_value' => 'facebook',
-						'condition_field' => $this->meta_prefix.'info_facebook',
-					),*/
 				),
 				array(
 					'name' => __("Search for", 'lang_social_feed'),
@@ -90,9 +139,54 @@ class mf_social_feed
 					'type' => 'text',
 				),
 				array(
-					'id' => $this->meta_prefix.'info',
+					'id' => $this->meta_prefix.'facebook_info',
 					'type' => 'custom_html',
-					'callback' => array($this, 'meta_feed_info'),
+					'callback' => array($this, 'meta_feed_facebook_info'),
+				),
+				array(
+					'id' => $this->meta_prefix.'instagram_info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_feed_instagram_info'),
+				),
+				array(
+					'id' => $this->meta_prefix.'linkedin_info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_feed_linkedin_info'),
+				),
+				array(
+					'id' => $this->meta_prefix.'rss_info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_feed_rss_info'),
+				),
+				array(
+					'id' => $this->meta_prefix.'twitter_info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_feed_twitter_info'),
+				),
+				array(
+					'name' => __("Client ID", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'instagram_client_id',
+					'type' => 'text',
+					'attributes' => array(
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'instagram',
+					),
+				),
+				array(
+					'name' => __("Access Token", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'instagram_access_token',
+					'type' => 'text',
+					'attributes' => array(
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'instagram',
+					),
+				),
+				array(
+					'id' => $this->meta_prefix.'instagram_access_token_info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_feed_instagram_access_token_info'),
 				),
 			)
 		);
@@ -490,9 +584,9 @@ class mf_social_feed
 				$this->facebook_api_secret = get_option_or_default('setting_facebook_api_secret', 'b00ccbc6513724fafca0ff41685d735b');
 			break;
 
-			case 'instagram':
+			/*case 'instagram':
 				$this->instagram_api_token = get_option_or_default('setting_instagram_api_token', '1080170513.3a81a9f.43201f5429d443b4ae063cd77dbea968');
-			break;
+			break;*/
 
 			case 'linkedin':
 				$this->linkedin_api_id = get_option('setting_linkedin_api_id');
@@ -535,6 +629,8 @@ class mf_social_feed
 				break;
 
 				case 'instagram':
+					$this->instagram_api_token = get_post_meta($this->id, $this->meta_prefix.'instagram_access_token', true);
+
 					$this->fetch_instagram();
 				break;
 
@@ -646,7 +742,27 @@ class mf_social_feed
 			$filter = "tags/".substr($this->search, 1)."/media/recent";
 		}
 
-		else if(substr($this->search, 0, 1) == "@")
+		else
+		{
+			$url = "https://api.instagram.com/v1/users/self/?access_token=".$this->instagram_api_token;
+
+			$result = wp_remote_retrieve_body(wp_remote_get($url));
+			$json = json_decode($result);
+
+			if(isset($json->data->id))
+			{
+				$filter = "users/".$json->data->id."/media/recent";
+
+				delete_post_meta($this->id, $this->meta_prefix.'error');
+			}
+
+			else
+			{
+				update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
+			}
+		}
+
+		/*else if(substr($this->search, 0, 1) == "@")
 		{
 			$url = "https://api.instagram.com/v1/users/search?q=".substr($this->search, 1)."&access_token=".$this->instagram_api_token;
 
@@ -667,14 +783,14 @@ class mf_social_feed
 
 			else
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', sprintf(__("The JSON I got back was not correct. Have a look at %s", 'lang_social_feed'), $url));
+				update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
 			}
 		}
 
 		else
 		{
 			$filter = "users/self/feed";
-		}
+		}*/
 
 		if($filter != '')
 		{

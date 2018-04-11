@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-30 17:07+0100\n"
+"POT-Creation-Date: 2018-04-11 15:08+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -16,454 +16,498 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../include/classes.php:18
-#: ../include/functions.php:200
-#: ../include/functions.php:701
-msgid "Facebook"
-msgstr ""
-
-#: ../include/classes.php:18
+#: ../include/classes.php:17
 msgid "Posts can only be fetched from Facebook Pages, not personal Profiles"
 msgstr "Inlägg kan endast hämtas från sk. Facebook Pages, inte från personliga profiler"
 
-#: ../include/classes.php:19
-#: ../include/functions.php:207
-#: ../include/functions.php:702
-msgid "Instagram"
-msgstr ""
-
-#: ../include/classes.php:19
 #: ../include/classes.php:22
+#: ../include/classes.php:79
 msgid "Posts can either be fetched from @users or #hashtags"
 msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
 
-#: ../include/classes.php:20
-#: ../include/classes.php:812
-#: ../include/classes.php:818
-#: ../include/functions.php:214
-#: ../include/functions.php:708
-msgid "LinkedIn"
+#: ../include/classes.php:41
+msgid "All Done!"
+msgstr "Nu är allt klart!"
+
+#: ../include/classes.php:47
+msgid "Authorize Here"
+msgstr "Auktorisera här"
+
+#: ../include/classes.php:48
+#, php-format
+msgid "When you arrive back here after authorization, just copy the access token from the address bar and paste it in the %s field above"
+msgstr "När du kommer tillbaka hit efter auktoriseringen, kopiera bara behörighetsnyckeln från adressfältet och klistar in i fältet %s ovan"
+
+#: ../include/classes.php:48
+#: ../include/classes.php:177
+#: ../include/functions.php:149
+#: ../include/functions.php:183
+msgid "Access Token"
+msgstr "Behörighetsnyckel"
+
+#: ../include/classes.php:56
+#, php-format
+msgid "Go to %sInstagram for Developers%s and Log in. It is important that you log in with the account that you want to fetch posts from"
+msgstr "Gå till %sInstagram för utvecklare%s och logga in. Det är viktigt att du loggar in med kontot som du vill hämta inlägg från"
+
+#: ../include/classes.php:57
+#, php-format
+msgid "Enter the fields in the form %s and press %s"
+msgstr "Fyll i fälten i formuläret %s and tryck på %s"
+
+#: ../include/classes.php:58
+#, php-format
+msgid "Click on %s or %s and then %s"
+msgstr "Klicka på %s eller %s och sen %s"
+
+#: ../include/classes.php:59
+#, php-format
+msgid "Enter the fields in the form %s and press %s. It is important that you enter all the fields and that %s is set to %s. You should also uncheck %s"
+msgstr "Fyll i fälten i formuläret %s and tryck på %s. Det är viktigt att du fyller i alla fälten och att %s är ifyllt med %s. Du bör också kryssa ur %s"
+
+#: ../include/classes.php:60
+#, php-format
+msgid "Copy %s and enter into the %s field above"
+msgstr "Kopiera %s och lägg in i fältet %s ovan"
+
+#: ../include/classes.php:60
+#: ../include/classes.php:167
+#: ../include/functions.php:161
+msgid "Client ID"
 msgstr ""
 
-#: ../include/classes.php:20
+#: ../include/classes.php:69
 msgid "Posts can be fetched with company ID as seen in the URL when visiting the page"
 msgstr "Inlägg kan hämtas med företags-ID som kan hittas i URLen när man besöker sidan"
 
-#: ../include/classes.php:21
-#: ../include/functions.php:711
-msgid "RSS"
-msgstr ""
-
-#: ../include/classes.php:21
+#: ../include/classes.php:74
 msgid "Posts can only be fetched by entering the full URL to the feed"
 msgstr "Inlägg kan endast hämtas genom att fylla i fullständiga URLen till flödet"
 
-#: ../include/classes.php:22
-#: ../include/classes.php:890
-#: ../include/classes.php:905
-#: ../include/classes.php:918
-#: ../include/functions.php:221
-#: ../include/functions.php:712
-msgid "Twitter"
-msgstr ""
-
-#: ../include/classes.php:70
+#: ../include/classes.php:124
 msgid "Settings"
 msgstr "Inställningar"
 
-#: ../include/classes.php:76
-#: ../include/functions.php:494
+#: ../include/classes.php:130
+#: ../include/functions.php:495
 msgid "Service"
 msgstr "Tjänst"
 
-#: ../include/classes.php:88
-#: ../include/functions.php:495
+#: ../include/classes.php:137
+#: ../include/functions.php:496
 msgid "Search for"
 msgstr "Sök efter"
 
-#: ../include/classes.php:102
+#: ../include/classes.php:196
 msgid "Information"
 msgstr "Information"
 
-#: ../include/classes.php:176
+#: ../include/classes.php:270
 msgid "Are you sure?"
 msgstr "Är du säker?"
 
-#: ../include/classes.php:176
+#: ../include/classes.php:270
 msgid "Hide"
 msgstr "Dölj"
 
-#: ../include/classes.php:180
+#: ../include/classes.php:274
 #, php-format
 msgid "Are you sure? This will make all future posts by %s to be ignored aswell!"
 msgstr "Är du säker? Detta kommer att göra så att alla framtida inlägg av %s också kommer att ignoreras!"
 
-#: ../include/classes.php:180
+#: ../include/classes.php:274
 msgid "Ignore Future Posts"
 msgstr "Ignorera framtida inlägg"
 
-#: ../include/classes.php:200
+#: ../include/classes.php:294
 msgid "I have hidden the post for you now"
 msgstr "Jag har dolt inlägget åt dig nu"
 
-#: ../include/classes.php:205
+#: ../include/classes.php:299
 msgid "I could not hide the post for you. An admin has been notified about this issue"
 msgstr "Jag lyckades inte dölja inlägget åt dig. En admin har fått info om detta problem"
 
-#: ../include/classes.php:240
+#: ../include/classes.php:334
 msgid "I have ignored the post for you now. This means that all future posts by this user will be ignored aswell"
 msgstr "Jag har ignorerat inlägget åt dig nu. Detta betyder att alla framtida inlägg av denna användare kommer att ignoreras"
 
-#: ../include/classes.php:245
+#: ../include/classes.php:339
 msgid "I could not ignore the post for you. An admin has been notified about this issue"
 msgstr "Jag lyckades inte ignorera inlägget åt dig. En admin har fått info om detta problem"
 
-#: ../include/classes.php:293
+#: ../include/classes.php:387
 msgid "Generate new Access Token"
 msgstr "Generera en ny behörighets-token"
 
-#: ../include/classes.php:299
+#: ../include/classes.php:393
 msgid "Generate Access Token"
 msgstr "Generera en behörighets-token"
 
-#: ../include/classes.php:300
+#: ../include/classes.php:394
 msgid "You must authorize in order to use the API"
 msgstr "Du måste auktorisera för att kunna använda APIet"
 
-#: ../include/classes.php:340
+#: ../include/classes.php:434
 msgid "LinkedIn Access Token has Expired"
 msgstr "LinkedIn behörighets-token har gått ut"
 
-#: ../include/classes.php:341
+#: ../include/classes.php:435
 #, php-format
 msgid "Please generate a new Access Token for LinkedIn %sHere%s"
 msgstr "Var vänlig generera en ny behörighets-token för LinkedIn %shär%s"
 
-#: ../include/classes.php:366
+#: ../include/classes.php:460
 #, php-format
 msgid "Expires in %s days, %s hours"
 msgstr "Går ut om %s dagar, %s timmar"
 
-#: ../include/classes.php:374
+#: ../include/classes.php:468
 msgid "The Access Token has expired. Please generate a new"
 msgstr "Behörighets-token har gått ut. Var vänlig generera en ny"
 
-#: ../include/classes.php:398
+#: ../include/classes.php:492
 msgid "I did not recieve an access token"
 msgstr "Jag fick inte någon behörighets-token"
 
-#: ../include/classes.php:421
+#: ../include/classes.php:515
 msgid "I could not update the Access Token for you"
 msgstr "Jag kunde inte uppdatera behörighets-token åt dig"
 
-#: ../include/classes.php:440
+#: ../include/classes.php:534
 msgid "I updated the Access Token for you"
 msgstr "Jag uppdatera behörighets-token åt dig"
 
-#: ../include/classes.php:670
-#: ../include/classes.php:732
+#: ../include/classes.php:761
+msgid "The JSON I got back was not correct"
+msgstr "Jag fick tillbaka JSON som inte var korrekt"
+
+#: ../include/classes.php:848
 #, php-format
 msgid "The JSON I got back was not correct. Have a look at %s"
 msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
 
-#: ../include/classes.php:818
+#: ../include/classes.php:928
+#: ../include/classes.php:934
+#: ../include/functions.php:215
+#: ../include/functions.php:709
+msgid "LinkedIn"
+msgstr ""
+
+#: ../include/classes.php:934
 msgid "Token has expired"
 msgstr "Token har gått ut"
 
-#: ../include/classes.php:1212
+#: ../include/classes.php:1006
+#: ../include/classes.php:1021
+#: ../include/classes.php:1034
+#: ../include/functions.php:222
+#: ../include/functions.php:713
+msgid "Twitter"
+msgstr ""
+
+#: ../include/classes.php:1328
 msgid "Display Social Feeds"
 msgstr "Visa sociala flöden"
 
-#: ../include/classes.php:1226
+#: ../include/classes.php:1342
 #: ../include/functions.php:30
 msgid "Social Feed"
 msgstr "Socialt flöde"
 
-#: ../include/classes.php:1301
+#: ../include/classes.php:1417
 msgid "Heading"
 msgstr "Rubrik"
 
-#: ../include/classes.php:1306
+#: ../include/classes.php:1422
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:1311
+#: ../include/classes.php:1427
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:1312
-#: ../include/classes.php:1313
+#: ../include/classes.php:1428
+#: ../include/classes.php:1429
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:1312
+#: ../include/classes.php:1428
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:1313
+#: ../include/classes.php:1429
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:1316
+#: ../include/classes.php:1432
 msgid "Display Filter"
 msgstr "Visa filter"
 
-#: ../include/classes.php:1322
-#: ../include/functions.php:496
+#: ../include/classes.php:1438
+#: ../include/functions.php:497
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:1323
+#: ../include/classes.php:1439
 msgid "Display Text"
 msgstr "Visa text"
 
-#: ../include/classes.php:1329
+#: ../include/classes.php:1445
 msgid "Display Read More"
 msgstr "Visa Läs mer"
 
-#: ../include/classes.php:1330
+#: ../include/classes.php:1446
 msgid "Display Likes"
 msgstr "Visa Gilla"
 
 #: ../include/functions.php:29
 #: ../include/functions.php:31
-#: ../include/functions.php:193
-#: ../include/functions.php:200
-#: ../include/functions.php:207
-#: ../include/functions.php:214
-#: ../include/functions.php:221
+#: ../include/functions.php:194
+#: ../include/functions.php:201
+#: ../include/functions.php:208
+#: ../include/functions.php:215
+#: ../include/functions.php:222
 msgid "Social Feeds"
 msgstr "Sociala flöden"
 
-#: ../include/functions.php:48
-#: ../include/functions.php:50
-#: ../include/functions.php:84
+#: ../include/functions.php:49
+#: ../include/functions.php:51
+#: ../include/functions.php:85
 msgid "Posts"
 msgstr "Inlägg"
 
-#: ../include/functions.php:49
+#: ../include/functions.php:50
 msgid "Post"
 msgstr "Inlägg"
 
-#: ../include/functions.php:97
+#: ../include/functions.php:98
 msgid "Interval to Fetch New"
 msgstr "Intervall för att hämta nytt"
 
-#: ../include/functions.php:98
+#: ../include/functions.php:99
 msgid "Interval to Reload Site"
 msgstr "Intervall för att ladda om sidan"
 
-#: ../include/functions.php:99
+#: ../include/functions.php:100
 msgid "Design"
 msgstr "Utseende"
 
-#: ../include/functions.php:100
+#: ../include/functions.php:101
 msgid "Display Full Width on Large Screens"
 msgstr "Visa fullbredd på stora skärmar"
 
-#: ../include/functions.php:115
+#: ../include/functions.php:116
 msgid "Columns on Desktop"
 msgstr "Kolumner på dator"
 
-#: ../include/functions.php:119
+#: ../include/functions.php:120
 msgid "Columns on Tablets"
 msgstr "Kolumner på plattor"
 
-#: ../include/functions.php:122
+#: ../include/functions.php:123
 msgid "Display Border"
 msgstr "Visa ram"
 
-#: ../include/functions.php:123
+#: ../include/functions.php:124
 msgid "Debug"
 msgstr ""
 
-#: ../include/functions.php:135
+#: ../include/functions.php:136
 msgid "App ID"
 msgstr ""
 
-#: ../include/functions.php:136
-#: ../include/functions.php:181
+#: ../include/functions.php:137
+#: ../include/functions.php:182
 msgid "Secret"
 msgstr "Hemlig nyckel"
 
-#: ../include/functions.php:148
-#: ../include/functions.php:182
-msgid "Access Token"
-msgstr ""
-
-#: ../include/functions.php:160
-msgid "Client ID"
-msgstr ""
-
-#: ../include/functions.php:161
+#: ../include/functions.php:162
 msgid "Client Secret"
-msgstr ""
+msgstr "Hemlig klientnyckel"
 
-#: ../include/functions.php:165
+#: ../include/functions.php:166
 msgid "Redirect URL"
 msgstr "Skicka vidare till URL"
 
-#: ../include/functions.php:166
+#: ../include/functions.php:167
 msgid "Authorize"
 msgstr "Auktorisera"
 
-#: ../include/functions.php:167
+#: ../include/functions.php:168
 msgid "Email when Expired"
 msgstr "Skicka e-post inför utgång"
 
-#: ../include/functions.php:180
+#: ../include/functions.php:181
 msgid "Key"
 msgstr "Nyckel"
 
-#: ../include/functions.php:183
+#: ../include/functions.php:184
 msgid "Access Token Secret"
+msgstr "Hemlig behörighetnyckel"
+
+#: ../include/functions.php:201
+#: ../include/functions.php:702
+msgid "Facebook"
 msgstr ""
 
-#: ../include/functions.php:253
-#: ../include/functions.php:268
+#: ../include/functions.php:208
+#: ../include/functions.php:703
+msgid "Instagram"
+msgstr ""
+
+#: ../include/functions.php:254
+#: ../include/functions.php:269
 msgid "min"
 msgstr "min"
 
-#: ../include/functions.php:253
+#: ../include/functions.php:254
 msgid "Between each API request"
 msgstr "Mellan varje API-anrop"
 
-#: ../include/functions.php:268
+#: ../include/functions.php:269
 msgid "no reload"
 msgstr "ingen omladdning"
 
-#: ../include/functions.php:277
+#: ../include/functions.php:278
 msgid "Square"
 msgstr "Rutnät"
 
-#: ../include/functions.php:277
+#: ../include/functions.php:278
 msgid "Default"
 msgstr "Standard"
 
-#: ../include/functions.php:278
+#: ../include/functions.php:279
 msgid "Masonry"
 msgstr "Murverk"
 
-#: ../include/functions.php:330
-#: ../include/functions.php:376
-#: ../include/functions.php:426
+#: ../include/functions.php:331
+#: ../include/functions.php:377
+#: ../include/functions.php:427
 #, php-format
 msgid "Go to %s and log in"
 msgstr "Gå till %s och logga in"
 
-#: ../include/functions.php:331
+#: ../include/functions.php:332
 #, php-format
 msgid "Create a new app and copy %s and %s to paste here"
 msgstr "Skapa en ny app och kopiera %s och %s för att klistra in här"
 
-#: ../include/functions.php:351
+#: ../include/functions.php:352
 #, php-format
 msgid "Go to %s and click on %s"
 msgstr "Gå till %s och klicka på %s"
 
-#: ../include/functions.php:352
+#: ../include/functions.php:353
 msgid "Make sure %s field is set to s%"
 msgstr "Se till att fältet %s innehåller %s"
 
-#: ../include/functions.php:353
+#: ../include/functions.php:354
 #, php-format
 msgid "Open a new browser tab and go to %s by replacing %s with your %s"
 msgstr "Öppna en ny tab i din webbläsare och go till %s genom att ersätta %s med din %s"
 
-#: ../include/functions.php:354
+#: ../include/functions.php:355
 msgid "Paste the returned token here"
 msgstr "Klistra in token som du får tillbaka här"
 
-#: ../include/functions.php:377
+#: ../include/functions.php:378
 msgid "Create a new app if you don't have one already and edit the app"
 msgstr "Lägg till en ny app om du inte redan har en och redigera appen"
 
-#: ../include/functions.php:378
+#: ../include/functions.php:379
 #, php-format
 msgid "Copy %s and %s to these fields"
 msgstr "Kopiera %s och %s till dessa fält"
 
-#: ../include/functions.php:379
+#: ../include/functions.php:380
 #, php-format
 msgid "Make sure that %s is checked"
 msgstr "Se till så att %s är markerad"
 
-#: ../include/functions.php:399
+#: ../include/functions.php:400
 #, php-format
 msgid "Add this URL to your App's %s"
 msgstr "Lägg till denna URL till din apps %s"
 
-#: ../include/functions.php:427
+#: ../include/functions.php:428
 #, php-format
 msgid "Click the tab %s"
 msgstr "Klicka på tabben %s"
 
-#: ../include/functions.php:428
+#: ../include/functions.php:429
 #, php-format
 msgid "Copy %s, %s, %s and %s to paste here"
 msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 
-#: ../include/functions.php:483
+#: ../include/functions.php:484
 msgid "Choose a Social Feed"
 msgstr "Välj ett socialt flöde"
 
-#: ../include/functions.php:568
+#: ../include/functions.php:539
+msgid "unknown"
+msgstr "okänd"
+
+#: ../include/functions.php:569
 msgid "Fetch"
 msgstr "Hämta"
 
-#: ../include/functions.php:578
+#: ../include/functions.php:579
 msgid "Fetched"
 msgstr "Hämtad"
 
-#: ../include/functions.php:590
+#: ../include/functions.php:591
 msgid "I got an error when accessing the feed"
 msgstr "Jag fick ett fel när jag hämtade flödet"
 
-#: ../include/functions.php:612
+#: ../include/functions.php:613
 msgid "I am waiting to get access to the feed"
 msgstr "Jag väntar på att få tillgång till flödet"
 
-#: ../include/functions.php:623
+#: ../include/functions.php:624
 msgid "Latest"
 msgstr "Senaste"
 
-#: ../include/functions.php:640
+#: ../include/functions.php:641
 msgid "Username"
 msgstr "Användarnamn"
 
-#: ../include/functions.php:641
+#: ../include/functions.php:642
 msgid "Text"
 msgstr "Text"
 
-#: ../include/functions.php:642
+#: ../include/functions.php:643
 msgid "Image"
 msgstr "Bild"
 
-#: ../include/functions.php:644
+#: ../include/functions.php:645
 msgid "Date"
 msgstr "Datum"
 
-#: ../include/functions.php:667
+#: ../include/functions.php:668
 msgid "Ignored"
 msgstr "Ignorerad"
 
-#: ../include/functions.php:671
+#: ../include/functions.php:672
 msgid "Hidden"
 msgstr "Dold"
 
-#: ../include/functions.php:758
+#: ../include/functions.php:712
+msgid "RSS"
+msgstr ""
+
+#: ../include/functions.php:759
 msgid "Read More"
 msgstr "Läs mer"
 
-#: ../include/functions.php:772
+#: ../include/functions.php:773
 msgid "There are no posts to display"
 msgstr "Det finns inga inlägg att visa"
 
-#: ../include/functions.php:776
+#: ../include/functions.php:777
 msgid "All"
 msgstr "Alla"
 
-#: ../include/functions.php:804
+#: ../include/functions.php:805
 #, php-format
 msgid "Image for the post %s"
 msgstr "Bild till inlägget %s"
