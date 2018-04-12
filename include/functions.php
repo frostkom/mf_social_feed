@@ -141,14 +141,14 @@ function settings_social_feed()
 
 	//Instagram
 	############################
-	$options_area = $options_area_orig."_instagram";
+	/*$options_area = $options_area_orig."_instagram";
 
 	add_settings_section($options_area, "", $options_area."_callback", BASE_OPTIONS_PAGE);
 
 	$arr_settings = array();
 	$arr_settings['setting_instagram_api_token'] = __("Access Token", 'lang_social_feed');
 
-	show_settings_fields(array('area' => $options_area, 'settings' => $arr_settings));
+	show_settings_fields(array('area' => $options_area, 'settings' => $arr_settings));*/
 	############################
 
 	//LinkedIn
@@ -343,7 +343,7 @@ function setting_facebook_api_secret_callback()
 	echo show_textfield(array('name' => $setting_key, 'value' => $option));
 }
 
-function setting_instagram_api_token_callback()
+/*function setting_instagram_api_token_callback()
 {
 	$setting_key = get_setting_key(__FUNCTION__);
 	$option = get_option($setting_key);
@@ -356,7 +356,7 @@ function setting_instagram_api_token_callback()
 	</ol>";
 
 	echo show_textfield(array('name' => $setting_key, 'value' => $option, 'description' => $description));
-}
+}*/
 
 function setting_linkedin_api_id_callback()
 {

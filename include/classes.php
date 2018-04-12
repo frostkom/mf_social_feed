@@ -29,36 +29,36 @@ class mf_social_feed
 		$post_id = $post->ID;
 		
 		$edit_url = admin_url("post.php?post=".$post_id."&action=edit");
+		
+		$instagram_access_token = get_post_meta($post_id, $this->meta_prefix.'instagram_access_token', true);
 
-		$instagram_client_id = get_post_meta($post_id, $this->meta_prefix.'instagram_client_id', true);
-
-		if($instagram_client_id != '')
+		if($instagram_access_token != '')
 		{
-			$instagram_access_token = get_post_meta($post_id, $this->meta_prefix.'instagram_access_token', true);
+			$out = "<strong><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
+		}
 
-			if($instagram_access_token != '')
-			{
-				$out = "<strong><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
-			}
+		else
+		{
+			$instagram_client_id = get_post_meta($post_id, $this->meta_prefix.'instagram_client_id', true);
 
-			else
+			if($instagram_client_id != '')
 			{
 				$out = "<ol condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>"
 					."<li><a href='https://www.instagram.com/oauth/authorize/?client_id=".$instagram_client_id."&redirect_uri=".$edit_url."&response_type=token&scope=public_content'>".__("Authorize Here", 'lang_social_feed')."</a></li>"
 					."<li>".sprintf(__("When you arrive back here after authorization, just copy the access token from the address bar and paste it in the %s field above", 'lang_social_feed'), __("Access Token", 'lang_social_feed'))."</li>"
 				."</ol>";
 			}
-		}
 
-		else
-		{
-			$out = "<ol condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>"
-				."<li>".sprintf(__("Go to %sInstagram for Developers%s and Log in. It is important that you log in with the account that you want to fetch posts from", 'lang_social_feed'), "<a href='//instagram.com/developer/'>", "</a>")."</li>"
-				."<li>".sprintf(__("Enter the fields in the form %s and press %s", 'lang_social_feed'), "Developer Signup", "Sign up")."</li>" //Your website, Phone number, What do you want to build with API
-				."<li>".sprintf(__("Click on %s or %s and then %s", 'lang_social_feed'), "Register Your Application", "Manage Clients", "Register a New Client")."</li>"
-				."<li>".sprintf(__("Enter the fields in the form %s and press %s. It is important that you enter all the fields and that %s is set to %s. You should also uncheck %s", 'lang_social_feed'), "Register new Client ID", "Register", "Valid redirect URIs", $edit_url, "Disable implicit OAuth")."</li>"
-				."<li>".sprintf(__("Copy %s and enter into the %s field above", 'lang_social_feed'), "CLIENT ID", __("Client ID", 'lang_social_feed'))."</li>"
-			."</ol>";
+			else
+			{
+				$out = "<ol condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>"
+					."<li>".sprintf(__("Go to %sInstagram for Developers%s and Log in. It is important that you log in with the account that you want to fetch posts from", 'lang_social_feed'), "<a href='//instagram.com/developer/'>", "</a>")."</li>"
+					."<li>".sprintf(__("Enter the fields in the form %s and press %s", 'lang_social_feed'), "Developer Signup", "Sign up")."</li>" //Your website, Phone number, What do you want to build with API
+					."<li>".sprintf(__("Click on %s or %s and then %s", 'lang_social_feed'), "Register Your Application", "Manage Clients", "Register a New Client")."</li>"
+					."<li>".sprintf(__("Enter the fields in the form %s and press %s. It is important that you enter all the fields and that %s is set to %s. You should also uncheck %s", 'lang_social_feed'), "Register new Client ID", "Register", "Valid redirect URIs", $edit_url, "Disable implicit OAuth")."</li>"
+					."<li>".sprintf(__("Copy %s and enter into the %s field above", 'lang_social_feed'), "CLIENT ID", __("Client ID", 'lang_social_feed'))."</li>"
+				."</ol>";
+			}
 		}
 
 		return $out;
@@ -585,7 +585,7 @@ class mf_social_feed
 			break;
 
 			/*case 'instagram':
-				$this->instagram_api_token = get_option_or_default('setting_instagram_api_token', '1080170513.3a81a9f.43201f5429d443b4ae063cd77dbea968');
+				$this->instagram_api_token = get_option('setting_instagram_api_token');
 			break;*/
 
 			case 'linkedin':
