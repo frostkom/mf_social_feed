@@ -65,15 +65,6 @@ function init_social_feed()
 	);
 
 	register_post_type('mf_social_feed_post', $args);
-
-	if(!is_admin())
-	{
-		$plugin_include_url = plugin_dir_url(__FILE__);
-		$plugin_version = get_plugin_version(__FILE__);
-
-		mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
-		mf_enqueue_style('style_bb', plugins_url()."/mf_base/include/backbone/style.css", $plugin_version);
-	}
 }
 
 function menu_social_feed()
@@ -630,11 +621,6 @@ function column_cell_social_feed($col, $id)
 
 function column_header_social_feed_post($cols)
 {
-	$plugin_include_url = plugin_dir_url(__FILE__);
-	$plugin_version = get_plugin_version(__FILE__);
-
-	mf_enqueue_script('script_social_feed', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')), $plugin_version);
-
 	unset($cols['title']);
 	unset($cols['date']);
 
@@ -747,19 +733,7 @@ function delete_social_feed($post_id)
 
 function footer_social_feed()
 {
-	$plugin_base_include_url = plugins_url()."/mf_base/include/";
-	$plugin_include_url = plugin_dir_url(__FILE__);
-	$plugin_version = get_plugin_version(__FILE__);
-
 	$setting_social_debug = get_option('setting_social_debug');
-
-	mf_enqueue_script('underscore');
-	mf_enqueue_script('backbone');
-	mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
-	mf_enqueue_script('script_social_feed_plugins', $plugin_include_url."backbone/bb.plugins.js", array('read_more' => __("Read More", 'lang_social_feed')), $plugin_version);
-	mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
-	mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
-	mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
 
 	$obj_base = new mf_base();
 	echo $obj_base->get_templates(array('lost_connection'));
