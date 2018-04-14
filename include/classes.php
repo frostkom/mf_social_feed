@@ -1255,7 +1255,7 @@ class mf_social_feed
 
 		if(count($arr_public_feeds) > 0)
 		{
-			$obj_social_feed = new mf_social_feed();
+			//$obj_social_feed = new mf_social_feed();
 
 			$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".$data['amount']); //, post_excerpt
 
@@ -1273,16 +1273,16 @@ class mf_social_feed
 					$post_date = $r->post_date;
 					//$post_feed = $r->post_excerpt;
 
-					$post_service = get_post_meta($post_id, $obj_social_feed->meta_prefix.'service', true);
-					$post_feed = get_post_meta($post_id, $obj_social_feed->meta_prefix.'feed_id', true);
-					$post_username = get_post_meta($post_id, $obj_social_feed->meta_prefix.'name', true);
-					$post_image = get_post_meta($post_id, $obj_social_feed->meta_prefix.'image', true);
-					$post_link = get_post_meta($post_id, $obj_social_feed->meta_prefix.'link', true);
+					$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
+					$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+					$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
+					$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
+					$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
 
 					if($data['likes'] == 'yes')
 					{
-						$post_likes = get_post_meta($post_id, $obj_social_feed->meta_prefix.'likes', true);
-						$post_comments = get_post_meta($post_id, $obj_social_feed->meta_prefix.'comments', true);
+						$post_likes = get_post_meta($post_id, $this->meta_prefix.'likes', true);
+						$post_comments = get_post_meta($post_id, $this->meta_prefix.'comments', true);
 					}
 
 					else
@@ -1326,7 +1326,7 @@ class mf_social_feed
 							'link' => $post_link,
 							'name' => $post_username,
 							'title' => $post_title,
-							'content' => $post_content,
+							'content' => apply_filters('the_content', $post_content),
 							'image' => $post_image,
 							'date' => format_date($post_date),
 							'likes' => $post_likes,
