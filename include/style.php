@@ -204,10 +204,11 @@ echo "@media all
 				
 					.widget.social_feed .sf_posts li .meta .fa
 					{
-						-webkit-box-flex: 0 0 0;
-						-webkit-flex: 0 0 0;
-						-ms-flex: 0 0 0;
-						flex: 0 0 0;
+						-webkit-box-flex: 0 0 auto;
+						-webkit-flex: 0 0 auto;
+						-ms-flex: 0 0 auto;
+						flex: 0 0 auto;
+						margin-right: .5em;
 					}
 
 						.sf_facebook .fa, .column-type .fa-facebook
@@ -243,7 +244,7 @@ echo "@media all
 						flex: 0 auto auto;
 						font-size: .7em;
 						line-height: 1.5;
-						margin: 0 .5em;
+						margin-right: .5em;
 						overflow: hidden;
 						text-overflow: ellipsis;
 						white-space: nowrap;
@@ -257,7 +258,7 @@ echo "@media all
 						-ms-flex: 1 0 0;
 						flex: 1 0 0;
 						font-size: .6em;
-						line-height: 2;
+						line-height: 1.8;
 						text-align: right;
 					}
 

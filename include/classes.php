@@ -329,9 +329,7 @@ class mf_social_feed
 
 		else
 		{
-			$error_text = __("I could not hide the post for you. An admin has been notified about this issue", 'lang_social_feed');
-
-			error_log($error_text." (".$wpdb->last_query.")");
+			$error_text = __("I could not hide the post for you. If the problem persists, please contact an admin", 'lang_social_feed');
 		}
 
 		$out = get_notification();
@@ -369,9 +367,7 @@ class mf_social_feed
 
 		else
 		{
-			$error_text = __("I could not ignore the post for you. An admin has been notified about this issue", 'lang_social_feed');
-
-			error_log($error_text." (".$wpdb->last_query.")");
+			$error_text = __("I could not ignore the post for you. If the problem persists, please contact an admin", 'lang_social_feed');
 		}
 
 		$out = get_notification();
@@ -1153,7 +1149,7 @@ class mf_social_feed
 
 				if($post_status == 'draft')
 				{
-					error_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
+					do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
 				}
 
 				$post_data = array(
