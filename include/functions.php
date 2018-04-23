@@ -34,6 +34,7 @@ function init_social_feed()
 	$args = array(
 		'labels' => $labels,
 		'public' => true,
+		'show_in_nav_menus' => false,
 		'exclude_from_search' => true,
 		'capability_type' => 'page',
 		'menu_position' => 21,
@@ -55,6 +56,7 @@ function init_social_feed()
 		'labels' => $labels,
 		'public' => true,
 		'show_in_menu' => false,
+		'show_in_nav_menus' => false,
 		'exclude_from_search' => true,
 		'hierarchical' => true,
 		'has_archive' => false,
