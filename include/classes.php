@@ -711,6 +711,8 @@ class mf_social_feed
 
 		if(isset($json['data']))
 		{
+			//do_log("FB: ".htmlspecialchars(var_export($json['data'], true)));
+
 			foreach($json['data'] as $post)
 			{
 				/*array (
@@ -724,10 +726,17 @@ class mf_social_feed
 					'created_time' => '2017-06-06T18:58:29+0000'
 				)*/
 
+				/*array(
+					'id' => '[id]_[id]',
+					'message' => '[text]',
+					'full_picture' => '[url]',
+					'created_time' => '2018-04-27T12:42:07+0000'
+				)*/
+
 				$post_id = $post['id'];
 				$arr_post_id = explode("_", $post_id);
 
-				$post_author = isset($post['from']) ? $post['from']['id'] : 0;
+				//$post_author = isset($post['from']) ? $post['from']['id'] : 0;
 
 				$post_content = "";
 
@@ -749,7 +758,8 @@ class mf_social_feed
 					'link' => "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1],
 					'image' => isset($post['full_picture']) && $post['full_picture'] != '' ? $post['full_picture'] : "",
 					'created' => date("Y-m-d H:i:s", strtotime($post['created_time'])),
-					'is_owner' => ($arr_post_id[0] == $post_author),
+					//'is_owner' => ( == $post_author),
+					'is_owner' => (isset($post['from']) ? $post['from']['id'] == $arr_post_id[0] : true),
 				);
 			}
 
@@ -1135,6 +1145,8 @@ class mf_social_feed
 	{
 		global $wpdb;
 
+		//do_log("Social Feed - Posts: ".htmlspecialchars(var_export($this->arr_posts, true)));
+
 		foreach($this->arr_posts as $post)
 		{
 			$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type']." ".$post['id']);
@@ -1144,33 +1156,33 @@ class mf_social_feed
 
 			if($wpdb->num_rows == 0)
 			{
-				$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' AND post_status = 'pending' AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->id, $post['name']));
-				$post_status = $wpdb->num_rows > 0 ? 'draft' : 'publish';
-
-				if($post_status == 'draft')
-				{
-					do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
-				}
-
-				$post_data = array(
-					'post_type' => 'mf_social_feed_post',
-					'post_status' => $post_status,
-					'post_name' => $post_name, //Can this be removed?
-					'post_title' => $post_title,
-					'post_content' => $post['text'],
-					'post_date' => $post['created'],
-					'post_excerpt' => $this->id, //Can this be removed?
-					'meta_input' => array(
-						$this->meta_prefix.'service' => $post['type'],
-						$this->meta_prefix.'feed_id' => $this->id,
-						$this->meta_prefix.'name' => $post['name'],
-						$this->meta_prefix.'image' => $post['image'],
-						$this->meta_prefix.'link' => $post['link'],
-					),
-				);
-
 				if(!isset($post['is_owner']) || $post['is_owner'] == true)
 				{
+					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' AND post_status = 'pending' AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->id, $post['name']));
+					$post_status = $wpdb->num_rows > 0 ? 'draft' : 'publish';
+
+					if($post_status == 'draft')
+					{
+						do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
+					}
+
+					$post_data = array(
+						'post_type' => 'mf_social_feed_post',
+						'post_status' => $post_status,
+						'post_name' => $post_name, //Can this be removed?
+						'post_title' => $post_title,
+						'post_content' => $post['text'],
+						'post_date' => $post['created'],
+						'post_excerpt' => $this->id, //Can this be removed?
+						'meta_input' => array(
+							$this->meta_prefix.'service' => $post['type'],
+							$this->meta_prefix.'feed_id' => $this->id,
+							$this->meta_prefix.'name' => $post['name'],
+							$this->meta_prefix.'image' => $post['image'],
+							$this->meta_prefix.'link' => $post['link'],
+						),
+					);
+
 					$post_id = wp_insert_post($post_data);
 
 					if(isset($post['likes']) && $post['likes'] > 0)
@@ -1189,22 +1201,22 @@ class mf_social_feed
 			{
 				foreach($result as $r)
 				{
-					$post_data = array(
-						'ID' => $r->ID,
-						'post_name' => $post_name, //Can this be removed?
-						'post_title' => $post_title,
-						'post_content' => $post['text'],
-						'meta_input' => array(
-							$this->meta_prefix.'service' => $post['type'],
-							$this->meta_prefix.'feed_id' => $this->id,
-							$this->meta_prefix.'name' => $post['name'],
-							$this->meta_prefix.'image' => $post['image'],
-							$this->meta_prefix.'link' => $post['link'],
-						),
-					);
-
 					if(!isset($post['is_owner']) || $post['is_owner'] == true)
 					{
+						$post_data = array(
+							'ID' => $r->ID,
+							'post_name' => $post_name, //Can this be removed?
+							'post_title' => $post_title,
+							'post_content' => $post['text'],
+							'meta_input' => array(
+								$this->meta_prefix.'service' => $post['type'],
+								$this->meta_prefix.'feed_id' => $this->id,
+								$this->meta_prefix.'name' => $post['name'],
+								$this->meta_prefix.'image' => $post['image'],
+								$this->meta_prefix.'link' => $post['link'],
+							),
+						);
+
 						wp_update_post($post_data);
 
 						if(isset($post['likes']) && $post['likes'] > 0)
