@@ -164,7 +164,7 @@ var SocialView = Backbone.View.extend(
 
 		dom_obj.html(html).removeClass('hide');
 
-		jQuery(this.el).find(".section .sf_posts.show_read_more p").shorten();
+		jQuery(this.el).find(".section .sf_posts.show_read_more .text").shorten();
 	}
 });
 

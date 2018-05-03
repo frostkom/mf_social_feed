@@ -788,7 +788,7 @@ function footer_social_feed()
 
 				if(content != '')
 				{ %>
-					<p><%= content %></p>
+					<div class='text'><%= content %></div>
 				<% }
 
 				if(likes != '' || comments != '')

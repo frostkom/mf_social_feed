@@ -148,7 +148,7 @@ echo "@media all
 					padding-top: 1em;
 				}
 
-				.widget.social_feed .sf_posts.hide_text .fa, .widget.social_feed .sf_posts.hide_text .name, .widget.social_feed .sf_posts.hide_text .date, .widget.social_feed .sf_posts.hide_text .content p
+				.widget.social_feed .sf_posts.hide_text .fa, .widget.social_feed .sf_posts.hide_text .name, .widget.social_feed .sf_posts.hide_text .date, .widget.social_feed .sf_posts.hide_text .content .text
 				{
 					display: none;
 				}
@@ -275,22 +275,22 @@ echo "@media all
 						margin-top: .5em;
 					}
 
-					.widget.social_feed p
+					.widget.social_feed p, .widget.social_feed .text
 					{
 						margin-top: .5em;
 					}
 
-						.widget.social_feed p + p
+						.widget.social_feed .text
 						{
 							font-size: .9em;
 						}
 
-						.shorten-shortened
+						.widget.social_feed .shorten-shortened
 						{
 							position: relative;
 						}
 
-							.shorten-shortened:after
+							.widget.social_feed .shorten-shortened:after
 							{
 								bottom: 0;
 								content: '';
@@ -300,12 +300,12 @@ echo "@media all
 								right: 0;
 							}
 
-								.shorten-clipped
+								.widget.social_feed .shorten-clipped
 								{
 									opacity: 0;
 								}
 
-								.shorten-more-link
+								.widget.social_feed .shorten-more-link
 								{
 									display: inline-block;
 									margin: .5em 0 0 !important;
