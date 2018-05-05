@@ -248,14 +248,15 @@ class mf_social_feed
 
 		if($post_type == 'mf_social_feed_post')
 		{
-			$strFilter = check_var('strFilter');
+			//$strFilterSocialFeed = get_or_set_table_filter(array('key' => 'strFilterSocialFeed', 'save' => true));
+			$strFilterSocialFeed = check_var('strFilterSocialFeed');
 
 			$arr_data = array();
 			get_post_children(array('post_type' => 'mf_social_feed', 'post_status' => '', 'add_choose_here' => true), $arr_data);
 
-			if(count($arr_data) > 1)
+			if(count($arr_data) > 2)
 			{
-				echo show_select(array('data' => $arr_data, 'name' => "strFilter", 'value' => $strFilter));
+				echo show_select(array('data' => $arr_data, 'name' => 'strFilterSocialFeed', 'value' => $strFilterSocialFeed));
 			}
 		}
 	}
@@ -266,14 +267,15 @@ class mf_social_feed
 
 		if($pagenow == 'edit.php' && $post_type == 'mf_social_feed_post')
 		{
-			$strFilter = check_var('strFilter');
+			//$strFilterSocialFeed = get_or_set_table_filter(array('key' => 'strFilterSocialFeed'));
+			$strFilterSocialFeed = check_var('strFilterSocialFeed');
 
-			if($strFilter != '')
+			if($strFilterSocialFeed != '')
 			{
 				$wp_query->query_vars['meta_query'] = array(
 					array(
 						'key' => $this->meta_prefix.'feed_id',
-						'value' => $strFilter,
+						'value' => $strFilterSocialFeed,
 						'compare' => '=',
 					),
 				);
@@ -711,7 +713,7 @@ class mf_social_feed
 
 		if(isset($json['data']))
 		{
-			//do_log("FB: ".htmlspecialchars(var_export($json['data'], true)));
+			//do_log("FB: ".$fb_feed_url." -> ".htmlspecialchars(var_export($json['data'], true)));
 
 			foreach($json['data'] as $post)
 			{
