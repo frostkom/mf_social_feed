@@ -1265,8 +1265,6 @@ class mf_social_feed
 
 		if(count($arr_public_feeds) > 0)
 		{
-			//$obj_social_feed = new mf_social_feed();
-
 			$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".$data['amount']); //, post_excerpt
 
 			if($wpdb->num_rows > 0)
@@ -1404,7 +1402,9 @@ class widget_social_feed extends WP_Widget
 				.$after_title;
 			}
 
-			echo "<div class='section'"
+			$feed_id = is_array($instance['social_feeds']) && count($instance['social_feeds']) > 0 ? implode("_", $instance['social_feeds']) : 0;
+
+			echo "<div id='feed_".$feed_id."' class='section'"
 				.(is_array($instance['social_feeds']) && count($instance['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $instance['social_feeds'])."'" : "")
 				.($instance['social_filter'] != '' ? " data-social_filter='".$instance['social_filter']."'" : "")
 				.($instance['social_amount'] > 0 ? " data-social_amount='".$instance['social_amount']."'" : "")

@@ -2,7 +2,7 @@ var feed_interval;
 
 var SocialView = Backbone.View.extend(
 {
-	el: jQuery(".widget.social_feed"),
+	el: jQuery("body"),
 
 	initialize: function()
 	{
@@ -11,12 +11,12 @@ var SocialView = Backbone.View.extend(
 			this.displayDebug("Initiated");
 		}
 
-		if(jQuery(this.el).length > 0)
+		if(jQuery(".widget.social_feed").length > 0)
 		{
 			this.model.on("change:response_feeds", this.show_feeds, this);
 			this.model.on("change:response_posts", this.show_posts, this);
 
-			if(jQuery(this.el).find(".sf_posts li").length == 0)
+			if(jQuery(".widget.social_feed").find(".sf_posts li").length == 0)
 			{
 				this.loadFeeds();
 			}
@@ -48,22 +48,31 @@ var SocialView = Backbone.View.extend(
 	{
 		this.displayDebug("Loading Feeds");
 
-		var dom_obj = jQuery(this.el).find(".section"),
-			reload = (dom_obj.attr('data-social_reload') || 0) * 60 * 1000,
-			action_type = "type=posts";
+		var reload = 0,
+			self = this;
 
-		if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){	action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
-		if(typeof dom_obj.attr('data-social_amount') != 'undefined'){	action_type += "&amount=" + dom_obj.attr('data-social_amount');}
-		if(typeof dom_obj.attr('data-social_filter') != 'undefined'){	action_type += "&filter=" + dom_obj.attr('data-social_filter');}
-		if(typeof dom_obj.attr('data-social_likes') != 'undefined'){	action_type += "&likes=" + dom_obj.attr('data-social_likes');}
+		jQuery(".widget.social_feed").find(".section").each(function()
+		{
+			var dom_obj = jQuery(this),
+				action_type = "type=posts";
 
-		this.loadPage(action_type);
+			if(dom_obj.attr('data-social_reload') && dom_obj.attr('data-social_reload') > 0 && dom_obj.attr('data-social_reload') < reload)
+			{
+				reload = dom_obj.attr('data-social_reload') * 60 * 1000;
+			}
+
+			if(typeof dom_obj.attr('id') != 'undefined'){					action_type += "&feed_id=" + dom_obj.attr('id');}
+			if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){	action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
+			if(typeof dom_obj.attr('data-social_amount') != 'undefined'){	action_type += "&amount=" + dom_obj.attr('data-social_amount');}
+			if(typeof dom_obj.attr('data-social_filter') != 'undefined'){	action_type += "&filter=" + dom_obj.attr('data-social_filter');}
+			if(typeof dom_obj.attr('data-social_likes') != 'undefined'){	action_type += "&likes=" + dom_obj.attr('data-social_likes');}
+
+			self.loadPage(action_type);
+		});
 
 		if(reload > 0)
 		{
 			clearInterval(feed_interval);
-
-			var self = this;
 
 			feed_interval = setInterval(function()
 			{
@@ -118,7 +127,7 @@ var SocialView = Backbone.View.extend(
 		var response = this.model.get('response_feeds'),
 			amount = response.length,
 			html = "",
-			dom_obj = jQuery(this.el).find(".section .sf_feeds");
+			dom_obj = jQuery("#" + this.model.get('feed_id') + ".section .sf_feeds");
 
 		dom_obj.addClass('hide');
 
@@ -139,15 +148,15 @@ var SocialView = Backbone.View.extend(
 	{
 		this.displayDebug("Display Posts");
 
-		jQuery(this.el).find(".section .fa-spinner").addClass('hide');
-
 		var response = this.model.get('response_posts'),
 			amount = response.length,
 			html = "",
-			dom_obj = jQuery(this.el).find(".section .sf_posts");
+			dom_obj = jQuery("#" + this.model.get('feed_id') + ".section");
 
-		if(amount < 3){		dom_obj.addClass('one_column');}
-		else{				dom_obj.removeClass('one_column');}
+		dom_obj.find(".fa-spinner").addClass('hide');
+
+		if(amount < 3){		dom_obj.find(".sf_posts").addClass('one_column');}
+		else{				dom_obj.find(".sf_posts").removeClass('one_column');}
 
 		if(amount > 0)
 		{
@@ -162,9 +171,9 @@ var SocialView = Backbone.View.extend(
 			html = _.template(jQuery("#template_feed_message").html())("");
 		}
 
-		dom_obj.html(html).removeClass('hide');
+		dom_obj.find(".sf_posts").html(html).removeClass('hide');
 
-		jQuery(this.el).find(".section .sf_posts.show_read_more .text").shorten();
+		dom_obj.find(".sf_posts.show_read_more .text").shorten();
 	}
 });
 

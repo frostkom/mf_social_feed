@@ -19,14 +19,16 @@ if(is_plugin_active('mf_cache/index.php'))
 $json_output = array();
 
 $type = check_var('type', 'char');
-$feeds = check_var('feeds', 'char');
-$amount = check_var('amount', 'int');
-$filter = check_var('filter', 'char');
-$likes = check_var('likes', 'char');
 
 switch($type)
 {
 	case 'posts':
+		$feed_id = check_var('feed_id', 'char');
+		$feeds = check_var('feeds', 'char');
+		$amount = check_var('amount', 'int');
+		$filter = check_var('filter', 'char');
+		$likes = check_var('likes', 'char');
+
 		if($feeds != '')
 		{
 			$feeds = explode(",", $feeds);
@@ -35,9 +37,10 @@ switch($type)
 		$obj_social_feed = new mf_social_feed();
 		list($arr_post_feeds, $arr_post_posts) = $obj_social_feed->get_feeds_and_posts(array('feeds' => $feeds, 'amount' => $amount, 'filter' => $filter, 'likes' => $likes));
 
+		$json_output['success'] = true;
+		$json_output['feed_id'] = $feed_id;
 		$json_output['response_feeds'] = $arr_post_feeds;
 		$json_output['response_posts'] = $arr_post_posts;
-		$json_output['success'] = true;
 	break;
 }
 

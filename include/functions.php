@@ -819,7 +819,7 @@ function shortcode_social_feed($atts)
 	$setting_social_reload = get_option('setting_social_reload');
 
 	$out = "<div class='widget social_feed'>
-		<div class='section'"
+		<div id='feed_".$id."' class='section'"
 			.($id > 0 ? " data-social_feeds='".$id."'" : "")
 			.($filter != '' ? " data-social_filter='".$filter."'" : "")
 			.($amount > 0 ? " data-social_amount='".$amount."'" : "")
