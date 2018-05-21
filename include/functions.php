@@ -398,7 +398,7 @@ function setting_linkedin_authorize_callback()
 	$setting_key = get_setting_key(__FUNCTION__);
 
 	$obj_social_feed = new mf_social_feed();
-	
+
 	echo $obj_social_feed->check_access_token()
 	.$obj_social_feed->get_access_token_button();
 }

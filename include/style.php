@@ -201,7 +201,7 @@ echo "@media all
 					display: -webkit-flex;
 					display: flex;
 				}
-				
+
 					.widget.social_feed .sf_posts li .meta .fa
 					{
 						-webkit-box-flex: 0 0 auto;

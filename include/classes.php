@@ -60,9 +60,9 @@ class mf_social_feed
 		global $post;
 
 		$post_id = $post->ID;
-		
+
 		$edit_url = admin_url("post.php?post=".$post_id."&action=edit");
-		
+
 		$instagram_access_token = get_post_meta($post_id, $this->meta_prefix.'instagram_access_token', true);
 
 		if($instagram_access_token != '')
@@ -447,7 +447,7 @@ class mf_social_feed
 			{
 				$this->email_when_expired();
 
-				update_option('option_linkedin_emailed', 1);
+				update_option('option_linkedin_emailed', 1, 'no');
 			}
 
 			else
@@ -559,7 +559,7 @@ class mf_social_feed
 					'expires_in' => $end_date
 				);
 
-				update_option('option_linkedin_authkey', $auth_options);
+				update_option('option_linkedin_authkey', $auth_options, 'no');
 				delete_option('option_linkedin_emailed');
 
 				$done_text = __("I updated the Access Token for you", 'lang_social_feed');
