@@ -27,16 +27,13 @@ function calc_width($columns)
 switch($setting_social_design)
 {
 	case 'masonry':
-		$post_container_desktop = "-moz-column-count: ".$setting_social_desktop_columns.";
-		-webkit-column-count: ".$setting_social_desktop_columns.";
+		$post_container_desktop = "-webkit-column-count: ".$setting_social_desktop_columns.";
 		column-count: ".$setting_social_desktop_columns.";";
 
-		$post_container_tablet = "-moz-column-count: ".$setting_social_tablet_columns.";
-		-webkit-column-count: ".$setting_social_tablet_columns.";
+		$post_container_tablet = "-webkit-column-count: ".$setting_social_tablet_columns.";
 		column-count: ".$setting_social_tablet_columns.";";
 
-		$post_container_mobile = "-moz-column-count: ".$setting_social_mobile_columns.";
-		-webkit-column-count: ".$setting_social_mobile_columns.";
+		$post_container_mobile = "-webkit-column-count: ".$setting_social_mobile_columns.";
 		column-count: ".$setting_social_mobile_columns.";";
 
 		$post_item_desktop = "-webkit-column-break-inside: avoid;
