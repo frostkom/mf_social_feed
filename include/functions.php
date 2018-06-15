@@ -518,7 +518,15 @@ function column_cell_social_feed($col, $id)
 				break;
 
 				case 'instagram':
-					$feed_url = "//instagram.com/".$post_meta_filtered;
+					if(substr($post_meta_filtered, 0, 1) == "#")
+					{
+						$feed_url = "//instagram.com/explore/tags/".substr($post_meta_filtered, 1);
+					}
+
+					else
+					{
+						$feed_url = "//instagram.com/".$post_meta_filtered;
+					}
 				break;
 
 				case 'linkedin':
@@ -533,7 +541,15 @@ function column_cell_social_feed($col, $id)
 				break;
 
 				case 'twitter':
-					$feed_url = "//twitter.com/".$post_meta_filtered;
+					if(substr($post_meta_filtered, 0, 1) == "#")
+					{
+						$feed_url = "//twitter.com/search?f=tweets&src=typd&q=%23".substr($post_meta_filtered, 1);
+					}
+
+					else
+					{
+						$feed_url = "//twitter.com/".$post_meta_filtered;
+					}
 				break;
 
 				default:
@@ -551,7 +567,7 @@ function column_cell_social_feed($col, $id)
 				{
 					$intFeedID = check_var('intFeedID');
 
-					if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce'], 'feed_fetch_'.$id))
+					if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce_feed_fetch'], 'feed_fetch_'.$id))
 					{
 						$obj_social_feed->set_id($id);
 						$obj_social_feed->fetch_feed();
@@ -559,7 +575,7 @@ function column_cell_social_feed($col, $id)
 
 					else
 					{
-						$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), "feed_fetch_".$id)."'>".__("Fetch", 'lang_social_feed')."</a> | ";
+						$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
 					}
 				}
 			}
@@ -612,7 +628,7 @@ function column_cell_social_feed($col, $id)
 			{
 				$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $id));
 
-				echo "<a href='".admin_url("edit.php?post_type=mf_social_feed_post&strFilter=".$id)."'>".$amount."</a>"
+				echo "<a href='".admin_url("edit.php?post_type=mf_social_feed_post&strFilterSocialFeed=".$id)."'>".$amount."</a>"
 				."<div class='row-actions'>"
 					.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
 				."</div>";

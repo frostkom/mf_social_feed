@@ -713,7 +713,10 @@ class mf_social_feed
 
 		if(isset($json['data']))
 		{
-			//do_log("FB: ".$fb_feed_url." -> ".htmlspecialchars(var_export($json['data'], true)));
+			if(get_option('setting_social_debug') == 'yes')
+			{
+				do_log(__("Facebook", 'lang_social_feed').": ".$fb_feed_url." -> ".htmlspecialchars(var_export($json['data'], true)));
+			}
 
 			foreach($json['data'] as $post)
 			{
@@ -725,14 +728,14 @@ class mf_social_feed
 					),
 					'message' => '[text]',
 					'full_picture' => '[url]',
-					'created_time' => '2017-06-06T18:58:29+0000'
+					'created_time' => '[datetime]'
 				)*/
 
 				/*array(
 					'id' => '[id]_[id]',
 					'message' => '[text]',
 					'full_picture' => '[url]',
-					'created_time' => '2018-04-27T12:42:07+0000'
+					'created_time' => '[datetime]'
 				)*/
 
 				$post_id = $post['id'];
@@ -780,7 +783,90 @@ class mf_social_feed
 
 		if(substr($this->search, 0, 1) == "#")
 		{
-			$filter = "tags/".substr($this->search, 1)."/media/recent";
+			//$filter = "tags/".substr($this->search, 1)."/media/recent";
+			$url = "https://www.instagram.com/explore/tags/".substr($this->search, 1)."/?__a=1";
+
+			$result = wp_remote_retrieve_body(wp_remote_get($url));
+			$json = json_decode($result);
+
+			if(isset($json->graphql->hashtag->edge_hashtag_to_media->edges))
+			{
+				if(get_option('setting_social_debug') == 'yes')
+				{
+					do_log(__("Instagram", 'lang_social_feed').": ".$url." -> ".htmlspecialchars(var_export($json->graphql->hashtag->edge_hashtag_to_media->edges, true)));
+				}
+
+				foreach($json->graphql->hashtag->edge_hashtag_to_media->edges as $post)
+				{
+					/*"node":{
+						"comments_disabled":false,
+						"id":[id],
+						"edge_media_to_caption":{
+							"edges":[
+							{
+								"node":{
+									"text":[text]
+								}
+							}]
+						},
+						"shortcode":[text],
+						"edge_media_to_comment":{"count":1},
+						"taken_at_timestamp":[timestamp],
+						"dimensions":{"height":1080,"width":1080},
+						"display_url":[url],
+						"edge_liked_by":{"count":45},
+						"edge_media_preview_like":{"count":45},
+						"owner":{"id":[id]},
+						"thumbnail_src":[url],
+						"thumbnail_resources":[
+						{
+							"src":[url],
+							"config_width":150,
+							"config_height":150
+						},
+						{
+							"src":[url],
+							"config_width":240,
+							"config_height":240
+						},
+						{
+							"src":[url],
+							"config_width":320,
+							"config_height":320
+						},
+						{
+							"src":[url],
+							"config_width":480,
+							"config_height":480
+						},
+						{
+							"src":[url],
+							"config_width":640,
+							"config_height":640
+						}],
+						"is_video":false
+					}*/
+
+					$this->arr_posts[] = array(
+						'type' => $this->type,
+						'id' => $post->node->id.(isset($post->node->owner->id) ? "_".$post->node->owner->id : ''),
+						'name' => isset($post->node->owner->id) ? $post->node->owner->id : $this->search,
+						'text' => isset($post->node->edge_media_to_caption->edges->node->text) ? $post->node->edge_media_to_caption->edges->node->text : "",
+						'link' => "https://www.instagram.com/p/".$post->node->shortcode,
+						'image' => $post->node->thumbnail_src,
+						'created' => date("Y-m-d H:i:s", $post->node->taken_at_timestamp),
+						'likes' => $post->node->edge_liked_by->count,
+						'comments' => $post->node->edge_media_to_comment->count,
+					);
+				}
+
+				delete_post_meta($this->id, $this->meta_prefix.'error');
+			}
+
+			else
+			{
+				update_post_meta($this->id, $this->meta_prefix.'error', sprintf(__("The JSON I got back was not correct. Have a look at %s", 'lang_social_feed'), $url));
+			}
 		}
 
 		else
@@ -842,6 +928,11 @@ class mf_social_feed
 
 			if(isset($json->data))
 			{
+				if(get_option('setting_social_debug') == 'yes')
+				{
+					do_log(__("Instagram", 'lang_social_feed').": ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
+				}
+
 				foreach($json->data as $post)
 				{
 					/*array('location' => NULL,
@@ -920,6 +1011,11 @@ class mf_social_feed
 
 			if(isset($results) && is_array($results))
 			{
+				if(get_option('setting_social_debug') == 'yes')
+				{
+					do_log(__("LinkedIn", 'lang_social_feed').": ".htmlspecialchars(var_export($results, true)));
+				}
+
 				foreach($results as $post)
 				{
 					/*array ( 'isCommentable' => true, 'isLikable' => true, 'isLiked' => false, 'numLikes' => 0, 'timestamp' => [timestamp], 'updateComments' => array ( '_total' => 0, ), 'updateContent' => array ( 'company' => array ( 'id' => [id], 'name' => '[text]', ), 'companyStatusUpdate' => array ( 'share' => array ( 'comment' => '[text]', 'id' => 's[id]', 'source' => array ( 'serviceProvider' => array ( 'name' => 'LINKEDIN', ), 'serviceProviderShareId' => 's[id]', ), 'timestamp' => [timestamp], 'visibility' => array ( 'code' => 'anyone', ), ), ), ), 'updateKey' => 'UPDATE-c18432292-[id]', 'updateType' => 'CMPY', )*/
@@ -993,6 +1089,11 @@ class mf_social_feed
 
 		if($check)
 		{
+			if(get_option('setting_social_debug') == 'yes')
+			{
+				do_log(__("RSS", 'lang_social_feed').": ".$this->search." -> ".htmlspecialchars(var_export($feed->get_items(), true)));
+			}
+
 			foreach($feed->get_items() as $item)
 			{
 				$post_link = $item->get_permalink();
@@ -1078,6 +1179,11 @@ class mf_social_feed
 
 		if(isset($results) && is_array($results))
 		{
+			if(get_option('setting_social_debug') == 'yes')
+			{
+				do_log(__("Twitter", 'lang_social_feed').": ".htmlspecialchars(var_export($results, true)));
+			}
+
 			foreach($results as $key => $post)
 			{
 				/*array('created_at' => 'Fri Feb 17 08:09:54 +0000 2017', 'id' => '[id]', 'id_str' => '[id]', 'text' => 'Text #hashtag', 'truncated' => false,
