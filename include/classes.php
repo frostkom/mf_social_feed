@@ -783,7 +783,6 @@ class mf_social_feed
 
 		if(substr($this->search, 0, 1) == "#")
 		{
-			//$filter = "tags/".substr($this->search, 1)."/media/recent";
 			$url = "https://www.instagram.com/explore/tags/".substr($this->search, 1)."/?__a=1";
 
 			$result = wp_remote_retrieve_body(wp_remote_get($url));
@@ -867,6 +866,8 @@ class mf_social_feed
 			{
 				update_post_meta($this->id, $this->meta_prefix.'error', sprintf(__("The JSON I got back was not correct. Have a look at %s", 'lang_social_feed'), $url));
 			}
+
+			$filter = "tags/".substr($this->search, 1)."/media/recent";
 		}
 
 		else

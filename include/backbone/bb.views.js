@@ -54,11 +54,12 @@ var SocialView = Backbone.View.extend(
 		jQuery(".widget.social_feed").find(".section").each(function()
 		{
 			var dom_obj = jQuery(this),
-				action_type = "type=posts";
+				action_type = "type=posts",
+				data_reload = parseInt(dom_obj.attr('data-social_reload')) || 0;
 
-			if(dom_obj.attr('data-social_reload') && dom_obj.attr('data-social_reload') > 0 && dom_obj.attr('data-social_reload') < reload)
+			if(data_reload > 0 || data_reload < reload)
 			{
-				reload = dom_obj.attr('data-social_reload') * 60 * 1000;
+				reload = data_reload * 60 * 1000;
 			}
 
 			if(typeof dom_obj.attr('id') != 'undefined'){					action_type += "&feed_id=" + dom_obj.attr('id');}
@@ -78,6 +79,13 @@ var SocialView = Backbone.View.extend(
 			{
 				self.loadFeeds();
 			}, reload);
+
+			this.displayDebug("Set New Interval (" + reload + ")");
+		}
+
+		else
+		{
+			this.displayDebug("No Interval Set");
 		}
 	},
 
