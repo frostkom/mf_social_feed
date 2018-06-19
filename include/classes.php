@@ -1211,7 +1211,7 @@ class mf_social_feed
 
 				if(isset($post->node->owner->id) && $post->node->owner->id > 0)
 				{
-					$result = $wpdb->get_results($wpdb->prepare("SELECT meta_value FROM ".$wpdb->postmeta." WHERE meta_key = %s AND post_id = (SELECT post_id FROM ".$wpdb->postmeta." WHERE meta_key = %s AND meta_value = %d) LIMIT 0, 1", $this->meta_prefix.'name', $this->meta_prefix.'user_id', $post->node->owner->id));
+					$result = $wpdb->get_results($wpdb->prepare("SELECT meta_value FROM ".$wpdb->postmeta." WHERE meta_key = %s AND post_id = (SELECT post_id FROM ".$wpdb->postmeta." WHERE meta_key = %s AND meta_value = %d LIMIT 0, 1) LIMIT 0, 1", $this->meta_prefix.'name', $this->meta_prefix.'user_id', $post->node->owner->id));
 
 					if($wpdb->num_rows > 0)
 					{
