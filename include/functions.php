@@ -73,7 +73,7 @@ function menu_social_feed()
 {
 	$menu_root = 'mf_social_feed/';
 	$menu_start = "edit.php?post_type=mf_social_feed";
-	$menu_capability = "edit_pages";
+	$menu_capability = override_capability(array('page' => $menu_start, 'default' => 'edit_pages'));
 
 	$menu_title = __("Posts", 'lang_social_feed');
 	add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=mf_social_feed_post");
