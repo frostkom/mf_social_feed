@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 5.0.11
+Version: 5.1.3
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: http://frostkom.se
@@ -20,7 +20,7 @@ include_once("include/functions.php");
 $obj_social_feed = new mf_social_feed();
 
 add_action('cron_base', 'activate_social_feed', mt_rand(1, 10));
-add_action('cron_base', 'cron_social_feed', mt_rand(1, 10));
+add_action('cron_base', array($obj_social_feed, 'run_cron'), mt_rand(1, 10));
 
 add_action('init', 'init_social_feed');
 add_action('widgets_init', 'widgets_social_feed');
@@ -30,7 +30,7 @@ if(is_admin())
 	register_activation_hook(__FILE__, 'activate_social_feed');
 	register_uninstall_hook(__FILE__, 'uninstall_social_feed');
 
-	add_action('admin_init', 'settings_social_feed');
+	add_action('admin_init', array($obj_social_feed, 'settings_social_feed'));
 	add_action('admin_init', array($obj_social_feed, 'admin_init'), 0);
 	add_action('admin_menu', 'menu_social_feed');
 
@@ -81,7 +81,7 @@ function activate_social_feed()
 function uninstall_social_feed()
 {
 	mf_uninstall_plugin(array(
-		'options' => array('setting_social_time_limit', 'setting_social_reload', 'setting_social_design', 'setting_social_full_width', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_display_border', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_linkedin_api_id', 'setting_linkedin_api_secret', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_linkedin_email_when_expired', 'option_linkedin_emailed', 'option_linkedin_authkey', 'setting_twitter_api_key', 'setting_twitter_api_secret', 'setting_twitter_api_token', 'setting_twitter_api_token_secret'),
+		'options' => array('setting_social_time_limit', 'setting_social_reload', 'setting_social_design', 'setting_social_full_width', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_display_border', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'setting_linkedin_api_id', 'setting_linkedin_api_secret', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_linkedin_email_when_expired', 'option_linkedin_emailed', 'option_linkedin_authkey', 'setting_twitter_api_key', 'setting_twitter_api_secret', 'setting_twitter_api_token', 'setting_twitter_api_token_secret'),
 		'post_types' => array('mf_social_feed', 'mf_social_feed_post'),
 	));
 }
