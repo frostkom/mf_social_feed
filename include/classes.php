@@ -1816,7 +1816,11 @@ class mf_social_feed
 
 		if(count($arr_public_feeds) > 0)
 		{
-			$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".$data['amount']); //, post_excerpt
+			/* Group Posts */
+			$query_where .= ", CONCAT(SUBSTRING(post_date, 1, 10), SUBSTRING(post_content, 1, 40)) AS post_group";
+			$query_group .= " GROUP BY post_group";
+
+			$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid".$query_where." FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT 0, ".$data['amount']);
 
 			if($wpdb->num_rows > 0)
 			{
@@ -1830,7 +1834,6 @@ class mf_social_feed
 					$post_title = $r->post_title;
 					$post_content = $r->post_content;
 					$post_date = $r->post_date;
-					//$post_feed = $r->post_excerpt;
 
 					$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 					$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
