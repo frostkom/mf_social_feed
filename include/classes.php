@@ -1800,7 +1800,7 @@ class mf_social_feed
 		global $wpdb;
 
 		$arr_public_feeds = $arr_post_feeds = $arr_post_posts = array();
-		$query_where = "";
+		$query_where = $query_group = "";
 
 		if(is_array($data['feeds']) && count($data['feeds']) > 0)
 		{
