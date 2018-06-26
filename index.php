@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 5.1.8
+Version: 5.1.9
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: http://frostkom.se
@@ -23,7 +23,6 @@ add_action('cron_base', 'activate_social_feed', mt_rand(1, 10));
 add_action('cron_base', array($obj_social_feed, 'run_cron'), mt_rand(1, 10));
 
 add_action('init', 'init_social_feed');
-add_action('widgets_init', 'widgets_social_feed');
 
 if(is_admin())
 {
@@ -63,6 +62,7 @@ else
 }
 
 add_shortcode('mf_social_feed', 'shortcode_social_feed');
+add_action('widgets_init', 'widgets_social_feed');
 
 add_action('wp_ajax_social_feed_action_hide', array($obj_social_feed, 'action_hide'));
 add_action('wp_ajax_social_feed_action_ignore', array($obj_social_feed, 'action_ignore'));

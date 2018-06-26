@@ -1157,7 +1157,7 @@ class mf_social_feed
 			update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
 		}
 	}
-	
+
 	function fetch_alt_instagram()
 	{
 		global $wpdb;
