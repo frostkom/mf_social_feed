@@ -2003,33 +2003,33 @@ class widget_social_feed extends WP_Widget
 		return $instance;
 	}
 
+	function get_display_filter_for_select()
+	{
+		return array(
+			'no' => __("No", 'lang_social_feed'),
+			'yes' => __("Yes", 'lang_social_feed')." (".__("Individually", 'lang_social_feed').")",
+			'group' => __("Yes", 'lang_social_feed')." (".__("Grouped", 'lang_social_feed').")",
+		);
+	}
+
 	function form($instance)
 	{
 		$instance = wp_parse_args((array)$instance, $this->arr_default);
 
 		$arr_data_feeds = array();
-		get_post_children(array('post_type' => 'mf_social_feed'), $arr_data_feeds);
+		get_post_children(array('post_type' => 'mf_social_feed', 'order_by' => 'post_title'), $arr_data_feeds);
 
 		echo "<div class='mf_form'>"
 			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading']));
 
 			if(count($arr_data_feeds) > 1)
 			{
-				echo "<div class='flex_flow'>"
-					.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']));
+				echo show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']));
 
-					if(count($instance['social_feeds']) != 1)
-					{
-						$arr_data_filter = array(
-							'no' => __("No", 'lang_social_feed'),
-							'yes' => __("Yes", 'lang_social_feed')." (".__("Individually", 'lang_social_feed').")",
-							'group' => __("Yes", 'lang_social_feed')." (".__("Grouped", 'lang_social_feed').")",
-						);
-
-						echo show_select(array('data' => $arr_data_filter, 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']));
-					}
-
-				echo "</div>";
+				if(count($instance['social_feeds']) != 1)
+				{
+					echo show_select(array('data' => $this->get_display_filter_for_select(), 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']));
+				}
 			}
 
 			echo show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
