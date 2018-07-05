@@ -64,8 +64,9 @@ var SocialView = Backbone.View.extend(
 
 			if(typeof dom_obj.attr('id') != 'undefined'){					action_type += "&feed_id=" + dom_obj.attr('id');}
 			if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){	action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
-			if(typeof dom_obj.attr('data-social_amount') != 'undefined'){	action_type += "&amount=" + dom_obj.attr('data-social_amount');}
 			if(typeof dom_obj.attr('data-social_filter') != 'undefined'){	action_type += "&filter=" + dom_obj.attr('data-social_filter');}
+			if(typeof dom_obj.attr('data-social_amount') != 'undefined'){	action_type += "&amount=" + dom_obj.attr('data-social_amount');}
+			if(typeof dom_obj.attr('data-social_limit_source') != 'undefined'){	action_type += "&limit_source=" + dom_obj.attr('data-social_limit_source');}
 			if(typeof dom_obj.attr('data-social_likes') != 'undefined'){	action_type += "&likes=" + dom_obj.attr('data-social_likes');}
 
 			self.loadPage(action_type);

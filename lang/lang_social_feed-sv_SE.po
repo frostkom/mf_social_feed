@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-04 19:40+0100\n"
+"POT-Creation-Date: 2018-07-05 22:58+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -413,20 +413,28 @@ msgstr "Flöden"
 msgid "Display Filter"
 msgstr "Visa filter"
 
-#: ../include/classes.php:2035
+#: ../include/classes.php:2036
 #: ../include/functions.php:117
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:2036
+#: ../include/classes.php:2040
+msgid "Limit Source"
+msgstr "Begränsa källa"
+
+#: ../include/classes.php:2040
+msgid "This will prevent one source from taking over the whole feed if it is posted to much more often than the other sources"
+msgstr "Detta stoppar en källa från att ta över hela flödet om det skrivs till den mycket oftare än övriga källor"
+
+#: ../include/classes.php:2045
 msgid "Display Text"
 msgstr "Visa text"
 
-#: ../include/classes.php:2042
+#: ../include/classes.php:2049
 msgid "Display Read More"
 msgstr "Visa Läs mer"
 
-#: ../include/classes.php:2043
+#: ../include/classes.php:2050
 msgid "Display Likes"
 msgstr "Visa Gilla"
 

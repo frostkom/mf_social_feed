@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-04 19:41+0100\n"
+"POT-Creation-Date: 2018-07-05 23:36+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -374,59 +374,67 @@ msgstr ""
 msgid "RSS"
 msgstr ""
 
-#: ../include/classes.php:1923
+#: ../include/classes.php:1947
 msgid "Display Social Feeds"
 msgstr ""
 
-#: ../include/classes.php:1937
+#: ../include/classes.php:1961
 #: ../include/functions.php:7
 msgid "Social Feed"
 msgstr ""
 
-#: ../include/classes.php:2009
+#: ../include/classes.php:2033
 msgid "No"
 msgstr ""
 
-#: ../include/classes.php:2010
-#: ../include/classes.php:2011
+#: ../include/classes.php:2034
+#: ../include/classes.php:2035
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:2010
+#: ../include/classes.php:2034
 msgid "Individually"
 msgstr ""
 
-#: ../include/classes.php:2011
+#: ../include/classes.php:2035
 msgid "Grouped"
 msgstr ""
 
-#: ../include/classes.php:2023
+#: ../include/classes.php:2047
 msgid "Heading"
 msgstr ""
 
-#: ../include/classes.php:2027
+#: ../include/classes.php:2051
 msgid "Feeds"
 msgstr ""
 
-#: ../include/classes.php:2031
+#: ../include/classes.php:2055
 msgid "Display Filter"
 msgstr ""
 
-#: ../include/classes.php:2035
+#: ../include/classes.php:2060
 #: ../include/functions.php:117
 msgid "Amount"
 msgstr ""
 
-#: ../include/classes.php:2036
+#: ../include/classes.php:2064
+msgid "Limit Source"
+msgstr ""
+
+#: ../include/classes.php:2064
+msgid "This will prevent one source from taking over the whole feed if it is posted to much more often than the other sources"
+msgstr ""
+
+#: ../include/classes.php:2069
 msgid "Display Text"
 msgstr ""
 
-#: ../include/classes.php:2042
+#: ../include/classes.php:2073
 #, fuzzy
 msgid "Display Read More"
 msgstr "Les Mer"
 
-#: ../include/classes.php:2043
+#: ../include/classes.php:2074
 msgid "Display Likes"
 msgstr ""
 

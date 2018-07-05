@@ -454,7 +454,6 @@ function shortcode_social_feed($atts)
 		'filter' => 'group',
 		'amount' => 3,
 		'text' => 'yes',
-		//'border' => 'yes',
 		'likes' => 'no',
 		'read_more' => 'yes',
 	), $atts));
@@ -475,7 +474,6 @@ function shortcode_social_feed($atts)
 
 				if($text == 'yes')
 				{
-					//($border == 'yes' ? " show_border" : '')
 					$out .= ($read_more == 'yes' ? " show_read_more" : '');
 				}
 
