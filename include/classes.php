@@ -2020,7 +2020,7 @@ class widget_social_feed extends WP_Widget
 		get_post_children(array('post_type' => 'mf_social_feed', 'order_by' => 'post_title'), $arr_data_feeds);
 
 		echo "<div class='mf_form'>"
-			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading']));
+			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='social-title'"));
 
 			if(count($arr_data_feeds) > 1)
 			{
