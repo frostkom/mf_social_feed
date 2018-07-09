@@ -123,17 +123,20 @@ function column_cell_social_feed($col, $id)
 {
 	global $wpdb;
 
-	$obj_social_feed = new mf_social_feed();
-
-	$post_meta = get_post_meta($id, $obj_social_feed->meta_prefix.$col, true);
-
 	switch($col)
 	{
 		case 'type':
+			$obj_social_feed = new mf_social_feed();
+
+			$post_meta = get_post_meta($id, $obj_social_feed->meta_prefix.$col, true);
+
 			echo "<i class='fa fa-".$post_meta." fa-2x'></i>";
 		break;
 
 		case 'search_for':
+			$obj_social_feed = new mf_social_feed();
+
+			$post_meta = get_post_meta($id, $obj_social_feed->meta_prefix.$col, true);
 			$service = get_post_meta($id, $obj_social_feed->meta_prefix.'type', true);
 
 			$post_meta_filtered = $obj_social_feed->filter_search_for($post_meta);
@@ -217,6 +220,8 @@ function column_cell_social_feed($col, $id)
 		break;
 
 		case 'amount_of_posts':
+			$obj_social_feed = new mf_social_feed();
+
 			$amount = $obj_social_feed->get_amount($id);
 
 			$post_error = get_post_meta($id, $obj_social_feed->meta_prefix.'error', true);
@@ -282,11 +287,11 @@ function column_cell_social_feed_post($col, $id)
 {
 	global $wpdb;
 
-	$obj_social_feed = new mf_social_feed();
-
 	switch($col)
 	{
 		case 'username':
+			$obj_social_feed = new mf_social_feed();
+
 			$post_meta = get_post_meta($id, $obj_social_feed->meta_prefix.'name', true);
 
 			echo "@".$post_meta;
@@ -312,6 +317,8 @@ function column_cell_social_feed_post($col, $id)
 		break;
 
 		case 'image':
+			$obj_social_feed = new mf_social_feed();
+
 			$post_meta = get_post_meta($id, $obj_social_feed->meta_prefix.$col, true);
 
 			if($post_meta != '')
