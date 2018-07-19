@@ -93,7 +93,6 @@ class mf_social_feed
 		add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
 		$arr_settings = array();
-		//$arr_settings['setting_instagram_api_token'] = __("Access Token", 'lang_social_feed');
 		$arr_settings['setting_instagram_activate_alt_fetch'] = __("Activate Alternative Fetch", 'lang_social_feed');
 
 		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
@@ -270,21 +269,6 @@ class mf_social_feed
 
 		echo show_textfield(array('name' => $setting_key, 'value' => $option));
 	}
-
-	/*function setting_instagram_api_token_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option($setting_key);
-
-		$description = "<ol>
-			<li>".sprintf(__("Go to %s and click on %s", 'lang_social_feed'), "<a href='//instagram.com/developer'>Instagram</a>", "Login -> Manage Clients -> Register a new Client")."</li>
-			<li>".sprintf(__("Make sure %s field is set to s%", 'lang_social_feed'), "OAuth redirect_uri", "http://localhost")."</li>
-			<li>".sprintf(__("Open a new browser tab and go to %s by replacing %s with your %s", 'lang_social_feed'), "<em>https://instagram.com/oauth/authorize/?client_id=[CLIENT_ID_HERE]&redirect_uri=http://localhost&response_type=token</em>", "[CLIENT_ID_HERE]", "Client ID")."</li>
-			<li>".__("Paste the returned token here", 'lang_social_feed')."</li>
-		</ol>";
-
-		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'description' => $description));
-	}*/
 
 	function setting_instagram_activate_alt_fetch_callback()
 	{
@@ -997,10 +981,6 @@ class mf_social_feed
 				$this->facebook_api_secret = get_option_or_default('setting_facebook_api_secret', 'b00ccbc6513724fafca0ff41685d735b');
 			break;
 
-			/*case 'instagram':
-				$this->instagram_api_token = get_option('setting_instagram_api_token');
-			break;*/
-
 			case 'linkedin':
 				$this->linkedin_api_id = get_option('setting_linkedin_api_id');
 				$this->linkedin_api_secret = get_option('setting_linkedin_api_secret');
@@ -1611,7 +1591,7 @@ class mf_social_feed
 					'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))),
 					'symbols' => array(), 'user_mentions' => array(), 'urls' => array(),
 					'media' => array(0 => stdClass::__set_state(array(
-						'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
+						'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => '[url]', 'media_url_https' => '[url]', 'url' => '[url]', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
 						'sizes' => stdClass::__set_state(array(
 							'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
 							'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
@@ -1622,7 +1602,7 @@ class mf_social_feed
 				)),
 				'extended_entities' => stdClass::__set_state(array(
 					'media' => array(0 => stdClass::__set_state(array(
-						'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => 'http://twimg.com/media/x.jpg', 'media_url_https' => 'http://twimg.com/media/x.jpg', 'url' => 'https://t.co/x', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
+						'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => '[url]', 'media_url_https' => '[url]', 'url' => '[url]', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
 						'sizes' => stdClass::__set_state(array(
 							'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
 							'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
@@ -1638,7 +1618,7 @@ class mf_social_feed
 					'entities' => stdClass::__set_state(array(
 						'url' => stdClass::__set_state(array(
 							'urls' => array(0 => stdClass::__set_state(array(
-								'url' => 'https://t.co/x', 'expanded_url' => 'http://domain.com', 'display_url' => 'domain.com', 'indices' => array(0 => 2)
+								'url' => 'https://t.co/x', 'expanded_url' => '[url]', 'display_url' => 'domain.com', 'indices' => array(0 => 2)
 							)))
 						)),
 						'description' => stdClass::__set_state(array('urls' => array()))
