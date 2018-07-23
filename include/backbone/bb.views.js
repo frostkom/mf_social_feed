@@ -142,11 +142,13 @@ var SocialView = Backbone.View.extend(
 
 		if(amount > 0)
 		{
+			var dom_template = jQuery("#template_feed").html();
+
 			html += _.template(jQuery("#template_feed_all").html())("");
 
 			for(var i = 0; i < amount; i++)
 			{
-				html += _.template(jQuery("#template_feed").html())(response[i]);
+				html += _.template(dom_template)(response[i]);
 			}
 
 			dom_obj.html(html).removeClass('hide');
@@ -169,9 +171,11 @@ var SocialView = Backbone.View.extend(
 
 		if(amount > 0)
 		{
+			var dom_template = jQuery("#template_feed_post").html();
+
 			for(var i = 0; i < amount; i++)
 			{
-				html += _.template(jQuery("#template_feed_post").html())(response[i]);
+				html += _.template(dom_template)(response[i]);
 			}
 		}
 
