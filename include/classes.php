@@ -15,7 +15,6 @@ class mf_social_feed
 		global $wpdb;
 
 		$obj_cron = new mf_cron();
-		//$obj_social_feed = new mf_social_feed();
 
 		$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
 
@@ -31,6 +30,52 @@ class mf_social_feed
 			$this->set_id($r->ID);
 			$this->fetch_feed();
 		}
+	}
+
+	function init()
+	{
+		$labels = array(
+			'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
+			'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
+			'menu_name' => __("Social Feeds", 'lang_social_feed')
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'public' => true,
+			'show_in_nav_menus' => false,
+			'exclude_from_search' => true,
+			'capability_type' => 'page',
+			'menu_position' => 21,
+			'menu_icon' => 'dashicons-megaphone',
+			'supports' => array('title'),
+			'hierarchical' => true,
+			'has_archive' => false,
+		);
+
+		register_post_type('mf_social_feed', $args);
+
+		$labels = array(
+			'name' => _x(__("Posts", 'lang_social_feed'), 'post type general name'),
+			'singular_name' => _x(__("Post", 'lang_social_feed'), 'post type singular name'),
+			'menu_name' => __("Posts", 'lang_social_feed')
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'public' => true,
+			'show_in_menu' => false,
+			'show_in_nav_menus' => false,
+			'exclude_from_search' => true,
+			'hierarchical' => true,
+			'has_archive' => false,
+			//Works fine if you're a Superadmin but admins can only view posts after this change
+			/*'capabilities' => array(
+				'create_posts' => (is_multisite() ? 'do_not_allow' : false),
+			),*/
+		);
+
+		register_post_type('mf_social_feed_post', $args);
 	}
 
 	function settings_social_feed()
@@ -169,12 +214,32 @@ class mf_social_feed
 		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("Twitter", 'lang_social_feed'));
 	}
 
+	function get_setting_min()
+	{
+		$setting_base_cron = get_option('setting_base_cron');
+
+		switch($setting_base_cron)
+		{
+			case 'every_two_minutes':
+				return 2;
+			break;
+
+			case 'every_ten_minutes':
+				return 10;
+			break;
+
+			default:
+				return 60;
+			break;
+		}
+	}
+
 	function setting_social_time_limit_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option_or_default($setting_key, 30);
 
-		$setting_min = get_setting_min();
+		$setting_min = $this->get_setting_min();
 
 		$option = max($option, $setting_min);
 
@@ -188,7 +253,7 @@ class mf_social_feed
 
 		if($option > 0)
 		{
-			$setting_min = get_setting_min() / 2;
+			$setting_min = $this->get_setting_min() / 2;
 
 			$option = max($option, $setting_min, (get_option('setting_social_time_limit') / 2));
 		}
@@ -313,9 +378,9 @@ class mf_social_feed
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		$obj_social_feed = new mf_social_feed();
-		$obj_social_feed->init_linkedin_auth();
-		$option = $obj_social_feed->settings_url;
+		//$obj_social_feed = new mf_social_feed();
+		$this->init_linkedin_auth();
+		$option = $this->settings_url;
 
 		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'xtra' => "readonly onclick='this.select()'", 'description' => sprintf(__("Add this URL to your App's %s", 'lang_social_feed'), "<a href='//www.linkedin.com/developer/apps/'>Authorized Redirect URLs</a>")));
 	}
@@ -324,10 +389,10 @@ class mf_social_feed
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		$obj_social_feed = new mf_social_feed();
+		//$obj_social_feed = new mf_social_feed();
 
-		echo $obj_social_feed->check_access_token()
-		.$obj_social_feed->get_access_token_button();
+		echo $this->check_access_token()
+		.$this->get_access_token_button();
 	}
 
 	function setting_linkedin_email_when_expired_callback()
@@ -389,28 +454,16 @@ class mf_social_feed
 		}
 	}
 
-	function wp_head()
+	function admin_menu()
 	{
-		$plugin_base_include_url = plugins_url()."/mf_base/include/";
-		$plugin_include_url = plugin_dir_url(__FILE__);
-		$plugin_version = get_plugin_version(__FILE__);
+		$menu_root = 'mf_social_feed/';
+		$menu_start = "edit.php?post_type=mf_social_feed";
+		$menu_capability = override_capability(array('page' => $menu_start, 'default' => 'edit_pages'));
 
-		$setting_social_debug = get_option('setting_social_debug');
-
-		mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
-		mf_enqueue_style('style_bb', $plugin_base_include_url."backbone/style.css", $plugin_version);
-
-		mf_enqueue_script('underscore');
-		mf_enqueue_script('backbone');
-		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
-		//mf_enqueue_script('script_social_feed_plugins', $plugin_include_url."backbone/bb.plugins.js", array('read_more' => __("Read More", 'lang_social_feed')), $plugin_version);
-		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
-		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
-		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
+		$menu_title = __("Posts", 'lang_social_feed');
+		add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=mf_social_feed_post");
 	}
 
-	// Admin
-	#########################
 	function meta_feed_facebook_info()
 	{
 		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='facebook'>".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</p>";
@@ -501,12 +554,32 @@ class mf_social_feed
 		return $out;
 	}
 
+	function get_social_types_for_select()
+	{
+		$arr_data = array();
+
+		$arr_data['facebook'] = __("Facebook", 'lang_social_feed');
+		$arr_data['instagram'] = __("Instagram", 'lang_social_feed');
+
+		//$obj_social_feed = new mf_social_feed();
+
+		if($this->check_token_life())
+		{
+			$arr_data['linkedin'] = __("LinkedIn", 'lang_social_feed');
+		}
+
+		$arr_data['rss'] = __("RSS", 'lang_social_feed');
+		$arr_data['twitter'] = __("Twitter", 'lang_social_feed');
+
+		return $arr_data;
+	}
+
 	function meta_boxes($meta_boxes)
 	{
 		global $wpdb;
 
 		#####################
-		$arr_data_social_types = get_social_types_for_select();
+		$arr_data_social_types = $this->get_social_types_for_select();
 
 		$default_type = "";
 
@@ -649,6 +722,258 @@ class mf_social_feed
 		}
 	}
 
+	function count_shortcode_button($count)
+	{
+		if($count == 0)
+		{
+			/*if(has_feeds())
+			{*/
+				$count++;
+			//}
+		}
+
+		return $count;
+	}
+
+	function get_shortcode_output($out)
+	{
+		$arr_data = array();
+		get_post_children(array('add_choose_here' => true, 'post_type' => 'mf_social_feed'), $arr_data);
+
+		if(count($arr_data) > 1)
+		{
+			$out .= "<h3>".__("Choose a Social Feed", 'lang_social_feed')."</h3>"
+			.show_select(array('data' => $arr_data, 'xtra' => "rel='mf_social_feed amount=3 filter=group border=no text=yes likes=no'"));
+		}
+
+		return $out;
+	}
+
+	function column_header($cols)
+	{
+		unset($cols['date']);
+
+		$cols['type'] = __("Service", 'lang_social_feed');
+		$cols['search_for'] = __("Search for", 'lang_social_feed');
+		$cols['amount_of_posts'] = __("Amount", 'lang_social_feed');
+
+		return $cols;
+	}
+
+	function column_cell($col, $id)
+	{
+		global $wpdb;
+
+		switch($col)
+		{
+			case 'type':
+				//$obj_social_feed = new mf_social_feed();
+
+				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+
+				echo "<i class='fa fa-".$post_meta." fa-2x'></i>";
+			break;
+
+			case 'search_for':
+				//$obj_social_feed = new mf_social_feed();
+
+				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+				$service = get_post_meta($id, $this->meta_prefix.'type', true);
+
+				$post_meta_filtered = $this->filter_search_for($post_meta);
+
+				switch($service)
+				{
+					case 'facebook':
+						$feed_url = "//facebook.com/".$post_meta_filtered;
+					break;
+
+					case 'instagram':
+						if(substr($post_meta_filtered, 0, 1) == "#")
+						{
+							$feed_url = "//instagram.com/explore/tags/".substr($post_meta_filtered, 1);
+						}
+
+						else
+						{
+							$feed_url = "//instagram.com/".$post_meta_filtered;
+						}
+					break;
+
+					case 'linkedin':
+						$feed_url = "//linkedin.com/company/".$post_meta_filtered;
+					break;
+
+					case 'rss':
+						$feed_url = $post_meta;
+
+						$post_meta_parts = parse_url($post_meta);
+						$post_meta = isset($post_meta_parts['host']) ? $post_meta_parts['host'] : "(".__("unknown", 'lang_social_feed').")";
+					break;
+
+					case 'twitter':
+						if(substr($post_meta_filtered, 0, 1) == "#")
+						{
+							$feed_url = "//twitter.com/search?f=tweets&src=typd&q=%23".substr($post_meta_filtered, 1);
+						}
+
+						else
+						{
+							$feed_url = "//twitter.com/".$post_meta_filtered;
+						}
+					break;
+
+					default:
+						$feed_url = "#";
+					break;
+				}
+
+				$fetch_link = "";
+
+				if(IS_SUPER_ADMIN)
+				{
+					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed' AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $id));
+
+					if($wpdb->num_rows > 0)
+					{
+						$intFeedID = check_var('intFeedID');
+
+						if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce_feed_fetch'], 'feed_fetch_'.$id))
+						{
+							$this->set_id($id);
+							$this->fetch_feed();
+						}
+
+						else
+						{
+							$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
+						}
+					}
+				}
+
+				$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
+
+				echo "<a href='".$feed_url."'>".$post_meta."</a>
+				<div class='row-actions'>"
+					.$fetch_link
+					.__("Fetched", 'lang_social_feed').": ".format_date($post_modified)
+				."</div>";
+			break;
+
+			case 'amount_of_posts':
+				//$obj_social_feed = new mf_social_feed();
+
+				$amount = $this->get_amount($id);
+
+				$post_error = get_post_meta($id, $this->meta_prefix.'error', true);
+
+				if($post_error != '')
+				{
+					echo "<i class='fa fa-close red fa-2x'></i>
+					<div class='row-actions'>".($post_error != '' ? $post_error : __("I got an error when accessing the feed", 'lang_social_feed'))."</div>";
+				}
+
+				else if($amount == 0)
+				{
+					$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
+
+					$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND ID = '%d' LIMIT 0, 1", $id));
+
+					foreach($result as $r)
+					{
+						$post_date = $r->post_date;
+						$post_modified = $r->post_modified;
+
+						if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime("-".$setting_social_time_limit." minute")))
+						{
+							echo "0";
+						}
+
+						else
+						{
+							echo "<i class='fa fa-spinner fa-spin fa-2x'></i>
+							<div class='row-actions'>".__("I am waiting to get access to the feed", 'lang_social_feed')."</div>";
+						}
+					}
+				}
+
+				else if($amount > 0)
+				{
+					$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $id));
+
+					echo "<a href='".admin_url("edit.php?post_type=mf_social_feed_post&strFilterSocialFeed=".$id)."'>".$amount."</a>"
+					."<div class='row-actions'>"
+						.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
+					."</div>";
+				}
+			break;
+		}
+	}
+
+	function column_header_post($cols)
+	{
+		unset($cols['title']);
+		unset($cols['date']);
+
+		$cols['username'] = __("Username", 'lang_social_feed');
+		$cols['text'] = __("Text", 'lang_social_feed');
+		$cols['image'] = __("Image", 'lang_social_feed');
+		//$cols['post_id'] = __("ID", 'lang_social_feed');
+		$cols['date'] = __("Date", 'lang_social_feed');
+
+		return $cols;
+	}
+
+	function column_cell_post($col, $id)
+	{
+		global $wpdb;
+
+		switch($col)
+		{
+			case 'username':
+				//$obj_social_feed = new mf_social_feed();
+
+				$post_meta = get_post_meta($id, $this->meta_prefix.'name', true);
+
+				echo "@".$post_meta;
+
+				$post_status = get_post_status($id);
+
+				switch($post_status)
+				{
+					case 'pending':
+						echo "<span class='strong nowrap'> - ".__("Ignored", 'lang_social_feed')."</span>";
+					break;
+
+					case 'draft':
+						echo "<span class='strong nowrap'> - ".__("Hidden", 'lang_social_feed')."</span>";
+					break;
+				}
+			break;
+
+			case 'text':
+				$post_content = mf_get_post_content($id);
+
+				echo shorten_text(array('string' => $post_content, 'limit' => 50));
+			break;
+
+			case 'image':
+				//$obj_social_feed = new mf_social_feed();
+
+				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+
+				if($post_meta != '')
+				{
+					echo "<img src='".$post_meta."'>";
+				}
+			break;
+
+			case 'post_id':
+				echo get_post_title($id);
+			break;
+		}
+	}
+
 	function row_actions($actions, $post)
 	{
 		if($post->post_type == 'mf_social_feed_post')
@@ -678,6 +1003,191 @@ class mf_social_feed
 		}
 
 		return $actions;
+	}
+
+	function add_policy($content)
+	{
+		$arr_data = array();
+		get_post_children(array('add_choose_here' => false, 'post_type' => 'mf_social_feed'), $arr_data);
+
+		if(count($arr_data) > 0)
+		{
+			$content .= "<h3>".__("Social Feed", 'lang_social_feed')."</h3>
+			<p>"
+				.__("Posts from social feeds are stored in the database to make it possible to present them in the fastest way possible to you as a visitor.", 'lang_social_feed')
+			."</p>";
+		}
+
+		return $content;
+	}
+
+	function save_post($post_id, $post, $update)
+	{
+		global $wpdb;
+
+		if($post->post_type == 'mf_social_feed' && $post->post_status == 'publish') // && $update == false
+		{
+			//$obj_social_feed = new mf_social_feed($post_id);
+			$this->set_id($post_id);
+
+			if(!($this->get_amount() > 0))
+			{
+				$this->fetch_feed();
+			}
+		}
+	}
+
+	function delete_post($post_id)
+	{
+		global $wpdb, $post_type;
+
+		if($post_type == 'mf_social_feed')
+		{
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d'", $post_id));
+
+			foreach($result as $r)
+			{
+				wp_trash_post($r->ID);
+			}
+		}
+	}
+
+	function wp_head()
+	{
+		$plugin_base_include_url = plugins_url()."/mf_base/include/";
+		$plugin_include_url = plugin_dir_url(__FILE__);
+		$plugin_version = get_plugin_version(__FILE__);
+
+		$setting_social_debug = get_option('setting_social_debug');
+
+		mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
+		mf_enqueue_style('style_bb', $plugin_base_include_url."backbone/style.css", $plugin_version);
+
+		mf_enqueue_script('underscore');
+		mf_enqueue_script('backbone');
+		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
+		//mf_enqueue_script('script_social_feed_plugins', $plugin_include_url."backbone/bb.plugins.js", array('read_more' => __("Read More", 'lang_social_feed')), $plugin_version);
+		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
+		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
+		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
+	}
+
+	function wp_footer()
+	{
+		$setting_social_debug = get_option('setting_social_debug');
+
+		$obj_base = new mf_base();
+		echo $obj_base->get_templates(array('lost_connection'));
+
+		if($setting_social_debug == 'yes')
+		{
+			echo "<div class='social_debug'></div>";
+		}
+
+		echo "<script type='text/template' id='template_feed_message'>
+			<li>".__("There are no posts to display", 'lang_social_feed')."</li>
+		</script>
+
+		<script type='text/template' id='template_feed_all'>
+			<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>
+		</script>
+
+		<script type='text/template' id='template_feed'>
+			<li><a href='#<%= id %>' id='<%= id %>'><%= name %></a></li>
+		</script>
+
+		<script type='text/template' id='template_feed_post'>
+			<li class='sf_<%= service %> sf_feed_<%= feed %>'>
+				<div class='meta'>
+					<i class='fa fa-<%= service %>'></i>
+
+					<% if(service == 'rss')
+					{ %>
+						<span class='name'><%= feed_title %></span>
+					<% }
+
+					else if(name != '')
+					{ %>
+						<span class='name'><%= name %></span>
+					<% } %>
+
+					<span class='date'><%= date %></span>
+				</div>
+				<a href='<%= link %>' class='content'>
+
+					<% if(image != '')
+					{ %>
+						<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
+					<% }
+
+					if(service == 'rss' && title != '')
+					{ %>
+						<p><%= title %></p>
+					<% }
+
+					if(content != '')
+					{ %>
+						<div class='text'><%= content %></div>
+					<% }
+
+					if(likes != '' || comments != '')
+					{ %>
+						<div class='likes'>
+							<i class='fa fa-thumbs-up'></i><span><%= likes %></span>
+							<i class='fa fa-comment-o'></i><span><%= comments %></span>
+						</div>
+					<% } %>
+
+				</a>
+			</li>
+		</script>";
+	}
+
+	function shortcode_social_feed($atts)
+	{
+		extract(shortcode_atts(array(
+			'id' => 0,
+			'filter' => 'group',
+			'amount' => 3,
+			'text' => 'yes',
+			'likes' => 'no',
+			'read_more' => 'yes',
+		), $atts));
+
+		$setting_social_reload = get_option('setting_social_reload');
+
+		$out = "<div class='widget social_feed'>
+			<div id='feed_".$id."' class='section'"
+				.($id > 0 ? " data-social_feeds='".$id."'" : "")
+				.($filter != '' ? " data-social_filter='".$filter."'" : "")
+				.($amount > 0 ? " data-social_amount='".$amount."'" : "")
+				.($likes != '' ? " data-social_likes='".$likes."'" : "")
+				.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
+			.">
+				<i class='fa fa-spinner fa-spin fa-3x'></i>
+				<ul class='sf_feeds hide'></ul>
+				<ul class='sf_posts";
+
+					if($text == 'yes')
+					{
+						$out .= ($read_more == 'yes' ? " show_read_more" : '');
+					}
+
+					else
+					{
+						$out .= " hide_text";
+					}
+
+				$out .= " hide'></ul>
+			</div>
+		</div>";
+
+		return $out;
+	}
+
+	function widgets_init()
+	{
+		register_widget('widget_social_feed');
 	}
 
 	function action_hide()
@@ -755,7 +1265,6 @@ class mf_social_feed
 		echo json_encode($result);
 		die();
 	}
-	#########################
 
 	//LinkedIn Auth
 	#########################
@@ -1803,7 +2312,7 @@ class mf_social_feed
 
 			if($data['filter'] == 'group')
 			{
-				$arr_services = get_social_types_for_select();
+				$arr_services = $this->get_social_types_for_select();
 			}
 
 			$limit_source_amount = ($data['limit_source'] == 'yes' && $count_public_feeds != 1 ? ceil(($data['amount'] / $count_public_feeds) * 1.2) : $data['amount']);
