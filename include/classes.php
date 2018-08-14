@@ -1579,7 +1579,7 @@ class mf_social_feed
 		$fb_access_token = $this->facebook_api_id."|".$this->facebook_api_secret;
 		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$fb_access_token; //&limit=10
 
-		$content = get_url_content($fb_feed_url);
+		$content = get_url_content(array('url' => $fb_feed_url));
 		$json = json_decode($content, true);
 
 		if(isset($json['data']))
