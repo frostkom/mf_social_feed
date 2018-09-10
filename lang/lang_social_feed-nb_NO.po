@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-07 08:45+0100\n"
+"POT-Creation-Date: 2018-09-07 13:21+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -15,9 +15,57 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: ..\n"
 
+msgid "Posts"
+msgstr "Innlegg"
+
+msgid "Facebook"
+msgstr "Facebook"
+
+msgid "Instagram"
+msgstr "Instagram"
+
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+msgid "Twitter"
+msgstr "Twitter"
+
+msgid "Default"
+msgstr "Standard"
+
+msgid "Settings"
+msgstr "Innstillinger"
+
+msgid "Information"
+msgstr "Informasjon"
+
+msgid "Username"
+msgstr "Brukernavn"
+
+msgid "Text"
+msgstr "Tekst"
+
+msgid "Image"
+msgstr "Bilde"
+
+msgid "Date"
+msgstr "Dato"
+
+msgid "Are you sure?"
+msgstr "Er du sikker?"
 
 msgid "Read More"
 msgstr "Les Mer"
 
+msgid "All"
+msgstr "Alle"
+
+msgid "No"
+msgstr "Nei"
+
 msgid "Yes"
 msgstr "Ja"
+
+msgid "Display Filter"
+msgstr "Vis Filter"
+

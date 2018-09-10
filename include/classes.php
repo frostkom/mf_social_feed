@@ -575,7 +575,7 @@ class mf_social_feed
 		return $arr_data;
 	}
 
-	function meta_boxes($meta_boxes)
+	function rwmb_meta_boxes($meta_boxes)
 	{
 		global $wpdb;
 
