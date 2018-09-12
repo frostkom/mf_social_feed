@@ -546,7 +546,7 @@ class mf_social_feed
 		$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
 
 		$out = "<ul id='".$this->meta_prefix."info'>"
-			."<li><i class='fa fa-".$post_service."'></i> ".get_post_title($post_feed)."</li>"
+			."<li><i class='fab fa-".$post_service."'></i> ".get_post_title($post_feed)."</li>"
 			."<li><a href='".$post_link."'>@".$post_username."</a></li>"
 			.($post_image != '' ? "<li><img src='".$post_image."'></li>" : "")
 			."<li>".format_date($post_date)."</li>"
@@ -768,16 +768,12 @@ class mf_social_feed
 		switch($col)
 		{
 			case 'type':
-				//$obj_social_feed = new mf_social_feed();
-
 				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
 
-				echo "<i class='fa fa-".$post_meta." fa-2x'></i>";
+				echo "<i class='fab fa-".$post_meta." fa-2x'></i>";
 			break;
 
 			case 'search_for':
-				//$obj_social_feed = new mf_social_feed();
-
 				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
 				$service = get_post_meta($id, $this->meta_prefix.'type', true);
 
@@ -862,8 +858,6 @@ class mf_social_feed
 			break;
 
 			case 'amount_of_posts':
-				//$obj_social_feed = new mf_social_feed();
-
 				$amount = $this->get_amount($id);
 
 				$post_error = get_post_meta($id, $this->meta_prefix.'error', true);
@@ -1100,7 +1094,7 @@ class mf_social_feed
 		<script type='text/template' id='template_feed_post'>
 			<li class='sf_<%= service %> sf_feed_<%= feed %>'>
 				<div class='meta'>
-					<i class='fa fa-<%= service %>'></i>
+					<i class='fab fa-<%= service %>'></i>
 
 					<% if(service == 'rss')
 					{ %>
@@ -1134,8 +1128,8 @@ class mf_social_feed
 					if(likes != '' || comments != '')
 					{ %>
 						<div class='likes'>
-							<i class='fa fa-thumbs-up'></i><span><%= likes %></span>
-							<i class='fa fa-comment-o'></i><span><%= comments %></span>
+							<i class='far fa-thumbs-up'></i><span><%= likes %></span>
+							<i class='far fa-comment'></i><span><%= comments %></span>
 						</div>
 					<% } %>
 
@@ -1360,7 +1354,7 @@ class mf_social_feed
 
 			if($times['days'] < 10)
 			{
-				$out .= "<i class='fa fa-warning yellow display_warning'></i> ";
+				$out .= "<i class='fas fa-exclamation-triangle yellow display_warning'></i> ";
 			}
 
 			$out .= sprintf(
