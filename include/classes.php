@@ -864,7 +864,7 @@ class mf_social_feed
 
 				if($post_error != '')
 				{
-					echo "<i class='fa fa-close red fa-2x'></i>
+					echo "<i class='fa fa-times red fa-2x'></i>
 					<div class='row-actions'>".($post_error != '' ? $post_error : __("I got an error when accessing the feed", 'lang_social_feed'))."</div>";
 				}
 
