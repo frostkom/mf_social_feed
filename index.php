@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 5.3.6
+Version: 5.3.8
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://frostkom.se
@@ -34,8 +34,8 @@ if(is_admin())
 
 	add_action('rwmb_meta_boxes', array($obj_social_feed, 'rwmb_meta_boxes'));
 
-	add_action('restrict_manage_posts', array($obj_social_feed, 'post_filter_select'));
-	add_action('pre_get_posts', array($obj_social_feed, 'post_filter_query'));
+	add_action('restrict_manage_posts', array($obj_social_feed, 'restrict_manage_posts'));
+	add_action('pre_get_posts', array($obj_social_feed, 'pre_get_posts'));
 
 	add_filter('count_shortcode_button', array($obj_social_feed, 'count_shortcode_button'));
 	add_filter('get_shortcode_output', array($obj_social_feed, 'get_shortcode_output'));

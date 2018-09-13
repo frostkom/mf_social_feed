@@ -682,7 +682,7 @@ class mf_social_feed
 		return $meta_boxes;
 	}
 
-	function post_filter_select()
+	function restrict_manage_posts()
 	{
 		global $post_type, $wpdb;
 
@@ -701,7 +701,7 @@ class mf_social_feed
 		}
 	}
 
-	function post_filter_query($wp_query)
+	function pre_get_posts($wp_query)
 	{
 		global $post_type, $pagenow;
 
@@ -1354,7 +1354,7 @@ class mf_social_feed
 
 			if($times['days'] < 10)
 			{
-				$out .= "<i class='fas fa-exclamation-triangle yellow display_warning'></i> ";
+				$out .= "<i class='fa fa-exclamation-triangle yellow display_warning'></i> ";
 			}
 
 			$out .= sprintf(
