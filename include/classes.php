@@ -1128,8 +1128,8 @@ class mf_social_feed
 					if(likes != '' || comments != '')
 					{ %>
 						<div class='likes'>
-							<i class='far fa-thumbs-up'></i><span><%= likes %></span>
-							<i class='far fa-comment'></i><span><%= comments %></span>
+							<i class='fa fa-thumbs-up'></i><span><%= likes %></span>
+							<i class='fa fa-comment'></i><span><%= comments %></span>
 						</div>
 					<% } %>
 
