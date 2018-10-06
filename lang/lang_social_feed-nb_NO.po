@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-07 13:21+0100\n"
+"POT-Creation-Date: 2018-10-03 12:09+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -18,23 +18,17 @@ msgstr ""
 msgid "Posts"
 msgstr "Innlegg"
 
-msgid "Facebook"
-msgstr "Facebook"
-
-msgid "Instagram"
-msgstr "Instagram"
-
-msgid "LinkedIn"
-msgstr "LinkedIn"
-
-msgid "Twitter"
-msgstr "Twitter"
+msgid "Post"
+msgstr "Innlegg"
 
 msgid "Default"
 msgstr "Standard"
 
 msgid "Settings"
 msgstr "Innstillinger"
+
+msgid "Search for"
+msgstr "Søk etter"
 
 msgid "Information"
 msgstr "Informasjon"
@@ -50,6 +44,9 @@ msgstr "Bilde"
 
 msgid "Date"
 msgstr "Dato"
+
+msgid "Hidden"
+msgstr "Skjult"
 
 msgid "Are you sure?"
 msgstr "Er du sikker?"

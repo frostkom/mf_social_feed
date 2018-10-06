@@ -10,7 +10,7 @@ class mf_social_feed
 		$this->meta_prefix = "mf_social_feed_";
 	}
 
-	function run_cron()
+	function cron_base()
 	{
 		global $wpdb;
 

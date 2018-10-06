@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 5.3.9
+Version: 5.3.10
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://frostkom.se
@@ -19,7 +19,7 @@ include_once("include/classes.php");
 $obj_social_feed = new mf_social_feed();
 
 add_action('cron_base', 'activate_social_feed', mt_rand(1, 10));
-add_action('cron_base', array($obj_social_feed, 'run_cron'), mt_rand(1, 10));
+add_action('cron_base', array($obj_social_feed, 'cron_base'), mt_rand(1, 10));
 
 add_action('init', array($obj_social_feed, 'init'));
 
