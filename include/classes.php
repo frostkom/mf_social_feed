@@ -926,8 +926,6 @@ class mf_social_feed
 		switch($col)
 		{
 			case 'username':
-				//$obj_social_feed = new mf_social_feed();
-
 				$post_meta = get_post_meta($id, $this->meta_prefix.'name', true);
 
 				echo "@".$post_meta;
@@ -953,8 +951,6 @@ class mf_social_feed
 			break;
 
 			case 'image':
-				//$obj_social_feed = new mf_social_feed();
-
 				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
 
 				if($post_meta != '')
@@ -1022,7 +1018,6 @@ class mf_social_feed
 
 		if($post->post_type == 'mf_social_feed' && $post->post_status == 'publish') // && $update == false
 		{
-			//$obj_social_feed = new mf_social_feed($post_id);
 			$this->set_id($post_id);
 
 			if(!($this->get_amount() > 0))

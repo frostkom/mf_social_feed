@@ -208,7 +208,7 @@ echo "@media all
 						margin-right: .5em;
 					}
 
-						.sf_facebook .fa, .sf_facebook .fab, .column-type .fa-facebook-f
+						.sf_facebook .fa, .sf_facebook .fab, .column-type .fa-facebook
 						{
 							color: #3b5998;
 						}
