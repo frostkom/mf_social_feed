@@ -2025,7 +2025,7 @@ class mf_social_feed
 
 		else
 		{
-			update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
+			update_post_meta($this->id, $this->meta_prefix.'error', __("I could not find a feed", 'lang_social_feed'));
 		}
 	}
 
