@@ -15,21 +15,27 @@ class mf_social_feed
 		global $wpdb;
 
 		$obj_cron = new mf_cron();
+		$obj_cron->start(__CLASS__);
 
-		$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
-
-		$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND post_modified < DATE_SUB(NOW(), INTERVAL ".$setting_social_time_limit." MINUTE) ORDER BY RAND()");
-
-		foreach($result as $r)
+		if($obj_cron->is_running == false)
 		{
-			if($obj_cron->has_expired(array('margin' => .9)))
-			{
-				break;
-			}
+			$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
 
-			$this->set_id($r->ID);
-			$this->fetch_feed();
+			$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND post_modified < DATE_SUB(NOW(), INTERVAL ".$setting_social_time_limit." MINUTE) ORDER BY RAND()");
+
+			foreach($result as $r)
+			{
+				/*if($obj_cron->has_expired(array('margin' => .9)))
+				{
+					break;
+				}*/
+
+				$this->set_id($r->ID);
+				$this->fetch_feed();
+			}
 		}
+
+		$obj_cron->end();
 	}
 
 	function init()
