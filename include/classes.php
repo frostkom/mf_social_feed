@@ -385,7 +385,6 @@ class mf_social_feed
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		//$obj_social_feed = new mf_social_feed();
 		$this->init_linkedin_auth();
 		$option = $this->settings_url;
 
@@ -395,8 +394,6 @@ class mf_social_feed
 	function setting_linkedin_authorize_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
-
-		//$obj_social_feed = new mf_social_feed();
 
 		echo $this->check_access_token()
 		.$this->get_access_token_button();
@@ -567,8 +564,6 @@ class mf_social_feed
 
 		$arr_data['facebook'] = __("Facebook", 'lang_social_feed');
 		$arr_data['instagram'] = __("Instagram", 'lang_social_feed');
-
-		//$obj_social_feed = new mf_social_feed();
 
 		if($this->check_token_life())
 		{
