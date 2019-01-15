@@ -2440,7 +2440,7 @@ class widget_social_feed extends WP_Widget
 
 		parent::__construct('social-feed-widget', __("Social Feed", 'lang_social_feed'), $widget_ops);
 
-		$this->meta_prefix = "mf_social_feed_";
+		//$this->meta_prefix = "mf_social_feed_";
 	}
 
 	function widget($args, $instance)
