@@ -378,7 +378,7 @@ class mf_social_feed
 			$description = '';
 		}
 
-		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'description' => $description));
+		echo show_password_field(array('name' => $setting_key, 'value' => $option, 'description' => $description));
 	}
 
 	function setting_linkedin_redirect_url_callback()
