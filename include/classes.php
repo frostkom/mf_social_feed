@@ -236,7 +236,7 @@ class mf_social_feed
 			break;
 
 			default:
-				return 60;
+				return 15;
 			break;
 		}
 	}
@@ -1303,7 +1303,7 @@ class mf_social_feed
 	{
 		$this->init_linkedin_auth();
 
-		$this->token_life = intval($this->auth_options['expires_in']) - strtotime(date('Y-m-d H:m:s'));
+		$this->token_life = intval($this->auth_options['expires_in']) - strtotime(date("Y-m-d H:m:s"));
 
 		if($this->token_life < 0)
 		{
@@ -2007,7 +2007,7 @@ class mf_social_feed
 					$post_image = $enclosure->get_link();
 				}*/
 
-				$post_date = $item->get_date('Y-m-d H:i:s');
+				$post_date = $item->get_date("Y-m-d H:i:s");
 
 				$this->arr_posts[] = array(
 					'type' => $this->type,
