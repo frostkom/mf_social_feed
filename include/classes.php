@@ -7,7 +7,8 @@ class mf_social_feed
 		$this->id = $id > 0 ? $id : 0;
 		$this->type = $this->search = "";
 
-		$this->meta_prefix = "mf_social_feed_";
+		$this->post_type = 'mf_social_feed';
+		$this->meta_prefix = $this->post_type."_";
 	}
 
 	function cron_base()
@@ -21,7 +22,7 @@ class mf_social_feed
 		{
 			$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
 
-			$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND post_modified < DATE_SUB(NOW(), INTERVAL ".$setting_social_time_limit." MINUTE) ORDER BY RAND()");
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_modified < DATE_SUB(NOW(), INTERVAL ".$setting_social_time_limit." MINUTE) ORDER BY RAND()", $this->post_type, 'publish'));
 
 			foreach($result as $r)
 			{
@@ -59,7 +60,7 @@ class mf_social_feed
 			'has_archive' => false,
 		);
 
-		register_post_type('mf_social_feed', $args);
+		register_post_type($this->post_type, $args);
 
 		$labels = array(
 			'name' => _x(__("Posts", 'lang_social_feed'), 'post type general name'),
@@ -125,7 +126,7 @@ class mf_social_feed
 		############################
 
 		//Facebook
-		//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = 'mf_social_feed' AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", 'facebook'));
+		//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = %s AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", $this->post_type, 'facebook'));
 		############################
 		$options_area = $options_area_orig."_facebook";
 
@@ -461,7 +462,7 @@ class mf_social_feed
 	function admin_menu()
 	{
 		$menu_root = 'mf_social_feed/';
-		$menu_start = "edit.php?post_type=mf_social_feed";
+		$menu_start = "edit.php?post_type=".$this->post_type;
 		$menu_capability = override_capability(array('page' => $menu_start, 'default' => 'edit_pages'));
 
 		$menu_title = __("Posts", 'lang_social_feed');
@@ -585,7 +586,7 @@ class mf_social_feed
 
 		$default_type = "";
 
-		$post_id = $wpdb->get_var("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' ORDER BY post_modified DESC LIMIT 0, 1");
+		$post_id = $wpdb->get_var($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s ORDER BY post_modified DESC LIMIT 0, 1", $this->post_type));
 
 		if($post_id > 0)
 		{
@@ -596,7 +597,7 @@ class mf_social_feed
 		$meta_boxes[] = array(
 			'id' => $this->meta_prefix.'settings',
 			'title' => __("Settings", 'lang_social_feed'),
-			'post_types' => array('mf_social_feed'),
+			'post_types' => array($this->post_type),
 			//'context' => 'side',
 			'priority' => 'low',
 			'fields' => array(
@@ -693,7 +694,7 @@ class mf_social_feed
 			$strFilterSocialFeed = check_var('strFilterSocialFeed');
 
 			$arr_data = array();
-			get_post_children(array('post_type' => 'mf_social_feed', 'post_status' => '', 'add_choose_here' => true), $arr_data);
+			get_post_children(array('post_type' => $this->post_type, 'post_status' => '', 'add_choose_here' => true), $arr_data);
 
 			if(count($arr_data) > 2)
 			{
@@ -740,12 +741,12 @@ class mf_social_feed
 	function get_shortcode_output($out)
 	{
 		$arr_data = array();
-		get_post_children(array('add_choose_here' => true, 'post_type' => 'mf_social_feed'), $arr_data);
+		get_post_children(array('add_choose_here' => true, 'post_type' => $this->post_type), $arr_data);
 
 		if(count($arr_data) > 1)
 		{
 			$out .= "<h3>".__("Choose a Social Feed", 'lang_social_feed')."</h3>"
-			.show_select(array('data' => $arr_data, 'xtra' => "rel='mf_social_feed amount=3 filter=group border=no text=yes likes=no'"));
+			.show_select(array('data' => $arr_data, 'xtra' => "rel='".$this->post_type." amount=3 filter=group border=no text=yes likes=no'"));
 		}
 
 		return $out;
@@ -830,7 +831,7 @@ class mf_social_feed
 
 				if(IS_SUPER_ADMIN)
 				{
-					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed' AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $id));
+					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $id, $this->post_type));
 
 					if($wpdb->num_rows > 0)
 					{
@@ -844,12 +845,12 @@ class mf_social_feed
 
 						else
 						{
-							$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=mf_social_feed&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
+							$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=".$this->post_type."&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
 						}
 					}
 				}
 
-				$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = 'mf_social_feed'", $id));
+				$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s", $id, $this->post_type));
 
 				echo "<a href='".$feed_url."'>".$post_meta."</a>
 				<div class='row-actions'>"
@@ -873,7 +874,7 @@ class mf_social_feed
 				{
 					$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
 
-					$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND ID = '%d' LIMIT 0, 1", $id));
+					$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = %s AND ID = '%d' LIMIT 0, 1", $this->post_type, $id));
 
 					foreach($result as $r)
 					{
@@ -1000,7 +1001,7 @@ class mf_social_feed
 	function add_policy($content)
 	{
 		$arr_data = array();
-		get_post_children(array('add_choose_here' => false, 'post_type' => 'mf_social_feed'), $arr_data);
+		get_post_children(array('add_choose_here' => false, 'post_type' => $this->post_type), $arr_data);
 
 		if(count($arr_data) > 0)
 		{
@@ -1017,7 +1018,7 @@ class mf_social_feed
 	{
 		global $wpdb;
 
-		if($post->post_type == 'mf_social_feed' && $post->post_status == 'publish') // && $update == false
+		if($post->post_type == $this->post_type && $post->post_status == 'publish') // && $update == false
 		{
 			$this->set_id($post_id);
 
@@ -1032,7 +1033,7 @@ class mf_social_feed
 	{
 		global $wpdb, $post_type;
 
-		if($post_type == 'mf_social_feed')
+		if($post_type == $this->post_type)
 		{
 			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d'", $post_id));
 
@@ -2146,7 +2147,7 @@ class mf_social_feed
 	{
 		global $wpdb;
 
-		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_modified = NOW() WHERE ID = '%d' AND post_type = 'mf_social_feed'", $this->id));
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_modified = NOW() WHERE ID = '%d' AND post_type = %s", $this->id, $this->post_type));
 	}
 
 	function insert_posts()
@@ -2287,7 +2288,7 @@ class mf_social_feed
 			$query_where = " AND ID IN('".implode("','", $data['feeds'])."')";
 		}
 
-		$result = $wpdb->get_results("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed' AND post_status = 'publish'".$query_where);
+		$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s".$query_where, $this->post_type, 'publish'));
 
 		foreach($result as $r)
 		{
@@ -2440,7 +2441,7 @@ class widget_social_feed extends WP_Widget
 
 		parent::__construct('social-feed-widget', __("Social Feed", 'lang_social_feed'), $widget_ops);
 
-		//$this->meta_prefix = "mf_social_feed_";
+		$this->obj_social_feed = new mf_social_feed();
 	}
 
 	function widget($args, $instance)
@@ -2521,7 +2522,7 @@ class widget_social_feed extends WP_Widget
 		$instance = wp_parse_args((array)$instance, $this->arr_default);
 
 		$arr_data_feeds = array();
-		get_post_children(array('post_type' => 'mf_social_feed', 'order_by' => 'post_title'), $arr_data_feeds);
+		get_post_children(array('post_type' => $this->obj_social_feed->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
 
 		echo "<div class='mf_form'>"
 			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='social-title'"));
