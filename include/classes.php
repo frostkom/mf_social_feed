@@ -686,7 +686,7 @@ class mf_social_feed
 
 	function restrict_manage_posts()
 	{
-		global $post_type, $wpdb;
+		global $post_type;
 
 		if($post_type == 'mf_social_feed_post')
 		{
@@ -923,8 +923,6 @@ class mf_social_feed
 
 	function column_cell_post($col, $id)
 	{
-		global $wpdb;
-
 		switch($col)
 		{
 			case 'username':
@@ -990,7 +988,7 @@ class mf_social_feed
 
 				if($post_username != $feed_name)
 				{
-					$actions['social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!"), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
+					$actions['social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!", 'lang_social_feed'), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
 				}
 			}
 		}
@@ -1016,8 +1014,6 @@ class mf_social_feed
 
 	function save_post($post_id, $post, $update)
 	{
-		global $wpdb;
-
 		if($post->post_type == $this->post_type && $post->post_status == 'publish') // && $update == false
 		{
 			$this->set_id($post_id);
@@ -1058,9 +1054,10 @@ class mf_social_feed
 		mf_enqueue_script('underscore');
 		mf_enqueue_script('backbone');
 		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
-		//mf_enqueue_script('script_social_feed_plugins', $plugin_include_url."backbone/bb.plugins.js", array('read_more' => __("Read More", 'lang_social_feed')), $plugin_version);
+
 		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
 		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
+
 		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
 	}
 
