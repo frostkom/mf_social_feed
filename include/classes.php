@@ -1272,9 +1272,9 @@ class mf_social_feed
 
 		$params = array(
 			'response_type' => 'code',
-			'client_id'     => $this->client_id,
-			'state'         => $state,
-			'redirect_uri'  => $this->settings_url,
+			'client_id' => $this->client_id,
+			'state' => $state,
+			'redirect_uri' => $this->settings_url,
 		);
 
 		if($this->auth_options)
@@ -1371,11 +1371,11 @@ class mf_social_feed
 		$this->init_linkedin_auth();
 
 		$params = array(
-			'grant_type'    => 'authorization_code',
-			'client_id'     => $this->client_id,
+			'grant_type' => 'authorization_code',
+			'client_id' => $this->client_id,
 			'client_secret' => get_option('setting_linkedin_api_secret'),
-			'code'          => $code,
-			'redirect_uri'  => $this->settings_url,
+			'code' => $code,
+			'redirect_uri' => $this->settings_url,
 		);
 
 		$url = "https://www.linkedin.com/uas/oauth2/accessToken?".http_build_query($params);
@@ -1568,7 +1568,7 @@ class mf_social_feed
 		$fb_access_token = $this->facebook_api_id."|".$this->facebook_api_secret;
 		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$fb_access_token; //&limit=10
 
-		$content = get_url_content(array('url' => $fb_feed_url));
+		list($content, $headers) = get_url_content(array('url' => $fb_feed_url, 'catch_head' => true));
 		$json = json_decode($content, true);
 
 		if(isset($json['data']))
