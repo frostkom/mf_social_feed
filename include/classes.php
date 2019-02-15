@@ -26,11 +26,6 @@ class mf_social_feed
 
 			foreach($result as $r)
 			{
-				/*if($obj_cron->has_expired(array('margin' => .9)))
-				{
-					break;
-				}*/
-
 				$this->set_id($r->ID);
 				$this->fetch_feed();
 			}
@@ -1623,7 +1618,7 @@ class mf_social_feed
 					'link' => "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1],
 					'image' => isset($post['full_picture']) && $post['full_picture'] != '' ? $post['full_picture'] : "",
 					'created' => date("Y-m-d H:i:s", strtotime($post['created_time'])),
-					'is_owner' => (isset($post['from']) ? ($post['from']['id'] == $arr_post_id[0]) : true),
+					'is_owner' => (isset($post['from']) ? ($post['from']['id'] == $arr_post_id[0]) : false), // true as fallback if others' posts should be included
 				);
 			}
 
@@ -2047,9 +2042,12 @@ class mf_social_feed
 			}
 		}
 
-		else if(substr($this->search, 0, 1) == "@")
+		else if($this->search != '')
 		{
-			$this->search = substr($this->search, 1);
+			if(substr($this->search, 0, 1) == "@")
+			{
+				$this->search = substr($this->search, 1);
+			}
 
 			try
 			{
