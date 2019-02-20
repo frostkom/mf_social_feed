@@ -8,6 +8,7 @@ class mf_social_feed
 		$this->type = $this->search = "";
 
 		$this->post_type = 'mf_social_feed';
+		$this->post_type_post = 'mf_social_feed_post';
 		$this->meta_prefix = $this->post_type."_";
 	}
 
@@ -77,7 +78,7 @@ class mf_social_feed
 			),*/
 		);
 
-		register_post_type('mf_social_feed_post', $args);
+		register_post_type($this->post_type_post, $args);
 	}
 
 	function settings_social_feed()
@@ -445,7 +446,7 @@ class mf_social_feed
 	{
 		global $pagenow;
 
-		if($pagenow == 'edit.php' && check_var('post_type') == 'mf_social_feed_post')
+		if($pagenow == 'edit.php' && check_var('post_type') == $this->post_type_post)
 		{
 			$plugin_include_url = plugin_dir_url(__FILE__);
 			$plugin_version = get_plugin_version(__FILE__);
@@ -461,7 +462,7 @@ class mf_social_feed
 		$menu_capability = override_capability(array('page' => $menu_start, 'default' => 'edit_pages'));
 
 		$menu_title = __("Posts", 'lang_social_feed');
-		add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=mf_social_feed_post");
+		add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_post);
 	}
 
 	function meta_feed_facebook_info()
@@ -538,8 +539,11 @@ class mf_social_feed
 		$post_id = $post->ID;
 		$post_date = $post->post_date;
 
-		$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 		$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+		//$feed_id = $post->post_excerpt;
+		//$feed_id = $post->post_parent;
+
+		$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 		$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
 		$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
 		$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
@@ -614,24 +618,23 @@ class mf_social_feed
 					'callback' => array($this, 'meta_feed_facebook_info'),
 				),
 				array(
+					'name' => __("Include", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'facebook_include',
+					'type' => 'select',
+					'options' => array(
+						'other' => __("Others", 'lang_social_feed'),
+					),
+					'multiple' => true,
+					'attributes' => array(
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'facebook',
+					),
+				),
+				array(
 					'id' => $this->meta_prefix.'instagram_info',
 					'type' => 'custom_html',
 					'callback' => array($this, 'meta_feed_instagram_info'),
-				),
-				array(
-					'id' => $this->meta_prefix.'linkedin_info',
-					'type' => 'custom_html',
-					'callback' => array($this, 'meta_feed_linkedin_info'),
-				),
-				array(
-					'id' => $this->meta_prefix.'rss_info',
-					'type' => 'custom_html',
-					'callback' => array($this, 'meta_feed_rss_info'),
-				),
-				array(
-					'id' => $this->meta_prefix.'twitter_info',
-					'type' => 'custom_html',
-					'callback' => array($this, 'meta_feed_twitter_info'),
 				),
 				array(
 					'name' => __("Client ID", 'lang_social_feed'),
@@ -658,13 +661,44 @@ class mf_social_feed
 					'type' => 'custom_html',
 					'callback' => array($this, 'meta_feed_instagram_access_token_info'),
 				),
+				array(
+					'id' => $this->meta_prefix.'linkedin_info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_feed_linkedin_info'),
+				),
+				array(
+					'id' => $this->meta_prefix.'rss_info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_feed_rss_info'),
+				),
+				array(
+					'id' => $this->meta_prefix.'twitter_info',
+					'type' => 'custom_html',
+					'callback' => array($this, 'meta_feed_twitter_info'),
+				),
+				array(
+					'name' => __("Include", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'twitter_include',
+					'type' => 'select',
+					'options' => array(
+						'other' => __("Others", 'lang_social_feed'),
+						'reply' => __("Replies", 'lang_social_feed'),
+						'retweet' => __("Retweets", 'lang_social_feed'),
+					),
+					'multiple' => true,
+					'attributes' => array(
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'twitter',
+					),
+				),
 			)
 		);
 
 		$meta_boxes[] = array(
 			'id' => $this->meta_prefix.'info',
 			'title' => __("Information", 'lang_social_feed'),
-			'post_types' => array('mf_social_feed_post'),
+			'post_types' => array($this->post_type_post),
 			'context' => 'side',
 			'priority' => 'high',
 			'fields' => array(
@@ -683,7 +717,7 @@ class mf_social_feed
 	{
 		global $post_type;
 
-		if($post_type == 'mf_social_feed_post')
+		if($post_type == $this->post_type_post)
 		{
 			//$strFilterSocialFeed = get_or_set_table_filter(array('key' => 'strFilterSocialFeed', 'save' => true));
 			$strFilterSocialFeed = check_var('strFilterSocialFeed');
@@ -702,7 +736,7 @@ class mf_social_feed
 	{
 		global $post_type, $pagenow;
 
-		if($pagenow == 'edit.php' && $post_type == 'mf_social_feed_post')
+		if($pagenow == 'edit.php' && $post_type == $this->post_type_post)
 		{
 			//$strFilterSocialFeed = get_or_set_table_filter(array('key' => 'strFilterSocialFeed'));
 			$strFilterSocialFeed = check_var('strFilterSocialFeed');
@@ -891,9 +925,9 @@ class mf_social_feed
 
 				else if($amount > 0)
 				{
-					$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $id));
+					$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $id)); // post_excerpt -> post_parent
 
-					echo "<a href='".admin_url("edit.php?post_type=mf_social_feed_post&strFilterSocialFeed=".$id)."'>".$amount."</a>"
+					echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$id)."'>".$amount."</a>"
 					."<div class='row-actions'>"
 						.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
 					."</div>";
@@ -907,10 +941,12 @@ class mf_social_feed
 		unset($cols['title']);
 		unset($cols['date']);
 
-		$cols['username'] = __("Username", 'lang_social_feed');
+		$cols['type'] = __("Type", 'lang_social_feed');
+		$cols['name'] = __("Username", 'lang_social_feed');
 		$cols['text'] = __("Text", 'lang_social_feed');
 		$cols['image'] = __("Image", 'lang_social_feed');
 		//$cols['post_id'] = __("ID", 'lang_social_feed');
+		$cols['info'] = __("Info", 'lang_social_feed');
 		$cols['date'] = __("Date", 'lang_social_feed');
 
 		return $cols;
@@ -920,8 +956,28 @@ class mf_social_feed
 	{
 		switch($col)
 		{
-			case 'username':
-				$post_meta = get_post_meta($id, $this->meta_prefix.'name', true);
+			case 'type':
+				$parent_id = get_post_meta($id, $this->meta_prefix.'feed_id', true);
+				//$feed_id = $post->post_excerpt;
+				//$feed_id = $post->post_parent;
+
+				$post_meta = get_post_meta($parent_id, $this->meta_prefix.$col, true);
+
+				if($post_meta != '')
+				{
+					echo "<i class='fab fa-".$post_meta." fa-2x'></i>";
+				}
+
+				else
+				{
+					//do_log("The parent ".$parent_id." does not exist anymore");
+
+					wp_trash_post($id);
+				}
+			break;
+
+			case 'name':
+				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
 
 				echo "@".$post_meta;
 
@@ -957,12 +1013,67 @@ class mf_social_feed
 			case 'post_id':
 				echo get_post_title($id);
 			break;
+
+			case 'info':
+				$parent_id = get_post_meta($id, $this->meta_prefix.'feed_id', true);
+				//$feed_id = $post->post_excerpt;
+				//$feed_id = $post->post_parent;
+
+				$post_meta = get_post_meta($parent_id, $this->meta_prefix.'type', true);
+
+				switch($post_meta)
+				{
+					case 'facebook':
+						$post_owner = get_post_meta($id, $this->meta_prefix.'is_owner', true);
+
+						if($post_owner == 1)
+						{
+							echo "<i class='fa fa-user fa-2x' title='".__("Owner", 'lang_social_feed')."'></i>";
+						}
+
+						else if($post_owner === 0)
+						{
+							echo "<span class='fa-stack fa-lg' title='".__("Not Owner", 'lang_social_feed')."'>
+								<i class='fa fa-user fa-stack-1x'></i>
+								<i class='fa fa-ban fa-stack-2x red'></i>
+							</span>";
+						}
+					break;
+
+					case 'twitter':
+						$post_owner = get_post_meta($id, $this->meta_prefix.'is_owner', true);
+
+						if($post_owner == 1)
+						{
+							echo "<i class='fa fa-user fa-2x' title='".__("Owner", 'lang_social_feed')."'></i>";
+						}
+
+						else if($post_owner === 0)
+						{
+							echo "<span class='fa-stack fa-lg' title='".__("Not Owner", 'lang_social_feed')."'>
+								<i class='fa fa-user fa-stack-1x'></i>
+								<i class='fa fa-ban fa-stack-2x red'></i>
+							</span>";
+						}
+
+						if(get_post_meta($id, $this->meta_prefix.'is_reply', true) == 1)
+						{
+							echo "<i class='fa fa-reply fa-2x' title='".__("Answer", 'lang_social_feed')."'></i>";
+						}
+
+						if(get_post_meta($id, $this->meta_prefix.'is_retweet', true) == 1)
+						{
+							echo "<i class='fa fa-share fa-2x' title='".__("Retweet", 'lang_social_feed')."'></i>";
+						}
+					break;
+				}
+			break;
 		}
 	}
 
 	function row_actions($actions, $post)
 	{
-		if($post->post_type == 'mf_social_feed_post')
+		if($post->post_type == $this->post_type_post)
 		{
 			unset($actions['inline hide-if-no-js']);
 			unset($actions['view']);
@@ -970,6 +1081,9 @@ class mf_social_feed
 			$post_id = $post->ID;
 
 			$feed_id = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+			//$feed_id = $post->post_excerpt;
+			//$feed_id = $post->post_parent;
+
 			$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
 
 			$post_username = "@".$post_username;
@@ -1026,7 +1140,7 @@ class mf_social_feed
 
 		if($post_type == $this->post_type)
 		{
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d'", $post_id));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_excerpt = '%d'", $this->post_type_post, $post_id)); //post_excerpt -> post_parent
 
 			foreach($result as $r)
 			{
@@ -1037,23 +1151,28 @@ class mf_social_feed
 
 	function wp_head()
 	{
-		$plugin_base_include_url = plugins_url()."/mf_base/include/";
-		$plugin_include_url = plugin_dir_url(__FILE__);
-		$plugin_version = get_plugin_version(__FILE__);
+		$post_id = apply_filters('get_widget_search', 'social-feed-widget');
 
-		$setting_social_debug = get_option('setting_social_debug');
+		if($post_id > 0)
+		{
+			$plugin_base_include_url = plugins_url()."/mf_base/include/";
+			$plugin_include_url = plugin_dir_url(__FILE__);
+			$plugin_version = get_plugin_version(__FILE__);
 
-		mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
-		mf_enqueue_style('style_bb', $plugin_base_include_url."backbone/style.css", $plugin_version);
+			$setting_social_debug = get_option('setting_social_debug');
 
-		mf_enqueue_script('underscore');
-		mf_enqueue_script('backbone');
-		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
+			mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
+			mf_enqueue_style('style_bb', $plugin_base_include_url."backbone/style.css", $plugin_version);
 
-		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
-		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
+			mf_enqueue_script('underscore');
+			mf_enqueue_script('backbone');
+			mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
 
-		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
+			mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
+			mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
+
+			mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
+		}
 	}
 
 	function wp_footer()
@@ -1182,7 +1301,7 @@ class mf_social_feed
 
 		$result = array();
 
-		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'draft' WHERE ID = '%d' AND post_type = 'mf_social_feed_post'", $action_id));
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'draft' WHERE ID = '%d' AND post_type = %s", $action_id, $this->post_type_post));
 
 		if($wpdb->rows_affected > 0)
 		{
@@ -1220,7 +1339,7 @@ class mf_social_feed
 
 		$result = array();
 
-		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'pending' WHERE ID = '%d' AND post_type = 'mf_social_feed_post'", $action_id));
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'pending' WHERE ID = '%d' AND post_type = %s", $action_id, $this->post_type_post));
 
 		if($wpdb->rows_affected > 0)
 		{
@@ -1497,7 +1616,7 @@ class mf_social_feed
 			$this->id = $id;
 		}
 
-		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt = '%d'", $this->id));
+		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_excerpt = '%d'", $this->post_type_post, 'publish', $this->id)); // post_excerpt -> post_parent
 	}
 
 	function fetch_feed()
@@ -1610,6 +1729,16 @@ class mf_social_feed
 					$post_content = $post['story'];
 				}
 
+				if(isset($post['from']))
+				{
+					$is_owner = ($post['from']['id'] == $arr_post_id[0]);
+				}
+
+				else
+				{
+					$is_owner = false;
+				}
+
 				$this->arr_posts[] = array(
 					'type' => $this->type,
 					'id' => $post_id,
@@ -1618,7 +1747,7 @@ class mf_social_feed
 					'link' => "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1],
 					'image' => isset($post['full_picture']) && $post['full_picture'] != '' ? $post['full_picture'] : "",
 					'created' => date("Y-m-d H:i:s", strtotime($post['created_time'])),
-					'is_owner' => (isset($post['from']) ? ($post['from']['id'] == $arr_post_id[0]) : false), // true as fallback if others' posts should be included
+					'is_owner' => $is_owner, 
 				);
 			}
 
@@ -2082,55 +2211,81 @@ class mf_social_feed
 
 			foreach($results as $key => $post)
 			{
-				/*array('created_at' => 'Fri Feb 17 08:09:54 +0000 2017', 'id' => '[id]', 'id_str' => '[id]', 'text' => 'Text #hashtag', 'truncated' => false,
-				'entities' => stdClass::__set_state(array(
-					'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))),
-					'symbols' => array(), 'user_mentions' => array(), 'urls' => array(),
-					'media' => array(0 => stdClass::__set_state(array(
-						'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => '[url]', 'media_url_https' => '[url]', 'url' => '[url]', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
-						'sizes' => stdClass::__set_state(array(
-							'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
-							'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
-							'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
-							'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
-						))
-					)))
-				)),
-				'extended_entities' => stdClass::__set_state(array(
-					'media' => array(0 => stdClass::__set_state(array(
-						'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => '[url]', 'media_url_https' => '[url]', 'url' => '[url]', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
-						'sizes' => stdClass::__set_state(array(
-							'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
-							'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
-							'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
-							'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
-						))
-					)))
-				)),
-				'metadata' => stdClass::__set_state(array('iso_language_code' => 'sv', 'result_type' => 'recent')),
-				'source' => 'Twitter for Dumbphone', 'in_reply_to_status_id' => NULL, 'in_reply_to_status_id_str' => NULL, 'in_reply_to_user_id' => NULL, 'in_reply_to_user_id_str' => NULL, 'in_reply_to_screen_name' => NULL,
-				'user' => stdClass::__set_state(array(
-					'id' => [id], 'id_str' => '[id]', 'name' => 'Name', 'screen_name' => 'username', 'location' => 'Sverige', 'description' => 'Description', 'url' => 'https://t.co/x',
+				/*array(
+					'created_at' => 'Fri Feb 17 08:09:54 +0000 2017',
+					'id' => '[id]',
+					'id_str' => '[id]',
+					'text' => 'Text #hashtag',
+					'truncated' => false,
 					'entities' => stdClass::__set_state(array(
-						'url' => stdClass::__set_state(array(
-							'urls' => array(0 => stdClass::__set_state(array(
-								'url' => 'https://t.co/x', 'expanded_url' => '[url]', 'display_url' => 'domain.com', 'indices' => array(0 => 2)
-							)))
-						)),
-						'description' => stdClass::__set_state(array('urls' => array()))
+						'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))),
+						'symbols' => array(), 'user_mentions' => array(), 'urls' => array(),
+						'media' => array(0 => stdClass::__set_state(array(
+							'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => '[url]', 'media_url_https' => '[url]', 'url' => '[url]', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
+							'sizes' => stdClass::__set_state(array(
+								'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
+								'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
+								'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
+								'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
+							))
+						)))
 					)),
-					'protected' => false, 'followers_count' => 78040, 'friends_count' => 4127, 'listed_count' => 594, 'created_at' => 'Tue Jan 20 10:19:51 +0000 2009', 'favourites_count' => 420, 'utc_offset' => 3600, 'time_zone' => 'Brantevik', 'geo_enabled' => true, 'verified' => true, 'statuses_count' => 12821, 'lang' => 'sv', 'contributors_enabled' => false, 'is_translator' => false, 'is_translation_enabled' => false, 'profile_background_color' => 'ffffff', 'profile_background_image_url' => 'http://pbs.twimg.com/profile_background_images/[id]/x.jpg', 'profile_background_image_url_https' => 'https://pbs.twimg.com/profile_background_images/[id]/x.jpeg', 'profile_background_tile' => false, 'profile_image_url' => 'http://pbs.twimg.com/profile_images/[id]/x.png', 'profile_image_url_https' => 'https://pbs.twimg.com/profile_images/[id]/x.png', 'profile_banner_url' => 'https://pbs.twimg.com/profile_banners/[id]/[id]', 'profile_link_color' => 'ffffff', 'profile_sidebar_border_color' => 'ffffff', 'profile_sidebar_fill_color' => 'ffffff', 'profile_text_color' => '333333', 'profile_use_background_image' => true, 'has_extended_profile' => false, 'default_profile' => false, 'default_profile_image' => false, 'following' => false, 'follow_request_sent' => false, 'notifications' => false, 'translator_type' => 'none'
-				)),
-				'geo' => NULL, 'coordinates' => NULL, 'place' => NULL, 'contributors' => NULL, 'is_quote_status' => false, 'retweet_count' => 9, 'favorite_count' => 27, 'favorited' => false, 'retweeted' => false, 'possibly_sensitive' => false, 'lang' => 'sv')*/
+					'extended_entities' => stdClass::__set_state(array(
+						'media' => array(0 => stdClass::__set_state(array(
+							'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => '[url]', 'media_url_https' => '[url]', 'url' => '[url]', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
+							'sizes' => stdClass::__set_state(array(
+								'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
+								'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
+								'medium' => stdClass::__set_state(array('w' => 1200, 'h' => 900, 'resize' => 'fit')),
+								'small' => stdClass::__set_state(array('w' => 680, 'h' => 510, 'resize' => 'fit'))
+							))
+						)))
+					)),
+					'metadata' => stdClass::__set_state(array('iso_language_code' => 'sv', 'result_type' => 'recent')),
+					'source' => 'Twitter for Dumbphone',
+					'in_reply_to_status_id' => NULL,
+					'in_reply_to_status_id_str' => NULL,
+					'in_reply_to_user_id' => NULL,
+					'in_reply_to_user_id_str' => NULL,
+					'in_reply_to_screen_name' => NULL,
+					'user' => stdClass::__set_state(array(
+						'id' => [id], 'id_str' => '[id]', 'name' => 'Name', 'screen_name' => 'username', 'location' => 'Sverige', 'description' => 'Description', 'url' => 'https://t.co/x',
+						'entities' => stdClass::__set_state(array(
+							'url' => stdClass::__set_state(array(
+								'urls' => array(0 => stdClass::__set_state(array(
+									'url' => 'https://t.co/x', 'expanded_url' => '[url]', 'display_url' => 'domain.com', 'indices' => array(0 => 2)
+								)))
+							)),
+							'description' => stdClass::__set_state(array('urls' => array()))
+						)),
+						'protected' => false, 'followers_count' => 78040, 'friends_count' => 4127, 'listed_count' => 594, 'created_at' => 'Tue Jan 20 10:19:51 +0000 2009', 'favourites_count' => 420, 'utc_offset' => 3600, 'time_zone' => 'Brantevik', 'geo_enabled' => true, 'verified' => true, 'statuses_count' => 12821, 'lang' => 'sv', 'contributors_enabled' => false, 'is_translator' => false, 'is_translation_enabled' => false, 'profile_background_color' => 'ffffff', 'profile_background_image_url' => 'http://pbs.twimg.com/profile_background_images/[id]/x.jpg', 'profile_background_image_url_https' => 'https://pbs.twimg.com/profile_background_images/[id]/x.jpeg', 'profile_background_tile' => false, 'profile_image_url' => 'http://pbs.twimg.com/profile_images/[id]/x.png', 'profile_image_url_https' => 'https://pbs.twimg.com/profile_images/[id]/x.png', 'profile_banner_url' => 'https://pbs.twimg.com/profile_banners/[id]/[id]', 'profile_link_color' => 'ffffff', 'profile_sidebar_border_color' => 'ffffff', 'profile_sidebar_fill_color' => 'ffffff', 'profile_text_color' => '333333', 'profile_use_background_image' => true, 'has_extended_profile' => false, 'default_profile' => false, 'default_profile_image' => false, 'following' => false, 'follow_request_sent' => false, 'notifications' => false, 'translator_type' => 'none'
+					)),
+					'geo' => NULL, 'coordinates' => NULL, 'place' => NULL, 'contributors' => NULL, 'is_quote_status' => false, 'retweet_count' => 9, 'favorite_count' => 27, 'favorited' => false, 'retweeted' => false, 'possibly_sensitive' => false, 'lang' => 'sv'
+				)*/
+
+				$username = (isset($post->user->screen_name) ? $post->user->screen_name : $this->search);
+
+				if(substr($this->search, 0, 1) == "#")
+				{
+					$is_owner = true;
+				}
+
+				else
+				{
+					$is_owner = ($username == $this->search);
+				}
 
 				$this->arr_posts[] = array(
 					'type' => $this->type,
 					'id' => $post->id,
-					'name' => isset($post->user->screen_name) ? $post->user->screen_name : $this->search,
+					'name' => $username,
 					'text' => $post->text,
 					'link' => "//twitter.com/".$this->search."/status/".$post->id,
 					'image' => (isset($post->entities->media[0]->media_url) ? $post->entities->media[0]->media_url : ""),
 					'created' => date("Y-m-d H:i:s", strtotime($post->created_at)),
+					'is_owner' => $is_owner,
+					'is_reply' => ($post->in_reply_to_status_id != ''),
+					'is_retweet' => (substr($post->text, 0, 3) == "RT "),
 				);
 			}
 
@@ -2145,6 +2300,90 @@ class mf_social_feed
 		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_modified = NOW() WHERE ID = '%d' AND post_type = %s", $this->id, $this->post_type));
 	}
 
+	function check_is_settings($post)
+	{
+		$out = true;
+
+		switch($post['type'])
+		{
+			case 'facebook':
+				if($post['is_owner'] == true)
+				{
+					// Do nothing
+				}
+
+				else
+				{
+					$post_include = get_post_meta($this->id, $this->meta_prefix.'facebook_include', false);
+
+					if(is_array($post_include) && count($post_include) > 0)
+					{
+						if(!in_array('other', $post_include))
+						{
+							$out = false;
+
+							//do_log("Hide because other (".var_export($post, true).")");
+						}
+					}
+
+					else
+					{
+						$out = false;
+
+						//do_log("Hide because no FB include (".var_export($post, true).")");
+					}
+				}
+			break;
+
+			case 'twitter':
+				if($post['is_owner'] == true && $post['is_reply'] == false && $post['is_retweet'] == false)
+				{
+					// Do nothing
+
+					//do_log("Do nothing. It's from the owner and neither a reply or a retweet (".var_export($post, true).")");
+				}
+
+				else
+				{
+					$post_include = get_post_meta($this->id, $this->meta_prefix.'twitter_include', false);
+
+					if(is_array($post_include) && count($post_include) > 0)
+					{
+						if($post['is_owner'] == false && !in_array('other', $post_include))
+						{
+							$out = false;
+
+							//do_log("Hide because not owner (".var_export($post, true).")");
+						}
+
+						else if($post['is_reply'] == true && !in_array('reply', $post_include))
+						{
+							$out = false;
+
+							//do_log("Hide because reply (".var_export($post, true).")");
+						}
+
+						else if($post['is_retweet'] == true && !in_array('retweet', $post_include))
+						{
+							$out = false;
+
+							//do_log("Hide because retweet (".var_export($post, true).")");
+						}
+					}
+
+					else
+					{
+						$out = false;
+
+						//do_log("Hide because no Twitter include (".var_export($post, true).")");
+					}
+				}
+			break;
+		}
+
+		return $out;
+	}
+
 	function insert_posts()
 	{
 		global $wpdb;
@@ -2154,81 +2393,94 @@ class mf_social_feed
 			$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type']." ".$post['id']);
 			$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
 
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND (post_title = %s OR post_name = %s) AND post_excerpt = '%d' LIMIT 0, 1", $post_title, $post_name, $this->id));
+			$arr_meta_input = array(
+				$this->meta_prefix.'service' => $post['type'],
+				$this->meta_prefix.'feed_id' => $this->id, //This can be removed when post_parent is used everywhere
+				$this->meta_prefix.'name' => $post['name'],
+				$this->meta_prefix.'image' => $post['image'],
+				$this->meta_prefix.'link' => $post['link'],
+			);
+
+			$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id', 'likes', 'comments');
+
+			foreach($arr_meta_input_types as $meta_input_type)
+			{
+				if(isset($post[$meta_input_type]) && $post[$meta_input_type] > 0)
+				{
+					$arr_meta_input[$this->meta_prefix.$meta_input_type] = $post[$meta_input_type];
+				}
+			}
+
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_excerpt = '%d'", $this->post_type_post, 'publish', $post_title, $post_name, $this->id)); // post_excerpt -> post_parent
 
 			if($wpdb->num_rows == 0)
 			{
-				if(!isset($post['is_owner']) || $post['is_owner'] == true)
+				//if(!isset($post['is_owner']) || $post['is_owner'] == true)
+				if($this->check_is_settings($post))
 				{
-					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = 'mf_social_feed_post' AND post_excerpt = '%d' AND post_status = 'pending' AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->id, $post['name']));
+					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_excerpt = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name'])); // post_excerpt -> post_parent
 					$post_status = $wpdb->num_rows > 0 ? 'draft' : 'publish';
 
-					if($post_status == 'draft')
+					/*if($post_status == 'draft')
 					{
 						do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
-					}
+					}*/
 
 					$post_data = array(
-						'post_type' => 'mf_social_feed_post',
+						'post_type' => $this->post_type_post,
 						'post_status' => $post_status,
-						'post_name' => $post_name, //Can this be removed?
+						'post_name' => $post_name,
 						'post_title' => $post_title,
 						'post_content' => $post['text'],
+						'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
+						'post_parent' => $this->id,
 						'post_date' => $post['created'],
-						'post_excerpt' => $this->id, //Can this be removed?
-						'meta_input' => array(
-							$this->meta_prefix.'service' => $post['type'],
-							$this->meta_prefix.'feed_id' => $this->id,
-							$this->meta_prefix.'name' => $post['name'],
-							$this->meta_prefix.'image' => $post['image'],
-							$this->meta_prefix.'link' => $post['link'],
-						),
+						'meta_input' => $arr_meta_input,
 					);
 
 					$post_id = wp_insert_post($post_data);
 
-					if(isset($post['user_id']) && $post['user_id'] > 0)
+					/*if(isset($post['user_id']) && $post['user_id'] > 0)
 					{
 						update_post_meta($post_id, $this->meta_prefix.'user_id', $post['user_id']);
 					}
 
-					if(isset($post['likes']) && $post['likes'] > 0)
+					if(isset($post['likes']) && $post[''] > 0)
 					{
 						update_post_meta($post_id, $this->meta_prefix.'likes', $post['likes']);
 					}
 
-					if(isset($post['comments']) && $post['comments'] > 0)
+					if(isset($post['comments']) && $post[''] > 0)
 					{
 						update_post_meta($post_id, $this->meta_prefix.'comments', $post['comments']);
-					}
+					}*/
 				}
 			}
 
 			else
 			{
+				$i = 0;
+
 				foreach($result as $r)
 				{
 					$post_id = $r->ID;
 
-					if(!isset($post['is_owner']) || $post['is_owner'] == true)
+					//if(!isset($post['is_owner']) || $post['is_owner'] == true)
+					if($this->check_is_settings($post) && $i == 0)
 					{
 						$post_data = array(
 							'ID' => $post_id,
-							'post_name' => $post_name, //Can this be removed?
+							'post_name' => $post_name,
 							'post_title' => $post_title,
 							'post_content' => $post['text'],
-							'meta_input' => array(
-								$this->meta_prefix.'service' => $post['type'],
-								$this->meta_prefix.'feed_id' => $this->id,
-								$this->meta_prefix.'name' => $post['name'],
-								$this->meta_prefix.'image' => $post['image'],
-								$this->meta_prefix.'link' => $post['link'],
-							),
+							'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
+							'post_parent' => $this->id,
+							'meta_input' => $arr_meta_input,
 						);
 
 						wp_update_post($post_data);
 
-						if(isset($post['user_id']) && $post['user_id'] > 0)
+						/*if(isset($post['user_id']) && $post['user_id'] > 0)
 						{
 							update_post_meta($post_id, $this->meta_prefix.'user_id', $post['user_id']);
 						}
@@ -2256,7 +2508,9 @@ class mf_social_feed
 						else
 						{
 							delete_post_meta($post_id, $this->meta_prefix.'comments');
-						}
+						}*/
+
+						$i++;
 					}
 
 					else
@@ -2310,7 +2564,7 @@ class mf_social_feed
 
 			while(count($arr_post_posts) < $data['amount'])
 			{
-				$result = $wpdb->get_results("SELECT ID, post_title, post_content, post_date, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = 'mf_social_feed_post' AND post_status = 'publish' AND post_excerpt IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".$data['amount']);
+				$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_excerpt, post_parent, post_date, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_excerpt IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".$data['amount'], $this->post_type_post, 'publish'));
 
 				if($wpdb->num_rows > 0)
 				{
@@ -2320,9 +2574,12 @@ class mf_social_feed
 						$post_title = $r->post_title;
 						$post_content = $r->post_content;
 						$post_date = $r->post_date;
+						
+						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+						//$post_feed = $r->post_excerpt;
+						//$post_feed = $r->post_parent;
 
 						$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
-						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
 						$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
 						$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
 						$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
