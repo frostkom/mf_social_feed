@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-03 12:09+0100\n"
+"POT-Creation-Date: 2019-02-21 07:22+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -20,6 +20,9 @@ msgstr "Innlegg"
 
 msgid "Post"
 msgstr "Innlegg"
+
+msgid "Key"
+msgstr "Nøkkel"
 
 msgid "Default"
 msgstr "Standard"
@@ -50,9 +53,6 @@ msgstr "Skjult"
 
 msgid "Are you sure?"
 msgstr "Er du sikker?"
-
-msgid "Read More"
-msgstr "Les Mer"
 
 msgid "All"
 msgstr "Alle"

@@ -1134,11 +1134,11 @@ class mf_social_feed
 		}
 	}
 
-	function delete_post($post_id)
+	function wp_trash_post($post_id)
 	{
-		global $wpdb, $post_type;
+		global $wpdb;
 
-		if($post_type == $this->post_type)
+		if(get_post_type($post_id) == $this->post_type)
 		{
 			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_excerpt = '%d'", $this->post_type_post, $post_id)); //post_excerpt -> post_parent
 

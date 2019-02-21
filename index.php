@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 5.4.0
+Version: 5.4.1
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://frostkom.se
@@ -50,7 +50,8 @@ if(is_admin())
 	add_filter('page_row_actions', array($obj_social_feed, 'row_actions'), 10, 2);
 
 	add_action('save_post', array($obj_social_feed, 'save_post'), 10, 3);
-	add_action('delete_post', array($obj_social_feed, 'delete_post'));
+	add_action('wp_trash_post', array($obj_social_feed, 'wp_trash_post'));
+	add_action('delete_post', array($obj_social_feed, 'wp_trash_post')); // Needs to be here until trash is emptied
 
 	add_filter('wp_get_default_privacy_policy_content', array($obj_social_feed, 'add_policy'));
 }
