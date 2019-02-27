@@ -446,12 +446,22 @@ class mf_social_feed
 	{
 		global $pagenow;
 
-		if($pagenow == 'edit.php' && check_var('post_type') == $this->post_type_post)
+		if($pagenow == 'edit.php')
 		{
 			$plugin_include_url = plugin_dir_url(__FILE__);
 			$plugin_version = get_plugin_version(__FILE__);
 
-			mf_enqueue_script('script_social_feed', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')), $plugin_version);
+			switch(check_var('post_type'))
+			{
+				case $this->post_type:
+					mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
+				break;
+
+				case $this->post_type_post:
+					mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
+					mf_enqueue_script('script_social_feed', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')), $plugin_version);
+				break;
+			}
 		}
 	}
 
@@ -532,6 +542,22 @@ class mf_social_feed
 		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='twitter'>".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</p>";
 	}
 
+	function get_post_icon($post_service)
+	{
+		switch($post_service)
+		{
+			case 'rss':
+				$post_icon = "fa fa-rss";
+			break;
+
+			default:
+				$post_icon = "fab fa-".$post_service;
+			break;
+		}
+
+		return $post_icon;
+	}
+
 	function meta_post_info()
 	{
 		global $post;
@@ -549,7 +575,7 @@ class mf_social_feed
 		$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
 
 		$out = "<ul id='".$this->meta_prefix."info'>"
-			."<li><i class='fab fa-".$post_service."'></i> ".get_post_title($post_feed)."</li>"
+			."<li><i class='".$this->get_post_icon($post_service)."'></i> ".get_post_title($post_feed)."</li>"
 			."<li><a href='".$post_link."'>@".$post_username."</a></li>"
 			.($post_image != '' ? "<li><img src='".$post_image."'></li>" : "")
 			."<li>".format_date($post_date)."</li>"
@@ -801,7 +827,7 @@ class mf_social_feed
 			case 'type':
 				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
 
-				echo "<i class='fab fa-".$post_meta." fa-2x'></i>";
+				echo "<i class='".$this->get_post_icon($post_meta)." fa-2x'></i>";
 			break;
 
 			case 'search_for':
@@ -965,7 +991,7 @@ class mf_social_feed
 
 				if($post_meta != '')
 				{
-					echo "<i class='fab fa-".$post_meta." fa-2x'></i>";
+					echo "<i class='".$this->get_post_icon($post_meta)." fa-2x'></i>";
 				}
 
 				else
@@ -1202,7 +1228,7 @@ class mf_social_feed
 		<script type='text/template' id='template_feed_post'>
 			<li class='sf_<%= service %> sf_feed_<%= feed %>'>
 				<div class='meta'>
-					<i class='fab fa-<%= service %>'></i>
+					<i class='<%= icon %>'></i>
 
 					<% if(service == 'rss')
 					{ %>
@@ -2206,22 +2232,89 @@ class mf_social_feed
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log(__("Twitter", 'lang_social_feed').": ".htmlspecialchars(var_export($results, true)));
+				$results_temp = (array)$results;
+
+				foreach($results_temp as $key => $arr_value)
+				{
+					unset($results_temp[$key]->id_str);
+					unset($results_temp[$key]->truncated);
+					unset($results_temp[$key]->entities->hashtags);
+					unset($results_temp[$key]->entities->symbols);
+					unset($results_temp[$key]->entities->user_mentions);
+					unset($results_temp[$key]->entities->urls);
+					unset($results_temp[$key]->entities->media->indices);
+					unset($results_temp[$key]->entities->media->media_url_https);
+					unset($results_temp[$key]->extended_entities);
+					unset($results_temp[$key]->metadata);
+					unset($results_temp[$key]->source);
+					unset($results_temp[$key]->in_reply_to_status_id_str);
+					unset($results_temp[$key]->in_reply_to_user_id_str);
+					unset($results_temp[$key]->user->id_str);
+					unset($results_temp[$key]->user->entities);
+					unset($results_temp[$key]->user->protected);
+					unset($results_temp[$key]->user->followers_count);
+					unset($results_temp[$key]->user->friends_count);
+					unset($results_temp[$key]->user->listed_count);
+					unset($results_temp[$key]->user->created_at);
+					unset($results_temp[$key]->user->favourites_count);
+					unset($results_temp[$key]->user->utc_offset);
+					unset($results_temp[$key]->user->time_zone);
+					unset($results_temp[$key]->user->geo_enabled);
+					unset($results_temp[$key]->user->statuses_count);
+					unset($results_temp[$key]->user->lang);
+					unset($results_temp[$key]->user->contributors_enabled);
+					unset($results_temp[$key]->user->is_translator);
+					unset($results_temp[$key]->user->is_translation_enabled);
+					unset($results_temp[$key]->user->profile_background_color);
+					unset($results_temp[$key]->user->profile_background_image_url);
+					unset($results_temp[$key]->user->profile_background_image_url_https);
+					unset($results_temp[$key]->user->profile_background_tile);
+					unset($results_temp[$key]->user->profile_image_url);
+					unset($results_temp[$key]->user->profile_image_url_https);
+					unset($results_temp[$key]->user->profile_banner_url);
+					unset($results_temp[$key]->user->profile_link_color);
+					unset($results_temp[$key]->user->profile_sidebar_border_color);
+					unset($results_temp[$key]->user->profile_sidebar_fill_color);
+					unset($results_temp[$key]->user->profile_text_color);
+					unset($results_temp[$key]->user->profile_use_background_image);
+					unset($results_temp[$key]->user->has_extended_profile);
+					unset($results_temp[$key]->user->default_profile);
+					unset($results_temp[$key]->user->default_profile_image);
+					unset($results_temp[$key]->user->following);
+					unset($results_temp[$key]->user->follow_request_sent);
+					unset($results_temp[$key]->user->notifications);
+					unset($results_temp[$key]->user->translator_type);
+					unset($results_temp[$key]->geo);
+					unset($results_temp[$key]->coordinates);
+					unset($results_temp[$key]->place);
+					unset($results_temp[$key]->contributors);
+					unset($results_temp[$key]->possibly_sensitive);
+					unset($results_temp[$key]->lang);
+				}
+
+				do_log(__("Twitter", 'lang_social_feed').": ".htmlspecialchars(var_export($results_temp, true)));
 			}
 
 			foreach($results as $key => $post)
 			{
 				/*array(
 					'created_at' => 'Fri Feb 17 08:09:54 +0000 2017',
-					'id' => '[id]',
-					'id_str' => '[id]',
+					'id' => '[id]', 'id_str' => '[id]',
 					'text' => 'Text #hashtag',
 					'truncated' => false,
 					'entities' => stdClass::__set_state(array(
 						'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))),
-						'symbols' => array(), 'user_mentions' => array(), 'urls' => array(),
+						'symbols' => array(),
+						'user_mentions' => array(),
+						'urls' => array(),
 						'media' => array(0 => stdClass::__set_state(array(
-							'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => '[url]', 'media_url_https' => '[url]', 'url' => '[url]', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
+							'id' => '[id]', 'id_str' => '[id]',
+							'indices' => array(0 => 50),
+							'media_url' => '[url]', 'media_url_https' => '[url]',
+							'url' => '[url]',
+							'display_url' => 'pic.twitter.com/x',
+							'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1',
+							'type' => 'photo',
 							'sizes' => stdClass::__set_state(array(
 								'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
 								'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
@@ -2232,7 +2325,13 @@ class mf_social_feed
 					)),
 					'extended_entities' => stdClass::__set_state(array(
 						'media' => array(0 => stdClass::__set_state(array(
-							'id' => '[id]', 'id_str' => '[id]', 'indices' => array(0 => 50), 'media_url' => '[url]', 'media_url_https' => '[url]', 'url' => '[url]', 'display_url' => 'pic.twitter.com/x', 'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1', 'type' => 'photo',
+							'id' => '[id]', 'id_str' => '[id]',
+							'indices' => array(0 => 50),
+							'media_url' => '[url]', 'media_url_https' => '[url]',
+							'url' => '[url]',
+							'display_url' => 'pic.twitter.com/x',
+							'expanded_url' => 'https://twitter.com/username/status/[id]/photo/1',
+							'type' => 'photo',
 							'sizes' => stdClass::__set_state(array(
 								'large' => stdClass::__set_state(array('w' => 1600, 'h' => 1200, 'resize' => 'fit')),
 								'thumb' => stdClass::__set_state(array('w' => 150, 'h' => 150, 'resize' => 'crop')),
@@ -2243,22 +2342,25 @@ class mf_social_feed
 					)),
 					'metadata' => stdClass::__set_state(array('iso_language_code' => 'sv', 'result_type' => 'recent')),
 					'source' => 'Twitter for Dumbphone',
-					'in_reply_to_status_id' => NULL,
-					'in_reply_to_status_id_str' => NULL,
-					'in_reply_to_user_id' => NULL,
-					'in_reply_to_user_id_str' => NULL,
+					'in_reply_to_status_id' => NULL, 'in_reply_to_status_id_str' => NULL,
+					'in_reply_to_user_id' => NULL, 'in_reply_to_user_id_str' => NULL,
 					'in_reply_to_screen_name' => NULL,
 					'user' => stdClass::__set_state(array(
-						'id' => [id], 'id_str' => '[id]', 'name' => 'Name', 'screen_name' => 'username', 'location' => 'Sverige', 'description' => 'Description', 'url' => 'https://t.co/x',
+						'id' => [id], 'id_str' => '[id]',
+						'name' => 'Name',
+						'screen_name' => 'username',
+						'location' => 'Sverige',
+						'description' => 'Description',
+						'url' => '[url]',
 						'entities' => stdClass::__set_state(array(
 							'url' => stdClass::__set_state(array(
 								'urls' => array(0 => stdClass::__set_state(array(
-									'url' => 'https://t.co/x', 'expanded_url' => '[url]', 'display_url' => 'domain.com', 'indices' => array(0 => 2)
+									'url' => '[url]', 'expanded_url' => '[url]', 'display_url' => 'domain.com', 'indices' => array(0 => 2)
 								)))
 							)),
 							'description' => stdClass::__set_state(array('urls' => array()))
 						)),
-						'protected' => false, 'followers_count' => 78040, 'friends_count' => 4127, 'listed_count' => 594, 'created_at' => 'Tue Jan 20 10:19:51 +0000 2009', 'favourites_count' => 420, 'utc_offset' => 3600, 'time_zone' => 'Brantevik', 'geo_enabled' => true, 'verified' => true, 'statuses_count' => 12821, 'lang' => 'sv', 'contributors_enabled' => false, 'is_translator' => false, 'is_translation_enabled' => false, 'profile_background_color' => 'ffffff', 'profile_background_image_url' => 'http://pbs.twimg.com/profile_background_images/[id]/x.jpg', 'profile_background_image_url_https' => 'https://pbs.twimg.com/profile_background_images/[id]/x.jpeg', 'profile_background_tile' => false, 'profile_image_url' => 'http://pbs.twimg.com/profile_images/[id]/x.png', 'profile_image_url_https' => 'https://pbs.twimg.com/profile_images/[id]/x.png', 'profile_banner_url' => 'https://pbs.twimg.com/profile_banners/[id]/[id]', 'profile_link_color' => 'ffffff', 'profile_sidebar_border_color' => 'ffffff', 'profile_sidebar_fill_color' => 'ffffff', 'profile_text_color' => '333333', 'profile_use_background_image' => true, 'has_extended_profile' => false, 'default_profile' => false, 'default_profile_image' => false, 'following' => false, 'follow_request_sent' => false, 'notifications' => false, 'translator_type' => 'none'
+						'protected' => false, 'followers_count' => 78040, 'friends_count' => 4127, 'listed_count' => 594, 'created_at' => 'Tue Jan 20 10:19:51 +0000 2009', 'favourites_count' => 420, 'utc_offset' => 3600, 'time_zone' => '[TZ]', 'geo_enabled' => true, 'verified' => true, 'statuses_count' => 12821, 'lang' => 'sv', 'contributors_enabled' => false, 'is_translator' => false, 'is_translation_enabled' => false, 'profile_background_color' => 'ffffff', 'profile_background_image_url' => 'http://pbs.twimg.com/profile_background_images/[id]/x.jpg', 'profile_background_image_url_https' => 'https://pbs.twimg.com/profile_background_images/[id]/x.jpeg', 'profile_background_tile' => false, 'profile_image_url' => 'http://pbs.twimg.com/profile_images/[id]/x.png', 'profile_image_url_https' => 'https://pbs.twimg.com/profile_images/[id]/x.png', 'profile_banner_url' => 'https://pbs.twimg.com/profile_banners/[id]/[id]', 'profile_link_color' => 'ffffff', 'profile_sidebar_border_color' => 'ffffff', 'profile_sidebar_fill_color' => 'ffffff', 'profile_text_color' => '333333', 'profile_use_background_image' => true, 'has_extended_profile' => false, 'default_profile' => false, 'default_profile_image' => false, 'following' => false, 'follow_request_sent' => false, 'notifications' => false, 'translator_type' => 'none'
 					)),
 					'geo' => NULL, 'coordinates' => NULL, 'place' => NULL, 'contributors' => NULL, 'is_quote_status' => false, 'retweet_count' => 9, 'favorite_count' => 27, 'favorited' => false, 'retweeted' => false, 'possibly_sensitive' => false, 'lang' => 'sv'
 				)*/
@@ -2272,7 +2374,7 @@ class mf_social_feed
 
 				else
 				{
-					$is_owner = ($username == $this->search);
+					$is_owner = (strtolower($username) == strtolower($this->search));
 				}
 
 				$this->arr_posts[] = array(
@@ -2387,6 +2489,11 @@ class mf_social_feed
 	function insert_posts()
 	{
 		global $wpdb;
+
+		if(get_option('setting_social_debug') == 'yes')
+		{
+			do_log("Social Posts: ".htmlspecialchars(var_export($this->arr_posts, true)));
+		}
 
 		foreach($this->arr_posts as $post)
 		{
@@ -2574,7 +2681,7 @@ class mf_social_feed
 						$post_title = $r->post_title;
 						$post_content = $r->post_content;
 						$post_date = $r->post_date;
-						
+
 						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
 						//$post_feed = $r->post_excerpt;
 						//$post_feed = $r->post_parent;
@@ -2628,6 +2735,7 @@ class mf_social_feed
 							{
 								$arr_post_posts[] = array(
 									'service' => $post_service,
+									'icon' => $this->get_post_icon($post_service),
 									'feed' => $post_feed,
 									'feed_title' => get_post_title($post_feed),
 									'link' => $post_link,
