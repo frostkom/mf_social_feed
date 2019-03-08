@@ -1524,7 +1524,7 @@ class mf_social_feed
 
 		if(!isset($json->access_token) || 5 >= strlen($json->access_token))
 		{
-			do_log(__("I did not recieve an access token", 'lang_social_feed')." (".var_export($json, true).")");
+			do_log("I did not recieve an access token (".var_export($json, true).")");
 
 			return false;
 		}
@@ -1715,7 +1715,7 @@ class mf_social_feed
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log(__("Facebook", 'lang_social_feed').": ".$fb_feed_url." -> ".htmlspecialchars(var_export($json['data'], true)));
+				do_log("Facebook: ".$fb_feed_url." -> ".htmlspecialchars(var_export($json['data'], true)));
 			}
 
 			foreach($json['data'] as $post)
@@ -1799,7 +1799,7 @@ class mf_social_feed
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log(__("Instagram", 'lang_social_feed').": ".$url." -> ".htmlspecialchars(var_export($json->graphql->hashtag->edge_hashtag_to_media->edges, true)));
+				do_log("Instagram: ".$url." -> ".htmlspecialchars(var_export($json->graphql->hashtag->edge_hashtag_to_media->edges, true)));
 			}
 
 			foreach($json->graphql->hashtag->edge_hashtag_to_media->edges as $post)
@@ -1873,7 +1873,7 @@ class mf_social_feed
 
 						else
 						{
-							do_log(sprintf(__("I could not fetch the source from %s", 'lang_social_feed'), $post_url." (".var_export($headers, true).")"));
+							do_log(sprintf("I could not fetch the source from %s", $post_url." (".var_export($headers, true).")"));
 						}
 					}
 				}
@@ -1977,7 +1977,7 @@ class mf_social_feed
 			{
 				if(get_option('setting_social_debug') == 'yes')
 				{
-					do_log(__("Instagram", 'lang_social_feed').": ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
+					do_log("Instagram: ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
 				}
 
 				foreach($json->data as $post)
@@ -2061,7 +2061,7 @@ class mf_social_feed
 			{
 				if(get_option('setting_social_debug') == 'yes')
 				{
-					do_log(__("LinkedIn", 'lang_social_feed').": ".htmlspecialchars(var_export($results, true)));
+					do_log("LinkedIn: ".htmlspecialchars(var_export($results, true)));
 				}
 
 				foreach($results as $post)
@@ -2139,7 +2139,7 @@ class mf_social_feed
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log(__("RSS", 'lang_social_feed').": ".$this->search." -> ".htmlspecialchars(var_export($feed->get_items(), true)));
+				do_log("RSS: ".$this->search." -> ".htmlspecialchars(var_export($feed->get_items(), true)));
 			}
 
 			foreach($feed->get_items() as $item)
@@ -2292,7 +2292,7 @@ class mf_social_feed
 					unset($results_temp[$key]->lang);
 				}
 
-				do_log(__("Twitter", 'lang_social_feed').": ".htmlspecialchars(var_export($results_temp, true)));
+				do_log("Twitter: ".htmlspecialchars(var_export($results_temp, true)));
 			}
 
 			foreach($results as $key => $post)
