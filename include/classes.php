@@ -194,28 +194,28 @@ class mf_social_feed
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("Facebook", 'lang_social_feed'));
+		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - Facebook");
 	}
 
 	function settings_social_feed_instagram_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("Instagram", 'lang_social_feed'));
+		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - Instagram");
 	}
 
 	function settings_social_feed_linkedin_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("LinkedIn", 'lang_social_feed'));
+		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - LinkedIn");
 	}
 
 	function settings_social_feed_twitter_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("Twitter", 'lang_social_feed'));
+		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - Twitter");
 	}
 
 	function get_setting_min()
@@ -588,16 +588,16 @@ class mf_social_feed
 	{
 		$arr_data = array();
 
-		$arr_data['facebook'] = __("Facebook", 'lang_social_feed');
-		$arr_data['instagram'] = __("Instagram", 'lang_social_feed');
+		$arr_data['facebook'] = "Facebook";
+		$arr_data['instagram'] = "Instagram";
 
 		if($this->check_token_life())
 		{
-			$arr_data['linkedin'] = __("LinkedIn", 'lang_social_feed');
+			$arr_data['linkedin'] = "LinkedIn";
 		}
 
-		$arr_data['rss'] = __("RSS", 'lang_social_feed');
-		$arr_data['twitter'] = __("Twitter", 'lang_social_feed');
+		$arr_data['rss'] = "RSS";
+		$arr_data['twitter'] = "Twitter";
 
 		return $arr_data;
 	}

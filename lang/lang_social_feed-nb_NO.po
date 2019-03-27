@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-21 07:22+0100\n"
+"POT-Creation-Date: 2019-03-22 09:52+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -14,6 +14,9 @@ msgstr ""
 "X-Poedit-KeywordsList: esc_html__;esc_html_e;esc_attr__;esc_attr_e;__;_e\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: ..\n"
+
+msgid "Social Feed"
+msgstr "Kommentarfelt"
 
 msgid "Posts"
 msgstr "Innlegg"
@@ -27,6 +30,9 @@ msgstr "Nøkkel"
 msgid "Default"
 msgstr "Standard"
 
+msgid "Go to %s and log in"
+msgstr "Gå til %s og logg inn"
+
 msgid "Settings"
 msgstr "Innstillinger"
 
@@ -35,6 +41,9 @@ msgstr "Søk etter"
 
 msgid "Information"
 msgstr "Informasjon"
+
+msgid "Latest"
+msgstr "Nyeste"
 
 msgid "Username"
 msgstr "Brukernavn"
@@ -54,6 +63,9 @@ msgstr "Skjult"
 msgid "Are you sure?"
 msgstr "Er du sikker?"
 
+msgid "Hide"
+msgstr "Skjul"
+
 msgid "All"
 msgstr "Alle"
 
@@ -62,6 +74,9 @@ msgstr "Nei"
 
 msgid "Yes"
 msgstr "Ja"
+
+msgid "Heading"
+msgstr "Overskriften"
 
 msgid "Display Filter"
 msgstr "Vis Filter"
