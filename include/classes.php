@@ -9,7 +9,7 @@ class mf_social_feed
 
 		$this->post_type = 'mf_social_feed';
 		$this->post_type_post = 'mf_social_feed_post';
-		$this->meta_prefix = $this->post_type."_";
+		$this->meta_prefix = $this->post_type.'_';
 	}
 
 	function cron_base()
@@ -1177,9 +1177,7 @@ class mf_social_feed
 
 	function wp_head()
 	{
-		$post_id = apply_filters('get_widget_search', 'social-feed-widget');
-
-		if($post_id > 0)
+		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
 			$plugin_base_include_url = plugins_url()."/mf_base/include/";
 			$plugin_include_url = plugin_dir_url(__FILE__);
