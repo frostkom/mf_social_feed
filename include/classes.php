@@ -385,7 +385,7 @@ class mf_social_feed
 		$this->init_linkedin_auth();
 		$option = $this->settings_url;
 
-		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'xtra' => "readonly onclick='this.select()'", 'description' => sprintf(__("Add this URL to your App's %s", 'lang_social_feed'), "<a href='//www.linkedin.com/developer/apps/'>Authorized Redirect URLs</a>")));
+		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'xtra' => "readonly onclick='this.select()'", 'description' => sprintf(__("Add this URL to your Apps %s", 'lang_social_feed'), "<a href='//www.linkedin.com/developer/apps/'>Authorized Redirect URLs</a>")));
 	}
 
 	function setting_linkedin_authorize_callback()
@@ -709,7 +709,7 @@ class mf_social_feed
 					'options' => array(
 						'other' => __("Others", 'lang_social_feed'),
 						'reply' => __("Replies", 'lang_social_feed'),
-						'retweet' => __("Retweets", 'lang_social_feed'),
+						'retweet' => "Retweets",
 					),
 					'multiple' => true,
 					'attributes' => array(
@@ -1089,7 +1089,7 @@ class mf_social_feed
 
 						if(get_post_meta($id, $this->meta_prefix.'is_retweet', true) == 1)
 						{
-							echo "<i class='fa fa-share fa-2x' title='".__("Retweet", 'lang_social_feed')."'></i>";
+							echo "<i class='fa fa-share fa-2x' title='"."Retweet"."'></i>";
 						}
 					break;
 				}
@@ -1464,8 +1464,8 @@ class mf_social_feed
 	function email_when_expired()
 	{
 		$mail_to = get_bloginfo('admin_email');
-		$mail_subject = "[".get_bloginfo('name')."] ".__("LinkedIn Access Token has Expired", 'lang_social_feed');
-		$mail_content = sprintf(__("Please generate a new Access Token for LinkedIn %sHere%s", 'lang_social_feed'), "<a href='".$this->settings_url."#settings_social_feed_linkedin'>", "</a>");
+		$mail_subject = "[".get_bloginfo('name')."] ".sprintf(__("%s Access Token has Expired", 'lang_social_feed'), "LinkedIn");
+		$mail_content = sprintf(__("Please generate a new Access Token for %s %sHere%s", 'lang_social_feed'), "LinkedIn", "<a href='".$this->settings_url."#settings_social_feed_linkedin'>", "</a>");
 
 		$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
 	}
@@ -2108,13 +2108,13 @@ class mf_social_feed
 
 			else
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', __("LinkedIn", 'lang_social_feed').": ".var_export($results, true));
+				update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: ".var_export($results, true));
 			}
 		}
 
 		else
 		{
-			update_post_meta($this->id, $this->meta_prefix.'error', __("LinkedIn", 'lang_social_feed').": ".__("Token has expired", 'lang_social_feed'));
+			update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: ".__("Token has expired", 'lang_social_feed'));
 		}
 	}
 
@@ -2191,7 +2191,7 @@ class mf_social_feed
 
 			catch(TwitterException $e)
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+				update_post_meta($this->id, $this->meta_prefix.'error', "Twitter: ".var_export($e->getMessage(), true));
 			}
 		}
 
@@ -2209,7 +2209,7 @@ class mf_social_feed
 
 			catch(TwitterException $e)
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+				update_post_meta($this->id, $this->meta_prefix.'error', "Twitter: ".var_export($e->getMessage(), true));
 			}
 		}
 
@@ -2222,7 +2222,7 @@ class mf_social_feed
 
 			catch(TwitterException $e)
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', __("Twitter", 'lang_social_feed').": ".var_export($e->getMessage(), true));
+				update_post_meta($this->id, $this->meta_prefix.'error', "Twitter: ".var_export($e->getMessage(), true));
 			}
 		}
 
