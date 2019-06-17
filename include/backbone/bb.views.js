@@ -27,6 +27,7 @@ var SocialView = Backbone.View.extend(
 	{
 		"click ul.sf_feeds a": "change_tab",
 		"click .shorten-more-link": "show_more",
+		"click .load_more_posts": "load_more_posts",
 	},
 
 	displayDebug: function(text)
@@ -65,8 +66,8 @@ var SocialView = Backbone.View.extend(
 			if(typeof dom_obj.attr('id') != 'undefined'){							action_type += "&feed_id=" + dom_obj.attr('id');}
 			if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){			action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
 			if(typeof dom_obj.attr('data-social_filter') != 'undefined'){			action_type += "&filter=" + dom_obj.attr('data-social_filter');}
-			if(typeof dom_obj.attr('data-social_amount') != 'undefined'){			action_type += "&amount=" + dom_obj.attr('data-social_amount');}
-			if(typeof dom_obj.attr('data-social_load_more_posts') != 'undefined'){	action_type += "&load_more_posts=" + dom_obj.attr('data-social_load_more_posts');}
+			if(typeof dom_obj.data('social_amount') != 'undefined'){				action_type += "&amount=" + dom_obj.data('social_amount');}
+			if(typeof dom_obj.data('social_load_more_posts') != 'undefined'){		action_type += "&load_more_posts=" + dom_obj.data('social_load_more_posts');}
 			/*if(typeof dom_obj.attr('data-social_limit_source') != 'undefined'){	action_type += "&limit_source=" + dom_obj.attr('data-social_limit_source');}*/
 			if(typeof dom_obj.attr('data-social_likes') != 'undefined'){			action_type += "&likes=" + dom_obj.attr('data-social_likes');}
 
@@ -128,6 +129,21 @@ var SocialView = Backbone.View.extend(
 		{
 			dom_ellipsis.parent(".shorten-shortened").removeClass('shorten-shortened');
 		});
+
+		return false;
+	},
+
+	load_more_posts: function(e)
+	{
+		var dom_obj = jQuery(e.currentTarget).parents(".widget.social_feed").find(".section"),
+			dom_amount = dom_obj.data('social_amount') || 0;
+
+		if(dom_amount > 0)
+		{
+			dom_obj.data({'social_amount': (parseInt(dom_amount) * 2)});
+
+			this.loadFeeds();
+		}
 
 		return false;
 	},
@@ -196,7 +212,12 @@ var SocialView = Backbone.View.extend(
 
 		if(this.model.get('has_more_posts'))
 		{
-			/*console.log("Display Load More");*/
+			dom_obj.find(".load_more_posts").removeClass('hide');
+		}
+
+		else
+		{
+			dom_obj.find(".load_more_posts").addClass('hide');
 		}
 	}
 });

@@ -325,6 +325,11 @@ echo "@media all
 						margin-right: .5em;
 					}
 
+		.widget.social_feed .load_more_posts
+		{
+			margin-top: 1em;
+		}
+
 	.social_debug
 	{
 		background: rgba(0, 0, 0, .5);

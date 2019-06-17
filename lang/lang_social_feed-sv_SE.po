@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-17 07:47+0100\n"
+"POT-Creation-Date: 2019-06-17 09:47+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -251,6 +251,9 @@ msgstr "Alla"
 
 msgid "Image for the post %s"
 msgstr "Bild till inlägget %s"
+
+msgid "View More"
+msgstr "Se fler"
 
 msgid "I have hidden the post for you now"
 msgstr "Jag har dolt inlägget åt dig nu"

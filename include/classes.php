@@ -1307,8 +1307,14 @@ class mf_social_feed
 						$out .= " hide_text";
 					}
 
-				$out .= " hide'></ul>
-			</div>
+				$out .= " hide'></ul>";
+
+				if($instance['social_load_more_posts'] == 'yes')
+				{
+					$out .= "<div class='form_button'><a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a></div>";
+				}
+
+			$out .= "</div>
 		</div>";
 
 		return $out;
@@ -2856,8 +2862,14 @@ class widget_social_feed extends WP_Widget
 						echo " hide_text";
 					}
 
-				echo " hide'></ul>
-			</div>"
+				echo " hide'></ul>";
+
+				if($instance['social_load_more_posts'] == 'yes')
+				{
+					echo "<div class='form_button'><a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a></div>";
+				}
+
+			echo "</div>"
 		.$after_widget;
 	}
 
