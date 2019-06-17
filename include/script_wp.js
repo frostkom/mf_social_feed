@@ -29,9 +29,9 @@ jQuery(function($)
 
 			$.ajax(
 			{
-				type: "post",
-				dataType: "json",
 				url: script_social_feed.ajax_url,
+				type: 'post',
+				dataType: 'json',
 				data: {
 					action: action_type,
 					action_id: action_id

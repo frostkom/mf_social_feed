@@ -27,6 +27,7 @@ switch($type)
 		$feeds = check_var('feeds', 'char');
 		$filter = check_var('filter', 'char');
 		$amount = check_var('amount', 'int');
+		$load_more_posts = check_var('load_more_posts', 'char');
 		$limit_source = check_var('limit_source', 'char');
 		$likes = check_var('likes', 'char');
 
@@ -36,12 +37,13 @@ switch($type)
 		}
 
 		$obj_social_feed = new mf_social_feed();
-		list($arr_post_feeds, $arr_post_posts) = $obj_social_feed->get_feeds_and_posts(array('feeds' => $feeds, 'filter' => $filter, 'amount' => $amount, 'limit_source' => $limit_source, 'likes' => $likes));
+		list($arr_post_feeds, $arr_post_posts, $has_more_posts) = $obj_social_feed->get_feeds_and_posts(array('feeds' => $feeds, 'filter' => $filter, 'amount' => $amount, 'limit_source' => $limit_source, 'likes' => $likes));
 
 		$json_output['success'] = true;
 		$json_output['feed_id'] = $feed_id;
 		$json_output['response_feeds'] = $arr_post_feeds;
 		$json_output['response_posts'] = $arr_post_posts;
+		$json_output['has_more_posts'] = ($load_more_posts == 'yes' && $has_more_posts == true);
 	break;
 }
 

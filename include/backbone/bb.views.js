@@ -25,8 +25,8 @@ var SocialView = Backbone.View.extend(
 
 	events:
 	{
-		"click ul.sf_feeds a" : 'change_tab',
-		"click .shorten-more-link" : 'show_more'
+		"click ul.sf_feeds a": "change_tab",
+		"click .shorten-more-link": "show_more",
 	},
 
 	displayDebug: function(text)
@@ -62,12 +62,13 @@ var SocialView = Backbone.View.extend(
 				reload = data_reload * 60 * 1000;
 			}
 
-			if(typeof dom_obj.attr('id') != 'undefined'){					action_type += "&feed_id=" + dom_obj.attr('id');}
-			if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){	action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
-			if(typeof dom_obj.attr('data-social_filter') != 'undefined'){	action_type += "&filter=" + dom_obj.attr('data-social_filter');}
-			if(typeof dom_obj.attr('data-social_amount') != 'undefined'){	action_type += "&amount=" + dom_obj.attr('data-social_amount');}
-			if(typeof dom_obj.attr('data-social_limit_source') != 'undefined'){	action_type += "&limit_source=" + dom_obj.attr('data-social_limit_source');}
-			if(typeof dom_obj.attr('data-social_likes') != 'undefined'){	action_type += "&likes=" + dom_obj.attr('data-social_likes');}
+			if(typeof dom_obj.attr('id') != 'undefined'){							action_type += "&feed_id=" + dom_obj.attr('id');}
+			if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){			action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
+			if(typeof dom_obj.attr('data-social_filter') != 'undefined'){			action_type += "&filter=" + dom_obj.attr('data-social_filter');}
+			if(typeof dom_obj.attr('data-social_amount') != 'undefined'){			action_type += "&amount=" + dom_obj.attr('data-social_amount');}
+			if(typeof dom_obj.attr('data-social_load_more_posts') != 'undefined'){	action_type += "&load_more_posts=" + dom_obj.attr('data-social_load_more_posts');}
+			/*if(typeof dom_obj.attr('data-social_limit_source') != 'undefined'){	action_type += "&limit_source=" + dom_obj.attr('data-social_limit_source');}*/
+			if(typeof dom_obj.attr('data-social_likes') != 'undefined'){			action_type += "&likes=" + dom_obj.attr('data-social_likes');}
 
 			self.loadPage(action_type);
 		});
@@ -187,6 +188,16 @@ var SocialView = Backbone.View.extend(
 		dom_obj.find(".sf_posts").html(html).removeClass('hide');
 
 		dom_obj.find(".sf_posts.show_read_more .text").shorten();
+
+		dom_obj.find(".sf_posts img").on("error", function()
+		{
+			jQuery(this).hide();
+		});
+
+		if(this.model.get('has_more_posts'))
+		{
+			/*console.log("Display Load More");*/
+		}
 	}
 });
 
