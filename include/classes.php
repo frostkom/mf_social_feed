@@ -385,7 +385,7 @@ class mf_social_feed
 		$this->init_linkedin_auth();
 		$option = $this->settings_url;
 
-		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'xtra' => "readonly onclick='this.select()'", 'description' => sprintf(__("Add this URL to your Apps %s", 'lang_social_feed'), "<a href='//www.linkedin.com/developer/apps/'>Authorized Redirect URLs</a>")));
+		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'xtra' => "readonly onclick='this.select()'", 'description' => sprintf(__("Add this URL to your Apps %s", 'lang_social_feed'), "<a href='//linkedin.com/developer/apps/'>Authorized Redirect URLs</a>")));
 	}
 
 	function setting_linkedin_authorize_callback()
@@ -1435,7 +1435,7 @@ class mf_social_feed
 			$authorization_message = "<p>".__("You must authorize in order to use the API", 'lang_social_feed')."</p>";
 		}
 
-		$out = "<a href='https://www.linkedin.com/uas/oauth2/authorization?".http_build_query($params)."' class='button-secondary'>"
+		$out = "<a href='https://linkedin.com/uas/oauth2/authorization?".http_build_query($params)."' class='button-secondary'>"
 			.$authorize_string
 		."</a>"
 		.$authorization_message;
@@ -1516,7 +1516,7 @@ class mf_social_feed
 	{
 		$this->init_linkedin_auth();
 
-		$params = array(
+		$arr_post_data = array(
 			'grant_type' => 'authorization_code',
 			'client_id' => $this->client_id,
 			'client_secret' => get_option('setting_linkedin_api_secret'),
@@ -1524,10 +1524,10 @@ class mf_social_feed
 			'redirect_uri' => $this->settings_url,
 		);
 
-		$url = "https://www.linkedin.com/uas/oauth2/accessToken?".http_build_query($params);
+		/*$url = "https://linkedin.com/uas/oauth2/accessToken?".http_build_query($arr_post_data);
 		$result = wp_remote_retrieve_body(wp_remote_get($url));
 		$json = json_decode($result);
-
+		
 		if(!isset($json->access_token) || 5 >= strlen($json->access_token))
 		{
 			do_log("I did not recieve an access token (".var_export($json, true).")");
@@ -1538,6 +1538,40 @@ class mf_social_feed
 		else
 		{
 			return $json;
+		}*/
+
+		list($content, $headers) = get_url_content(array(
+			'url' => "https://linkedin.com/oauth/v2/accessToken",
+			'catch_head' => true,
+			'headers' => array(
+				'Cache-Control: no-cache',
+				'Content-Type: x-www-form-urlencoded',
+			),
+			'post_data' => json_encode($arr_post_data),
+		));
+
+		switch($headers['http_code'])
+		{
+			case 200:
+			case 201:
+				$json = json_decode($content, true);
+
+				if(!isset($json->access_token) || 5 >= strlen($json->access_token))
+				{
+					do_log("I did not recieve an access token (".var_export($json, true).")");
+
+					return false;
+				}
+
+				else
+				{
+					return $json;
+				}
+			break;
+
+			default:
+				do_log("I could not connect to LinkedIn: ".$headers['http_code']." (".var_export($headers, true).", ".json_encode($arr_post_data).", ".$content.")");
+			break;
 		}
 	}
 
@@ -2104,7 +2138,7 @@ class mf_social_feed
 						'id' => $post_id,
 						'name' => $post['updateContent']['company']['name'],
 						'text' => $post_content,
-						//'link' => "//www.linkedin.com/company/".$this->search,
+						//'link' => "//linkedin.com/company/".$this->search,
 						'link' => "//linkedin.com/nhome/updates?topic=".$post_id,
 						'image' => $post_image_url,
 						'created' => date("Y-m-d H:i:s", ($post_share['timestamp'] / 1000)),
