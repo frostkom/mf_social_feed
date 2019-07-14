@@ -1527,7 +1527,7 @@ class mf_social_feed
 		/*$url = "https://linkedin.com/uas/oauth2/accessToken?".http_build_query($arr_post_data);
 		$result = wp_remote_retrieve_body(wp_remote_get($url));
 		$json = json_decode($result);
-		
+
 		if(!isset($json->access_token) || 5 >= strlen($json->access_token))
 		{
 			do_log("I did not recieve an access token (".var_export($json, true).")");
@@ -2866,6 +2866,8 @@ class widget_social_feed extends WP_Widget
 
 			if($instance['social_heading'] != '')
 			{
+				$instance['social_heading'] = apply_filters('widget_title', $instance['social_heading'], $instance, $this->id_base);
+
 				echo $before_title
 					.$instance['social_heading']
 				.$after_title;
