@@ -1524,7 +1524,7 @@ class mf_social_feed
 			'redirect_uri' => $this->settings_url,
 		);
 
-		/*$url = "https://linkedin.com/uas/oauth2/accessToken?".http_build_query($arr_post_data);
+		$url = "https://linkedin.com/uas/oauth2/accessToken?".http_build_query($arr_post_data);
 		$result = wp_remote_retrieve_body(wp_remote_get($url));
 		$json = json_decode($result);
 
@@ -1538,9 +1538,10 @@ class mf_social_feed
 		else
 		{
 			return $json;
-		}*/
+		}
 
-		list($content, $headers) = get_url_content(array(
+		/* Does not work yet */
+		/*list($content, $headers) = get_url_content(array(
 			'url' => "https://linkedin.com/oauth/v2/accessToken",
 			'catch_head' => true,
 			'headers' => array(
@@ -1572,7 +1573,7 @@ class mf_social_feed
 			default:
 				do_log("I could not connect to LinkedIn: ".$headers['http_code']." (".var_export($headers, true).", ".json_encode($arr_post_data).", ".$content.")");
 			break;
-		}
+		}*/
 	}
 
 	function check_access_token()
