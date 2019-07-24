@@ -2541,12 +2541,19 @@ class mf_social_feed
 			$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type']." ".$post['id']);
 			$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
 
-			$arr_meta_input = array(
-				$this->meta_prefix.'service' => $post['type'],
-				$this->meta_prefix.'feed_id' => $this->id, //This can be removed when post_parent is used everywhere
-				$this->meta_prefix.'name' => $post['name'],
-				$this->meta_prefix.'image' => $post['image'],
-				$this->meta_prefix.'link' => $post['link'],
+			$post_data = array(
+				'post_name' => $post_name,
+				'post_title' => $post_title,
+				'post_content' => $post['text'],
+				'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
+				'post_parent' => $this->id,
+				'meta_input' => array(
+					$this->meta_prefix.'service' => $post['type'],
+					$this->meta_prefix.'feed_id' => $this->id, //This can be removed when post_parent is used everywhere
+					$this->meta_prefix.'name' => $post['name'],
+					$this->meta_prefix.'image' => $post['image'],
+					$this->meta_prefix.'link' => $post['link'],
+				),
 			);
 
 			$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id', 'likes', 'comments');
@@ -2555,7 +2562,7 @@ class mf_social_feed
 			{
 				if(isset($post[$meta_input_type]) && $post[$meta_input_type] > 0)
 				{
-					$arr_meta_input[$this->meta_prefix.$meta_input_type] = $post[$meta_input_type];
+					$post_data['meta_input'][$this->meta_prefix.$meta_input_type] = $post[$meta_input_type];
 				}
 			}
 
@@ -2563,45 +2570,21 @@ class mf_social_feed
 
 			if($wpdb->num_rows == 0)
 			{
-				//if(!isset($post['is_owner']) || $post['is_owner'] == true)
 				if($this->check_is_settings($post))
 				{
 					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_excerpt = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name'])); // post_excerpt -> post_parent
-					$post_status = $wpdb->num_rows > 0 ? 'draft' : 'publish';
+					$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
 
 					/*if($post_status == 'draft')
 					{
 						do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
 					}*/
 
-					$post_data = array(
-						'post_type' => $this->post_type_post,
-						'post_status' => $post_status,
-						'post_name' => $post_name,
-						'post_title' => $post_title,
-						'post_content' => $post['text'],
-						'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
-						'post_parent' => $this->id,
-						'post_date' => $post['created'],
-						'meta_input' => $arr_meta_input,
-					);
+					$post_data['post_type'] = $this->post_type_post;
+					$post_data['post_status'] = $post_status;
+					$post_data['post_date'] = $post['created'];
 
 					$post_id = wp_insert_post($post_data);
-
-					/*if(isset($post['user_id']) && $post['user_id'] > 0)
-					{
-						update_post_meta($post_id, $this->meta_prefix.'user_id', $post['user_id']);
-					}
-
-					if(isset($post['likes']) && $post[''] > 0)
-					{
-						update_post_meta($post_id, $this->meta_prefix.'likes', $post['likes']);
-					}
-
-					if(isset($post['comments']) && $post[''] > 0)
-					{
-						update_post_meta($post_id, $this->meta_prefix.'comments', $post['comments']);
-					}*/
 				}
 			}
 
@@ -2613,50 +2596,11 @@ class mf_social_feed
 				{
 					$post_id = $r->ID;
 
-					//if(!isset($post['is_owner']) || $post['is_owner'] == true)
 					if($this->check_is_settings($post) && $i == 0)
 					{
-						$post_data = array(
-							'ID' => $post_id,
-							'post_name' => $post_name,
-							'post_title' => $post_title,
-							'post_content' => $post['text'],
-							'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
-							'post_parent' => $this->id,
-							'meta_input' => $arr_meta_input,
-						);
+						$post_data['ID'] = $post_id;
 
 						wp_update_post($post_data);
-
-						/*if(isset($post['user_id']) && $post['user_id'] > 0)
-						{
-							update_post_meta($post_id, $this->meta_prefix.'user_id', $post['user_id']);
-						}
-
-						else
-						{
-							delete_post_meta($post_id, $this->meta_prefix.'user_id');
-						}
-
-						if(isset($post['likes']) && $post['likes'] > 0)
-						{
-							update_post_meta($post_id, $this->meta_prefix.'likes', $post['likes']);
-						}
-
-						else
-						{
-							delete_post_meta($post_id, $this->meta_prefix.'likes');
-						}
-
-						if(isset($post['comments']) && $post['comments'] > 0)
-						{
-							update_post_meta($post_id, $this->meta_prefix.'comments', $post['comments']);
-						}
-
-						else
-						{
-							delete_post_meta($post_id, $this->meta_prefix.'comments');
-						}*/
 
 						$i++;
 					}
