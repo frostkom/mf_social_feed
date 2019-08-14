@@ -1309,7 +1309,7 @@ class mf_social_feed
 
 				$out .= " hide'></ul>";
 
-				if($instance['social_load_more_posts'] == 'yes')
+				if($load_more_posts == 'yes')
 				{
 					$out .= "<div class='form_button'><a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a></div>";
 				}
