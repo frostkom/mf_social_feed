@@ -332,6 +332,7 @@ echo "@media all
 
 	.social_debug
 	{
+		background: #000;
 		background: rgba(0, 0, 0, .5);
 		bottom: 0;
 		color: #fff;

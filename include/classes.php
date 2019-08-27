@@ -507,7 +507,7 @@ class mf_social_feed
 			if($instagram_client_id != '')
 			{
 				$out = "<ol condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>"
-					."<li><a href='https://www.instagram.com/oauth/authorize/?client_id=".$instagram_client_id."&redirect_uri=".$edit_url."&response_type=token&scope=public_content'>".__("Authorize Here", 'lang_social_feed')."</a></li>"
+					."<li><a href='//instagram.com/oauth/authorize/?client_id=".$instagram_client_id."&redirect_uri=".$edit_url."&response_type=token'>".__("Authorize Here", 'lang_social_feed')."</a></li>" //&scope=public_content
 					."<li>".sprintf(__("When you arrive back here after authorization, just copy the access token from the address bar and paste it in the %s field above", 'lang_social_feed'), __("Access Token", 'lang_social_feed'))."</li>"
 				."</ol>";
 			}
@@ -1005,7 +1005,12 @@ class mf_social_feed
 			case 'name':
 				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
 
-				echo "@".$post_meta;
+				if(substr($post_meta, 0, 1) != "@")
+				{
+					$post_meta = "@".$post_meta;
+				}
+				
+				echo $post_meta;
 
 				$post_status = get_post_status($id);
 
@@ -1541,8 +1546,38 @@ class mf_social_feed
 		}
 
 		/* Does not work yet */
+		//$url = "https://linkedin.com/oauth/v2/accessToken";
+
+		/*$result = wp_remote_post($url, array(
+			'body' => $arr_post_data,
+		));
+
+		switch($result['response']['code'])
+		{
+			case 200:
+			case 201:
+				$json = json_decode($result['body'], true);
+
+				if(!isset($json->access_token) || 5 >= strlen($json->access_token))
+				{
+					do_log("I did not recieve an access token (".var_export($json, true).")");
+
+					return false;
+				}
+
+				else
+				{
+					return $json;
+				}
+			break;
+
+			default:
+				do_log("I could not connect to LinkedIn: ".$result['response']['code']." (".json_encode($arr_post_data).", ".$result['body'].")");
+			break;
+		}*/
+
 		/*list($content, $headers) = get_url_content(array(
-			'url' => "https://linkedin.com/oauth/v2/accessToken",
+			'url' => $url,
 			'catch_head' => true,
 			'headers' => array(
 				'Cache-Control: no-cache',
@@ -2084,6 +2119,16 @@ class mf_social_feed
 
 		if(false === $json || !isset($json[$key]) || empty($json[$key]))
 		{
+			if(isset($json['message']))
+			{
+				update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: ".$json['message']);
+			}
+
+			else
+			{
+				update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: No key found (".var_export($json, true).")");
+			}
+
 			return false;
 		}
 
@@ -2147,11 +2192,6 @@ class mf_social_feed
 				}
 
 				delete_post_meta($this->id, $this->meta_prefix.'error');
-			}
-
-			else
-			{
-				update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: ".var_export($results, true));
 			}
 		}
 
@@ -2655,13 +2695,17 @@ class mf_social_feed
 			$limit_source_amount = ($data['limit_source'] == 'yes' && $count_public_feeds != 1 ? ceil(($data['amount'] / $count_public_feeds) * 1.2) : $data['amount']);
 
 			/* Group Posts */
-			$query_select = ", CONCAT(SUBSTRING(post_date, 1, 10), SUBSTRING(post_content, 1, 40)) AS post_group";
-			$query_group = " GROUP BY post_group";
+			$query_select = $query_group = "";
+
+			if($count_public_feeds > 1)
+			{
+				$query_select = ", CONCAT(SUBSTRING(post_date, 1, 10), SUBSTRING(post_content, 1, 40)) AS post_group";
+				$query_group = " GROUP BY post_group";
+			}
 
 			/*while(count($arr_post_posts) < $data['amount'])
 			{*/
 				$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_excerpt, post_parent, post_date, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_excerpt IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".($data['amount'] + 1), $this->post_type_post, 'publish'));
-
 				$rows = $wpdb->num_rows;
 
 				if($rows > 0)
