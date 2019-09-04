@@ -1009,7 +1009,7 @@ class mf_social_feed
 				{
 					$post_meta = "@".$post_meta;
 				}
-				
+
 				echo $post_meta;
 
 				$post_status = get_post_status($id);
@@ -1206,12 +1206,16 @@ class mf_social_feed
 
 	function wp_footer()
 	{
-		$setting_social_debug = get_option('setting_social_debug');
+		global $obj_base;
 
-		$obj_base = new mf_base();
+		if(!isset($obj_base))
+		{
+			$obj_base = new mf_base();
+		}
+
 		echo $obj_base->get_templates(array('lost_connection'));
 
-		if($setting_social_debug == 'yes')
+		if(get_option('setting_social_debug') == 'yes')
 		{
 			echo "<div class='social_debug'></div>";
 		}
