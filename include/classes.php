@@ -972,7 +972,7 @@ class mf_social_feed
 		$cols['text'] = __("Text", 'lang_social_feed');
 		$cols['image'] = __("Image", 'lang_social_feed');
 		//$cols['post_id'] = __("ID", 'lang_social_feed');
-		$cols['info'] = __("Info", 'lang_social_feed');
+		$cols['info'] = __("Information", 'lang_social_feed');
 		$cols['date'] = __("Date", 'lang_social_feed');
 
 		return $cols;
