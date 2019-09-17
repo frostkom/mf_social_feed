@@ -364,7 +364,7 @@ class mf_social_feed
 		{
 			$description = "<ol>
 				<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='//linkedin.com/developer/apps/'>LinkedIn</a>")."</li>
-				<li>".__("Create a new app if you don't have one already and edit the app", 'lang_social_feed')."</li>
+				<li>".__("Create a new app if you do not have one already and edit the app", 'lang_social_feed')."</li>
 				<li>".sprintf(__("Copy %s and %s to these fields", 'lang_social_feed'), "Client ID", "Client Secret")."</li>
 				<li>".sprintf(__("Make sure that %s is checked", 'lang_social_feed'), "<em>rw_company_admin</em>")."</li>
 			</ol>";
