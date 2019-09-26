@@ -809,292 +809,303 @@ class mf_social_feed
 
 	function column_header($cols)
 	{
-		unset($cols['date']);
+		global $post_type;
 
-		$cols['type'] = __("Service", 'lang_social_feed');
-		$cols['search_for'] = __("Search for", 'lang_social_feed');
-		$cols['amount_of_posts'] = __("Amount", 'lang_social_feed');
+		switch($post_type)
+		{
+			case $this->post_type:
+				unset($cols['date']);
+
+				$cols['type'] = __("Service", 'lang_social_feed');
+				$cols['search_for'] = __("Search for", 'lang_social_feed');
+				$cols['amount_of_posts'] = __("Amount", 'lang_social_feed');
+			break;
+
+			case $this->post_type_post:
+				unset($cols['title']);
+				unset($cols['date']);
+
+				$cols['type'] = __("Type", 'lang_social_feed');
+				$cols['name'] = __("Username", 'lang_social_feed');
+				$cols['text'] = __("Text", 'lang_social_feed');
+				$cols['image'] = __("Image", 'lang_social_feed');
+				//$cols['post_id'] = __("ID", 'lang_social_feed');
+				$cols['info'] = __("Information", 'lang_social_feed');
+				$cols['date'] = __("Date", 'lang_social_feed');
+			break;
+		}
 
 		return $cols;
 	}
 
 	function column_cell($col, $id)
 	{
-		global $wpdb;
+		global $wpdb, $post;
 
-		switch($col)
+		switch($post->post_type)
 		{
-			case 'type':
-				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
-
-				echo "<i class='".$this->get_post_icon($post_meta)." fa-2x'></i>";
-			break;
-
-			case 'search_for':
-				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
-				$service = get_post_meta($id, $this->meta_prefix.'type', true);
-
-				$post_meta_filtered = $this->filter_search_for($post_meta);
-
-				switch($service)
+			case $this->post_type:
+				switch($col)
 				{
-					case 'facebook':
-						$feed_url = "//facebook.com/".$post_meta_filtered;
+					case 'type':
+						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+
+						echo "<i class='".$this->get_post_icon($post_meta)." fa-2x'></i>";
 					break;
 
-					case 'instagram':
-						if(substr($post_meta_filtered, 0, 1) == "#")
+					case 'search_for':
+						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+						$service = get_post_meta($id, $this->meta_prefix.'type', true);
+
+						$post_meta_filtered = $this->filter_search_for($post_meta);
+
+						if($post_meta_filtered != '')
 						{
-							$feed_url = "//instagram.com/explore/tags/".substr($post_meta_filtered, 1);
+							switch($service)
+							{
+								case 'facebook':
+									$feed_url = "//facebook.com/".$post_meta_filtered;
+								break;
+
+								case 'instagram':
+									if(substr($post_meta_filtered, 0, 1) == "#")
+									{
+										$feed_url = "//instagram.com/explore/tags/".substr($post_meta_filtered, 1);
+									}
+
+									else
+									{
+										$feed_url = "//instagram.com/".$post_meta_filtered;
+									}
+								break;
+
+								case 'linkedin':
+									$feed_url = "//linkedin.com/company/".$post_meta_filtered;
+								break;
+
+								case 'rss':
+									$feed_url = $post_meta;
+
+									$post_meta_parts = parse_url($post_meta);
+									$post_meta = isset($post_meta_parts['host']) ? $post_meta_parts['host'] : "(".__("unknown", 'lang_social_feed').")";
+								break;
+
+								case 'twitter':
+									if(substr($post_meta_filtered, 0, 1) == "#")
+									{
+										$feed_url = "//twitter.com/search?f=tweets&src=typd&q=%23".substr($post_meta_filtered, 1);
+									}
+
+									else
+									{
+										$feed_url = "//twitter.com/".$post_meta_filtered;
+									}
+								break;
+
+								default:
+									$feed_url = "#";
+								break;
+							}
+
+							$fetch_link = "";
+
+							if(IS_SUPER_ADMIN)
+							{
+								$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $id, $this->post_type));
+
+								if($wpdb->num_rows > 0)
+								{
+									$intFeedID = check_var('intFeedID');
+
+									if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce_feed_fetch'], 'feed_fetch_'.$id))
+									{
+										$this->set_id($id);
+										$this->fetch_feed();
+									}
+
+									else
+									{
+										$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=".$this->post_type."&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
+									}
+								}
+							}
+
+							$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s", $id, $this->post_type));
+
+							echo "<a href='".$feed_url."'>".$post_meta."</a>
+							<div class='row-actions'>"
+								.$fetch_link
+								.__("Fetched", 'lang_social_feed').": ".format_date($post_modified)
+							."</div>";
+						}
+					break;
+
+					case 'amount_of_posts':
+						$amount = $this->get_amount($id);
+
+						$post_error = get_post_meta($id, $this->meta_prefix.'error', true);
+
+						if($post_error != '')
+						{
+							echo "<i class='fa fa-times red fa-2x'></i>
+							<div class='row-actions'>".($post_error != '' ? $post_error : __("I got an error when accessing the feed", 'lang_social_feed'))."</div>";
+						}
+
+						else if($amount == 0)
+						{
+							$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
+
+							$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = %s AND ID = '%d' LIMIT 0, 1", $this->post_type, $id));
+
+							foreach($result as $r)
+							{
+								$post_date = $r->post_date;
+								$post_modified = $r->post_modified;
+
+								if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime("-".$setting_social_time_limit." minute")))
+								{
+									echo "0";
+								}
+
+								else
+								{
+									echo "<i class='fa fa-spinner fa-spin fa-2x'></i>
+									<div class='row-actions'>".__("I am waiting to get access to the feed", 'lang_social_feed')."</div>";
+								}
+							}
+						}
+
+						else if($amount > 0)
+						{
+							$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $id)); // post_excerpt -> post_parent
+
+							echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$id)."'>".$amount."</a>"
+							."<div class='row-actions'>"
+								.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
+							."</div>";
+						}
+					break;
+				}
+			break;
+			
+			case $this->post_type_post:
+				switch($col)
+				{
+					case 'type':
+						$parent_id = get_post_meta($id, $this->meta_prefix.'feed_id', true);
+						//$feed_id = $post->post_excerpt;
+						//$feed_id = $post->post_parent;
+
+						$post_meta = get_post_meta($parent_id, $this->meta_prefix.$col, true);
+
+						if($post_meta != '')
+						{
+							echo "<i class='".$this->get_post_icon($post_meta)." fa-2x'></i>";
 						}
 
 						else
 						{
-							$feed_url = "//instagram.com/".$post_meta_filtered;
+							//do_log("The parent ".$parent_id." does not exist anymore");
+
+							wp_trash_post($id);
 						}
 					break;
 
-					case 'linkedin':
-						$feed_url = "//linkedin.com/company/".$post_meta_filtered;
-					break;
+					case 'name':
+						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
 
-					case 'rss':
-						$feed_url = $post_meta;
-
-						$post_meta_parts = parse_url($post_meta);
-						$post_meta = isset($post_meta_parts['host']) ? $post_meta_parts['host'] : "(".__("unknown", 'lang_social_feed').")";
-					break;
-
-					case 'twitter':
-						if(substr($post_meta_filtered, 0, 1) == "#")
+						if(substr($post_meta, 0, 1) != "@")
 						{
-							$feed_url = "//twitter.com/search?f=tweets&src=typd&q=%23".substr($post_meta_filtered, 1);
+							$post_meta = "@".$post_meta;
 						}
 
-						else
+						echo $post_meta;
+
+						$post_status = get_post_status($id);
+
+						switch($post_status)
 						{
-							$feed_url = "//twitter.com/".$post_meta_filtered;
-						}
-					break;
+							case 'pending':
+								echo "<span class='strong nowrap'> - ".__("Ignored", 'lang_social_feed')."</span>";
+							break;
 
-					default:
-						$feed_url = "#";
-					break;
-				}
-
-				$fetch_link = "";
-
-				if(IS_SUPER_ADMIN)
-				{
-					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $id, $this->post_type));
-
-					if($wpdb->num_rows > 0)
-					{
-						$intFeedID = check_var('intFeedID');
-
-						if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce_feed_fetch'], 'feed_fetch_'.$id))
-						{
-							$this->set_id($id);
-							$this->fetch_feed();
-						}
-
-						else
-						{
-							$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=".$this->post_type."&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
-						}
-					}
-				}
-
-				$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s", $id, $this->post_type));
-
-				echo "<a href='".$feed_url."'>".$post_meta."</a>
-				<div class='row-actions'>"
-					.$fetch_link
-					.__("Fetched", 'lang_social_feed').": ".format_date($post_modified)
-				."</div>";
-			break;
-
-			case 'amount_of_posts':
-				$amount = $this->get_amount($id);
-
-				$post_error = get_post_meta($id, $this->meta_prefix.'error', true);
-
-				if($post_error != '')
-				{
-					echo "<i class='fa fa-times red fa-2x'></i>
-					<div class='row-actions'>".($post_error != '' ? $post_error : __("I got an error when accessing the feed", 'lang_social_feed'))."</div>";
-				}
-
-				else if($amount == 0)
-				{
-					$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
-
-					$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = %s AND ID = '%d' LIMIT 0, 1", $this->post_type, $id));
-
-					foreach($result as $r)
-					{
-						$post_date = $r->post_date;
-						$post_modified = $r->post_modified;
-
-						if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime("-".$setting_social_time_limit." minute")))
-						{
-							echo "0";
-						}
-
-						else
-						{
-							echo "<i class='fa fa-spinner fa-spin fa-2x'></i>
-							<div class='row-actions'>".__("I am waiting to get access to the feed", 'lang_social_feed')."</div>";
-						}
-					}
-				}
-
-				else if($amount > 0)
-				{
-					$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $id)); // post_excerpt -> post_parent
-
-					echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$id)."'>".$amount."</a>"
-					."<div class='row-actions'>"
-						.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
-					."</div>";
-				}
-			break;
-		}
-	}
-
-	function column_header_post($cols)
-	{
-		unset($cols['title']);
-		unset($cols['date']);
-
-		$cols['type'] = __("Type", 'lang_social_feed');
-		$cols['name'] = __("Username", 'lang_social_feed');
-		$cols['text'] = __("Text", 'lang_social_feed');
-		$cols['image'] = __("Image", 'lang_social_feed');
-		//$cols['post_id'] = __("ID", 'lang_social_feed');
-		$cols['info'] = __("Information", 'lang_social_feed');
-		$cols['date'] = __("Date", 'lang_social_feed');
-
-		return $cols;
-	}
-
-	function column_cell_post($col, $id)
-	{
-		switch($col)
-		{
-			case 'type':
-				$parent_id = get_post_meta($id, $this->meta_prefix.'feed_id', true);
-				//$feed_id = $post->post_excerpt;
-				//$feed_id = $post->post_parent;
-
-				$post_meta = get_post_meta($parent_id, $this->meta_prefix.$col, true);
-
-				if($post_meta != '')
-				{
-					echo "<i class='".$this->get_post_icon($post_meta)." fa-2x'></i>";
-				}
-
-				else
-				{
-					//do_log("The parent ".$parent_id." does not exist anymore");
-
-					wp_trash_post($id);
-				}
-			break;
-
-			case 'name':
-				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
-
-				if(substr($post_meta, 0, 1) != "@")
-				{
-					$post_meta = "@".$post_meta;
-				}
-
-				echo $post_meta;
-
-				$post_status = get_post_status($id);
-
-				switch($post_status)
-				{
-					case 'pending':
-						echo "<span class='strong nowrap'> - ".__("Ignored", 'lang_social_feed')."</span>";
-					break;
-
-					case 'draft':
-						echo "<span class='strong nowrap'> - ".__("Hidden", 'lang_social_feed')."</span>";
-					break;
-				}
-			break;
-
-			case 'text':
-				$post_content = mf_get_post_content($id);
-
-				echo shorten_text(array('string' => $post_content, 'limit' => 50));
-			break;
-
-			case 'image':
-				$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
-
-				if($post_meta != '')
-				{
-					echo "<img src='".$post_meta."'>";
-				}
-			break;
-
-			case 'post_id':
-				echo get_post_title($id);
-			break;
-
-			case 'info':
-				$parent_id = get_post_meta($id, $this->meta_prefix.'feed_id', true);
-				//$feed_id = $post->post_excerpt;
-				//$feed_id = $post->post_parent;
-
-				$post_meta = get_post_meta($parent_id, $this->meta_prefix.'type', true);
-
-				switch($post_meta)
-				{
-					case 'facebook':
-						$post_owner = get_post_meta($id, $this->meta_prefix.'is_owner', true);
-
-						if($post_owner == 1)
-						{
-							echo "<i class='fa fa-user fa-2x' title='".__("Owner", 'lang_social_feed')."'></i>";
-						}
-
-						else if($post_owner === 0)
-						{
-							echo "<span class='fa-stack fa-lg' title='".__("Not Owner", 'lang_social_feed')."'>
-								<i class='fa fa-user fa-stack-1x'></i>
-								<i class='fa fa-ban fa-stack-2x red'></i>
-							</span>";
+							case 'draft':
+								echo "<span class='strong nowrap'> - ".__("Hidden", 'lang_social_feed')."</span>";
+							break;
 						}
 					break;
 
-					case 'twitter':
-						$post_owner = get_post_meta($id, $this->meta_prefix.'is_owner', true);
+					case 'text':
+						$post_content = mf_get_post_content($id);
 
-						if($post_owner == 1)
+						echo shorten_text(array('string' => $post_content, 'limit' => 50));
+					break;
+
+					case 'image':
+						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+
+						if($post_meta != '')
 						{
-							echo "<i class='fa fa-user fa-2x' title='".__("Owner", 'lang_social_feed')."'></i>";
+							echo "<img src='".$post_meta."'>";
 						}
+					break;
 
-						else if($post_owner === 0)
-						{
-							echo "<span class='fa-stack fa-lg' title='".__("Not Owner", 'lang_social_feed')."'>
-								<i class='fa fa-user fa-stack-1x'></i>
-								<i class='fa fa-ban fa-stack-2x red'></i>
-							</span>";
-						}
+					case 'post_id':
+						echo get_post_title($id);
+					break;
 
-						if(get_post_meta($id, $this->meta_prefix.'is_reply', true) == 1)
-						{
-							echo "<i class='fa fa-reply fa-2x' title='".__("Answer", 'lang_social_feed')."'></i>";
-						}
+					case 'info':
+						$parent_id = get_post_meta($id, $this->meta_prefix.'feed_id', true);
+						//$feed_id = $post->post_excerpt;
+						//$feed_id = $post->post_parent;
 
-						if(get_post_meta($id, $this->meta_prefix.'is_retweet', true) == 1)
+						$post_meta = get_post_meta($parent_id, $this->meta_prefix.'type', true);
+
+						switch($post_meta)
 						{
-							echo "<i class='fa fa-share fa-2x' title='"."Retweet"."'></i>";
+							case 'facebook':
+								$post_owner = get_post_meta($id, $this->meta_prefix.'is_owner', true);
+
+								if($post_owner == 1)
+								{
+									echo "<i class='fa fa-user fa-2x' title='".__("Owner", 'lang_social_feed')."'></i>";
+								}
+
+								else if($post_owner === 0)
+								{
+									echo "<span class='fa-stack fa-lg' title='".__("Not Owner", 'lang_social_feed')."'>
+										<i class='fa fa-user fa-stack-1x'></i>
+										<i class='fa fa-ban fa-stack-2x red'></i>
+									</span>";
+								}
+							break;
+
+							case 'twitter':
+								$post_owner = get_post_meta($id, $this->meta_prefix.'is_owner', true);
+
+								if($post_owner == 1)
+								{
+									echo "<i class='fa fa-user fa-2x' title='".__("Owner", 'lang_social_feed')."'></i>";
+								}
+
+								else if($post_owner === 0)
+								{
+									echo "<span class='fa-stack fa-lg' title='".__("Not Owner", 'lang_social_feed')."'>
+										<i class='fa fa-user fa-stack-1x'></i>
+										<i class='fa fa-ban fa-stack-2x red'></i>
+									</span>";
+								}
+
+								if(get_post_meta($id, $this->meta_prefix.'is_reply', true) == 1)
+								{
+									echo "<i class='fa fa-reply fa-2x' title='".__("Answer", 'lang_social_feed')."'></i>";
+								}
+
+								if(get_post_meta($id, $this->meta_prefix.'is_retweet', true) == 1)
+								{
+									echo "<i class='fa fa-share fa-2x' title='"."Retweet"."'></i>";
+								}
+							break;
 						}
 					break;
 				}
@@ -1722,7 +1733,9 @@ class mf_social_feed
 			$this->id = $id;
 		}
 
-		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_excerpt = '%d'", $this->post_type_post, 'publish', $this->id)); // post_excerpt -> post_parent
+		//do_log("get_amount: ".$wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = '".$this->meta_prefix."feed_id' AND meta_value = '%d'", $this->post_type_post, 'publish', $this->id));
+
+		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = '".$this->meta_prefix."feed_id' AND meta_value = '%d'", $this->post_type_post, 'publish', $this->id)); // post_excerpt -> post_parent // AND post_excerpt = '%d'
 	}
 
 	function fetch_feed()
@@ -1742,7 +1755,15 @@ class mf_social_feed
 				case 'instagram':
 					$this->instagram_api_token = get_post_meta($this->id, $this->meta_prefix.'instagram_access_token', true);
 
-					$this->fetch_instagram();
+					if($this->instagram_api_token == '')
+					{
+						update_post_meta($this->id, $this->meta_prefix.'error', __("You have to edit this account and add an access token", 'lang_social_feed'));
+					}
+
+					else
+					{
+						$this->fetch_instagram();
+					}
 				break;
 
 				case 'linkedin':
@@ -1978,7 +1999,7 @@ class mf_social_feed
 
 		else
 		{
-			update_post_meta($this->id, $this->meta_prefix.'error', sprintf(__("The JSON I got back was not correct. Have a look at %s", 'lang_social_feed'), $url));
+			update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
 		}
 	}
 
@@ -2015,36 +2036,6 @@ class mf_social_feed
 				update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
 			}
 		}
-
-		/*else if(substr($this->search, 0, 1) == "@")
-		{
-			$url = "https://api.instagram.com/v1/users/search?q=".substr($this->search, 1)."&access_token=".$this->instagram_api_token;
-
-			$result = wp_remote_retrieve_body(wp_remote_get($url));
-			$json = json_decode($result);
-
-			if(isset($json->data))
-			{
-				foreach($json->data as $user)
-				{
-					$filter = "users/".$user->id."/media/recent";
-
-					break;
-				}
-
-				delete_post_meta($this->id, $this->meta_prefix.'error');
-			}
-
-			else
-			{
-				update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
-			}
-		}
-
-		else
-		{
-			$filter = "users/self/feed";
-		}*/
 
 		if($filter != '')
 		{
@@ -2105,7 +2096,7 @@ class mf_social_feed
 
 			else
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', sprintf(__("The JSON I got back was not correct. Have a look at %s", 'lang_social_feed'), $url));
+				update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
 			}
 		}
 	}

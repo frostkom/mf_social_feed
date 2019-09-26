@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-17 09:47+0100\n"
+"POT-Creation-Date: 2019-09-26 09:51+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -105,8 +105,8 @@ msgstr "Gå till %s och logga in"
 msgid "Create a new app and copy %s and %s to paste here"
 msgstr "Skapa en ny app och kopiera %s och %s för att klistra in här"
 
-msgid "Create a new app if you don't have one already and edit the app"
-msgstr "Lägg till en ny app om du inte redan har en och redigera appen"
+msgid "Create a new app if you do not have one already and edit the app"
+msgstr "Skapa en ny app om du inte redan har det, och redigera appen"
 
 msgid "Copy %s and %s to these fields"
 msgstr "Kopiera %s och %s till dessa fält"
@@ -183,6 +183,18 @@ msgstr "Välj ett socialt flöde"
 msgid "Amount"
 msgstr "Antal"
 
+msgid "Type"
+msgstr "Typ"
+
+msgid "Username"
+msgstr "Användarnamn"
+
+msgid "Image"
+msgstr "Bild"
+
+msgid "Date"
+msgstr "Datum"
+
 msgid "unknown"
 msgstr "okänd"
 
@@ -200,18 +212,6 @@ msgstr "Jag väntar på att få tillgång till flödet"
 
 msgid "Latest"
 msgstr "Senaste"
-
-msgid "Type"
-msgstr "Typ"
-
-msgid "Username"
-msgstr "Användarnamn"
-
-msgid "Image"
-msgstr "Bild"
-
-msgid "Date"
-msgstr "Datum"
 
 msgid "Ignored"
 msgstr "Ignorerad"
@@ -294,8 +294,8 @@ msgstr "Jag kunde inte uppdatera behörighets-token åt dig"
 msgid "I updated the Access Token for you"
 msgstr "Jag uppdaterade behörighets-token åt dig"
 
-msgid "The JSON I got back was not correct. Have a look at %s"
-msgstr "Jag fick tillbaka JSON som inte var korrekt. Kolla på %s"
+msgid "You have to edit this account and add an access token"
+msgstr "Du måste redigera detta konto och lägga till en access token"
 
 msgid "The JSON I got back was not correct"
 msgstr "Jag fick tillbaka JSON som inte var korrekt"
