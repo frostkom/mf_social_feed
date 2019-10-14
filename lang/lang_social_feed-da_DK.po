@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-18 09:41+0100\n"
+"POT-Creation-Date: 2019-10-08 20:49+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -33,11 +33,8 @@ msgstr "Søg efter"
 msgid "Amount"
 msgstr "Antal"
 
-msgid "unknown"
-msgstr "ukendt"
-
-msgid "Latest"
-msgstr "Seneste"
+msgid "Username"
+msgstr "Brugernavn"
 
 msgid "Text"
 msgstr "Tekst"
@@ -47,6 +44,12 @@ msgstr "Billede"
 
 msgid "Date"
 msgstr "Dato"
+
+msgid "unknown"
+msgstr "ukendt"
+
+msgid "Latest"
+msgstr "Seneste"
 
 msgid "Hidden"
 msgstr "Skjult"

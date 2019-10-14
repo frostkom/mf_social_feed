@@ -35,12 +35,33 @@ class mf_social_feed
 		$obj_cron->end();
 	}
 
+	function get_message_error_amount($data = array())
+	{
+		global $wpdb;
+
+		$out = "";
+
+		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value != ''", $this->post_type, $this->meta_prefix.'error'));
+		$rows = $wpdb->num_rows;
+
+		if($rows > 0)
+		{
+			$out = "&nbsp;<span class='update-plugins' title='".__("Errors", 'lang_social_feed')."'>
+				<span>".$rows."</span>
+			</span>";
+		}
+
+		return $out;
+	}
+
 	function init()
 	{
+		$count_message = $this->get_message_error_amount();
+
 		$labels = array(
 			'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
 			'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
-			'menu_name' => __("Social Feeds", 'lang_social_feed')
+			'menu_name' => __("Social Feeds", 'lang_social_feed').$count_message
 		);
 
 		$args = array(
@@ -465,7 +486,7 @@ class mf_social_feed
 		}
 	}
 
-	function admin_menu()
+	/*function admin_menu()
 	{
 		$menu_root = 'mf_social_feed/';
 		$menu_start = "edit.php?post_type=".$this->post_type;
@@ -473,7 +494,7 @@ class mf_social_feed
 
 		$menu_title = __("Posts", 'lang_social_feed');
 		add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_post);
-	}
+	}*/
 
 	function meta_feed_facebook_info()
 	{
@@ -987,7 +1008,7 @@ class mf_social_feed
 					break;
 				}
 			break;
-			
+
 			case $this->post_type_post:
 				switch($col)
 				{
