@@ -56,12 +56,12 @@ class mf_social_feed
 
 	function init()
 	{
-		$count_message = $this->get_message_error_amount();
+		//$count_message = $this->get_message_error_amount();
 
 		$labels = array(
 			'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
 			'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
-			'menu_name' => __("Social Feeds", 'lang_social_feed').$count_message
+			'menu_name' => __("Social Feeds", 'lang_social_feed'), //.$count_message // This will be rendered as visible HTML tags in the menu
 		);
 
 		$args = array(
@@ -930,24 +930,21 @@ class mf_social_feed
 
 							$fetch_link = "";
 
-							if(IS_SUPER_ADMIN)
+							$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $id, $this->post_type));
+
+							if($wpdb->num_rows > 0)
 							{
-								$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $id, $this->post_type));
+								$intFeedID = check_var('intFeedID');
 
-								if($wpdb->num_rows > 0)
+								if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce_feed_fetch'], 'feed_fetch_'.$id))
 								{
-									$intFeedID = check_var('intFeedID');
+									$this->set_id($id);
+									$this->fetch_feed();
+								}
 
-									if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce_feed_fetch'], 'feed_fetch_'.$id))
-									{
-										$this->set_id($id);
-										$this->fetch_feed();
-									}
-
-									else
-									{
-										$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=".$this->post_type."&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
-									}
+								else
+								{
+									$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=".$this->post_type."&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
 								}
 							}
 
