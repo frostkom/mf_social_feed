@@ -10,6 +10,8 @@ class mf_social_feed
 		$this->post_type = 'mf_social_feed';
 		$this->post_type_post = 'mf_social_feed_post';
 		$this->meta_prefix = $this->post_type.'_';
+
+		$this->parent_url = "https://frostkom.se";
 	}
 
 	function cron_base()
@@ -145,15 +147,18 @@ class mf_social_feed
 		//Facebook
 		//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = %s AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", $this->post_type, 'facebook'));
 		############################
-		$options_area = $options_area_orig."_facebook";
+		if(get_site_url() == $this->parent_url)
+		{
+			$options_area = $options_area_orig."_facebook";
 
-		add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
+			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
-		$arr_settings = array();
-		$arr_settings['setting_facebook_api_id'] = __("App ID", 'lang_social_feed');
-		$arr_settings['setting_facebook_api_secret'] = __("Secret", 'lang_social_feed');
+			$arr_settings = array();
+			$arr_settings['setting_facebook_api_id'] = __("App ID", 'lang_social_feed');
+			$arr_settings['setting_facebook_api_secret'] = __("Secret", 'lang_social_feed');
 
-		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
+			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
+		}
 		############################
 
 		//Instagram
@@ -1810,9 +1815,9 @@ class mf_social_feed
 			case 'facebook':
 				$this->facebook_code_url = "https://facebook.com/dialog/oauth";
 				$this->facebook_access_token_url = "https://graph.facebook.com/oauth/access_token";
-				$this->facebook_redirect_url = "https://frostkom.se/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=fb_login";
-				$this->facebook_api_id = get_option_or_default('setting_facebook_api_id', '218056055327780');
-				$this->facebook_api_secret = get_option_or_default('setting_facebook_api_secret', 'b00ccbc6513724fafca0ff41685d735b');
+				$this->facebook_redirect_url = $this->parent_url."/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=fb_login";
+				$this->facebook_api_id = get_option('setting_facebook_api_id');
+				$this->facebook_api_secret = get_option('setting_facebook_api_secret');
 			break;
 
 			case 'linkedin':
