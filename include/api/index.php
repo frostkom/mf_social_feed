@@ -11,6 +11,8 @@ if(!defined('ABSPATH'))
 
 do_action('run_cache', array('suffix' => 'json'));
 
+$obj_social_feed = new mf_social_feed();
+
 $json_output = array();
 
 $type = check_var('type', 'char');
@@ -31,7 +33,6 @@ switch($type)
 			$feeds = explode(",", $feeds);
 		}
 
-		$obj_social_feed = new mf_social_feed();
 		list($arr_post_feeds, $arr_post_posts, $has_more_posts) = $obj_social_feed->get_feeds_and_posts(array('feeds' => $feeds, 'filter' => $filter, 'amount' => $amount, 'limit_source' => $limit_source, 'likes' => $likes));
 
 		$json_output['success'] = true;

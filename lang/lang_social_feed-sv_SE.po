@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-14 08:56+0100\n"
+"POT-Creation-Date: 2019-10-22 11:08+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -129,11 +129,11 @@ msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 msgid "Posts can only be fetched from Facebook Pages, not personal Profiles"
 msgstr "Inlägg kan endast hämtas från sk. Facebook Pages, inte från personliga profiler"
 
-msgid "Posts can either be fetched from @users or #hashtags"
-msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
-
 msgid "All Done!"
 msgstr "Nu är allt klart!"
+
+msgid "Posts can either be fetched from @users or #hashtags"
+msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
 
 msgid "Authorize Here"
 msgstr "Auktorisera här"
@@ -170,6 +170,9 @@ msgstr "Tjänst"
 
 msgid "Search for"
 msgstr "Sök efter"
+
+msgid "Page ID"
+msgstr "Sid-ID"
 
 msgid "Include"
 msgstr "Inkludera"
