@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 5.6.0
+Version: 5.6.1
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://frostkom.se
@@ -40,11 +40,11 @@ if(is_admin())
 	add_filter('count_shortcode_button', array($obj_social_feed, 'count_shortcode_button'));
 	add_filter('get_shortcode_output', array($obj_social_feed, 'get_shortcode_output'));
 
-	add_filter('manage_mf_social_feed_posts_columns', array($obj_social_feed, 'column_header'), 5);
-	add_action('manage_mf_social_feed_posts_custom_column', array($obj_social_feed, 'column_cell'), 5, 2);
+	add_filter('manage_'.$obj_social_feed->post_type.'_posts_columns', array($obj_social_feed, 'column_header'), 5);
+	add_action('manage_'.$obj_social_feed->post_type.'_posts_custom_column', array($obj_social_feed, 'column_cell'), 5, 2);
 
-	add_filter('manage_mf_social_feed_post_posts_columns', array($obj_social_feed, 'column_header'), 5);
-	add_action('manage_mf_social_feed_post_posts_custom_column', array($obj_social_feed, 'column_cell'), 5, 2);
+	add_filter('manage_'.$obj_social_feed->post_type_post.'_posts_columns', array($obj_social_feed, 'column_header'), 5);
+	add_action('manage_'.$obj_social_feed->post_type_post.'_posts_custom_column', array($obj_social_feed, 'column_cell'), 5, 2);
 
 	add_filter('post_row_actions', array($obj_social_feed, 'row_actions'), 10, 2);
 	add_filter('page_row_actions', array($obj_social_feed, 'row_actions'), 10, 2);
@@ -81,9 +81,11 @@ function activate_social_feed()
 
 function uninstall_social_feed()
 {
+	global $obj_social_feed;
+
 	mf_uninstall_plugin(array(
 		'uploads' => 'mf_social_feed',
 		'options' => array('setting_social_time_limit', 'setting_social_reload', 'setting_social_design', 'setting_social_full_width', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_display_border', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'setting_linkedin_api_id', 'setting_linkedin_api_secret', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_linkedin_email_when_expired', 'option_linkedin_emailed', 'option_linkedin_authkey', 'setting_twitter_api_key', 'setting_twitter_api_secret', 'setting_twitter_api_token', 'setting_twitter_api_token_secret'),
-		'post_types' => array('mf_social_feed', 'mf_social_feed_post'),
+		'post_types' => array($obj_social_feed->post_type, $obj_social_feed->post_type_post),
 	));
 }

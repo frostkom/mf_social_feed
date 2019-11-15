@@ -2,7 +2,7 @@
 
 if(!defined('ABSPATH'))
 {
-	header('Content-Type: application/json');
+	header("Content-Type: application/json");
 
 	$folder = str_replace("/wp-content/plugins/mf_social_feed/include/api", "/", dirname(__FILE__));
 

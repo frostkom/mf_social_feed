@@ -2,7 +2,7 @@
 
 if(!defined('ABSPATH'))
 {
-	//header('Content-Type: application/json');
+	//header("Content-Type: application/json");
 
 	$folder = str_replace("/wp-content/plugins/mf_social_feed/include/api", "/", dirname(__FILE__));
 
@@ -35,7 +35,7 @@ switch($type)
 				$url = $obj_social_feed->facebook_code_url."?client_id=".$obj_social_feed->facebook_api_id."&redirect_uri=".urlencode($obj_social_feed->facebook_redirect_url);
 				mf_redirect($url);
 			}
-			
+
 			else if($code != '')
 			{
 				$sesCallbackURL = check_var('sesCallbackURL');
@@ -77,7 +77,7 @@ switch($type)
 						break;
 					}
 				}
-				
+
 				else
 				{
 					do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).", ".var_export($_SESSION, true).")");

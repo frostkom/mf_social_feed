@@ -14350,9 +14350,9 @@ class SimplePie_Misc
 		{
 			ob_start('ob_gzhandler');
 		}
-		header('Content-type: text/javascript; charset: UTF-8');
-		header('Cache-Control: must-revalidate');
-		header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 604800) . ' GMT'); // 7 days
+		header("Content-type: text/javascript; charset: UTF-8");
+		header("Cache-Control: must-revalidate");
+		header("Expires: ".gmdate('D, d M Y H:i:s', time() + 604800)." GMT"); // 7 days
 		?>
 function embed_quicktime(type, bgcolor, width, height, link, placeholder, loop) {
 	if (placeholder != '') {

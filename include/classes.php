@@ -533,7 +533,7 @@ class mf_social_feed
 				$this->get_api_credentials('facebook');
 
 				$out .= "<ol>"
-					."<li>".sprintf(__("Go to %s and Log in", 'lang_social_feed'), "<a href='".$this->facebook_redirect_url."&client_id=".$this->facebook_api_id."&client_secret=".$this->facebook_api_secret."&callback_url=".urlencode($edit_url)."'>Facebook</a>")."</li>"
+					."<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_redirect_url."&client_id=".$this->facebook_api_id."&client_secret=".$this->facebook_api_secret."&callback_url=".urlencode($edit_url)."'>Facebook</a>")."</li>"
 				."</ol>";
 			}
 
@@ -675,8 +675,8 @@ class mf_social_feed
 		$arr_data_social_types = $this->get_social_types_for_select();
 
 		$default_type = "";
-		
-		$post_id = check_var('post');		
+
+		$post_id = check_var('post');
 
 		if($post_id > 0)
 		{
@@ -1480,7 +1480,7 @@ class mf_social_feed
 			$result['error'] = $out;
 		}
 
-		header('Content-Type: application/json');
+		header("Content-Type: application/json");
 		echo json_encode($result);
 		die();
 	}
@@ -1518,7 +1518,7 @@ class mf_social_feed
 			$result['error'] = $out;
 		}
 
-		header('Content-Type: application/json');
+		header("Content-Type: application/json");
 		echo json_encode($result);
 		die();
 	}
