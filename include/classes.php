@@ -35,7 +35,7 @@ class mf_social_feed
 		$obj_cron->end();
 	}
 
-	function get_message_error_amount($data = array())
+	/*function get_message_error_amount($data = array())
 	{
 		global $wpdb;
 
@@ -52,7 +52,7 @@ class mf_social_feed
 		}
 
 		return $out;
-	}
+	}*/
 
 	function init()
 	{
@@ -599,17 +599,12 @@ class mf_social_feed
 
 					$_SESSION['sesCallbackURL'] = $edit_url;
 
-					$out .= "<ol>"
-						//."<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_redirect_url."&callback_url=".urlencode($edit_url)."'>Facebook</a>")."</li>"
-						."<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</li>"
-					."</ol>";
+					$out .= "<strong>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</strong>";
 				}
 
 				else
 				{
-					$out .= "<ol>"
-						."<li>".sprintf(__("Go to %sSettings%s and add an API URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</li>"
-					."</ol>";
+					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add an API URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</strong>";
 				}
 			}
 
@@ -629,6 +624,18 @@ class mf_social_feed
 
 		$post_id = $post->ID;
 
+		$instagram_action = check_var('instagram_action');
+
+		switch($instagram_action)
+		{
+			case 'set_business_name':
+				update_post_meta($post_id, $this->meta_prefix.'instagram_id', check_var('id'));
+				update_post_meta($post_id, $this->meta_prefix.'instagram_name', check_var('name'));
+				update_post_meta($post_id, $this->meta_prefix.'instagram_username', check_var('username'));
+				update_post_meta($post_id, $this->meta_prefix.'instagram_profile_picture', check_var('profile_picture'));
+			break;
+		}
+
 		$edit_url = admin_url("post.php?post=".$post_id."&action=edit");
 
 		$instagram_access_token = get_post_meta($post_id, $this->meta_prefix.'instagram_access_token', true);
@@ -637,44 +644,93 @@ class mf_social_feed
 
 			if($instagram_access_token != '')
 			{
-				$out .= "<strong><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
+				$instagram_id = get_post_meta($post_id, $this->meta_prefix.'instagram_id', true);
+
+				if(!($instagram_id > 0))
+				{
+					$this->instagram_access_token = get_post_meta($post_id, $this->meta_prefix.'instagram_access_token', true);
+
+					$result_id = $this->get_instagram_business_id();
+
+					if(is_array($result_id) && count($result_id) > 0)
+					{
+						$out .= "<h3>".__("Choose an Account", 'lang_social_feed')."</h3>
+						<ul>";
+
+							foreach($result_id as $instagram_id)
+							{
+								$result_name = $this->get_instagram_business_name($instagram_id);
+
+								if(is_array($result_name) && isset($result_name['name']))
+								{
+									$out .= "<li>
+										<a href='".$edit_url."&instagram_action=set_business_name&id=".$instagram_id."&name=".$result_name['name']."&username=".$result_name['username']."&profile_picture=".$result_name['profile_picture']."'>"
+											//."<img src='".$result_name['profile_picture']."'> "
+											.$result_name['name']." (".$result_name['username'].")"
+										."</a>
+									</li>";
+								}
+
+								else
+								{
+									$out .= "<li>
+										<a href='".$result_name."'>"
+											.__("I could not get the name for the business account", 'lang_social_feed')
+										."</a>
+									</li>";
+								}
+							}
+
+						$out .= "</ul>";
+					}
+
+					else
+					{
+						$out .= "<strong><i class='fa fa-times red'></i> <a href='".$result_id."'>".__("There are no business accounts connected to the login that you used", 'lang_social_feed')."</a></strong>";
+					}
+				}
+
+				else
+				{
+					$instagram_name = get_post_meta($post_id, $this->meta_prefix.'instagram_name', true);
+
+					if($instagram_name == '')
+					{
+						$instagram_username = get_post_meta($post_id, $this->meta_prefix.'instagram_username', true);
+						$instagram_profile_picture = get_post_meta($post_id, $this->meta_prefix.'instagram_profile_picture', true);
+					}
+
+					else
+					{
+						$out .= "<strong><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
+					}
+				}
 			}
 
 			else
 			{
 				$this->get_api_credentials('instagram');
 
-				if($this->setting_social_api_url != '')
+				if($this->setting_social_api_url == '')
 				{
-					if($this->instagram_client_id != '')
-					{
-						if(!session_id())
-						{
-							@session_start();
-						}
+					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add an API URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</strong>";
+				}
 
-						$_SESSION['sesCallbackURL'] = $edit_url;
-
-						$out .= "<ol>"
-							."<li><a href='".$this->instagram_authorize_url."'>".__("Authorize Here", 'lang_social_feed')."</a></li>"
-							//."<li>".sprintf(__("When you arrive back here after authorization, just copy the access token from the address bar and paste it in the %s field above", 'lang_social_feed'), __("Access Token", 'lang_social_feed'))."</li>"
-						."</ol>";
-					}
-
-					/*else
-					{
-						$out .= "<ol>"
-							."<li><a href='".$this->instagram_redirect_url."&callback_url=".urlencode($edit_url)."'>".__("Authorize Here", 'lang_social_feed')."</a></li>"
-							."<li>".sprintf(__("When you arrive back here after authorization, just copy the access token from the address bar and paste it in the %s field above", 'lang_social_feed'), __("Access Token", 'lang_social_feed'))."</li>"
-						."</ol>";
-					}*/
+				else if($this->instagram_client_id == '')
+				{
+					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add a Client URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_instagram")."'>", "</a>")."</strong>";
 				}
 
 				else
 				{
-					$out .= "<ol>"
-						."<li>".sprintf(__("Go to %sSettings%s and add an API URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</li>"
-					."</ol>";
+					if(!session_id())
+					{
+						@session_start();
+					}
+
+					$_SESSION['sesCallbackURL'] = $edit_url;
+
+					$out .= "<strong><a href='".$this->instagram_authorize_url."'>".__("Authorize Here", 'lang_social_feed')."</a></strong>";
 				}
 			}
 
@@ -776,7 +832,7 @@ class mf_social_feed
 			{
 				update_post_meta($post_id, $this->meta_prefix.'facebook_access_token', $facebook_access_token);
 			}
-			
+
 			$instagram_access_token = check_var('instagram_access_token');
 
 			if($instagram_access_token != '')
@@ -876,6 +932,46 @@ class mf_social_feed
 				array(
 					'name' => __("Access Token", 'lang_social_feed'),
 					'id' => $this->meta_prefix.'instagram_access_token',
+					'type' => 'text',
+					'attributes' => array(
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'instagram',
+					),
+				),
+				array(
+					'name' => __("ID", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'instagram_id',
+					'type' => 'text',
+					'attributes' => array(
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'instagram',
+					),
+				),
+				array(
+					'name' => __("Name", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'instagram_name',
+					'type' => 'text',
+					'attributes' => array(
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'instagram',
+					),
+				),
+				array(
+					'name' => __("Username", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'instagram_username',
+					'type' => 'text',
+					'attributes' => array(
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'instagram',
+					),
+				),
+				array(
+					'name' => __("Profile Picture", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'instagram_profile_picture',
 					'type' => 'text',
 					'attributes' => array(
 						'condition_type' => 'show_this_if',
@@ -2029,7 +2125,6 @@ class mf_social_feed
 	{
 		$this->search = $this->filter_search_for($this->search);
 
-		//$facebook_access_token = $this->facebook_api_id."|".$this->facebook_api_secret;
 		$facebook_access_token = $this->facebook_access_token;
 		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$facebook_access_token; //&limit=10
 
@@ -2111,160 +2206,44 @@ class mf_social_feed
 		}
 	}
 
-	function fetch_alt_instagram()
+	function get_instagram_business_id()
 	{
-		global $wpdb;
-
-		$url = "https://www.instagram.com/explore/tags/".substr($this->search, 1)."/?__a=1";
-
-		$result = wp_remote_retrieve_body(wp_remote_get($url));
-		$json = json_decode($result);
-
-		if(isset($json->graphql->hashtag->edge_hashtag_to_media->edges))
-		{
-			if(get_option('setting_social_debug') == 'yes')
-			{
-				do_log("Instagram: ".$url." -> ".htmlspecialchars(var_export($json->graphql->hashtag->edge_hashtag_to_media->edges, true)));
-			}
-
-			foreach($json->graphql->hashtag->edge_hashtag_to_media->edges as $post)
-			{
-				/*"node":{
-					"comments_disabled":false,
-					"id":[id],
-					"edge_media_to_caption":{
-						"edges":[
-						{
-							"node":{
-								"text":[text]
-							}
-						}]
-					},
-					"shortcode":[text],
-					"edge_media_to_comment":{"count":1},
-					"taken_at_timestamp":[timestamp],
-					"dimensions":{"height":1080,"width":1080},
-					"display_url":[url],
-					"edge_liked_by":{"count":45},
-					"edge_media_preview_like":{"count":45},
-					"owner":{"id":[id]},
-					"thumbnail_src":[url],
-					"thumbnail_resources":[
-						{"src":[url],"config_width":150,"config_height":150},
-						{"src":[url],"config_width":240,"config_height":240},
-						{"src":[url],"config_width":320,"config_height":320},
-						{"src":[url],"config_width":480,"config_height":480},
-						{"src":[url],"config_width":640,"config_height":640}
-					],
-					"is_video":false
-				}*/
-
-				$post_url = "https://www.instagram.com/p/".$post->node->shortcode."/";
-				$username = '';
-
-				if(isset($post->node->owner->id) && $post->node->owner->id > 0)
-				{
-					$result = $wpdb->get_results($wpdb->prepare("SELECT meta_value FROM ".$wpdb->postmeta." WHERE meta_key = %s AND post_id = (SELECT post_id FROM ".$wpdb->postmeta." WHERE meta_key = %s AND meta_value = %d LIMIT 0, 1) LIMIT 0, 1", $this->meta_prefix.'name', $this->meta_prefix.'user_id', $post->node->owner->id));
-
-					if($wpdb->num_rows > 0)
-					{
-						foreach($result as $r)
-						{
-							$username = $r->meta_value;
-						}
-					}
-
-					else
-					{
-						list($content, $headers) = get_url_content(array(
-							'url' => $post_url,
-							'catch_head' => true,
-						));
-
-						if($headers['http_code'] == 200)
-						{
-							$username_temp = get_match("/\"username\":\"(.*?)\"/is", $content, false);
-
-							if($username_temp != '')
-							{
-								$username = $username_temp;
-							}
-
-							else
-							{
-								do_log("I could not find username in ".htmlspecialchars($content));
-							}
-						}
-
-						else
-						{
-							do_log(sprintf("I could not fetch the source from %s", $post_url." (".var_export($headers, true).")"));
-						}
-					}
-				}
-
-				$this->arr_posts[] = array(
-					'type' => $this->type,
-					'id' => $post->node->id.(isset($post->node->owner->id) ? "_".$post->node->owner->id : ''),
-					'user_id' => isset($post->node->owner->id) && $username != '' ? $post->node->owner->id : 0,
-					'name' => $username != '' ? $username : $this->search,
-					//'name' => isset($post->node->owner->id) ? $post->node->owner->id : $this->search,
-					'text' => isset($post->node->edge_media_to_caption->edges[0]->node->text) ? $post->node->edge_media_to_caption->edges[0]->node->text : "",
-					'link' => $post_url,
-					'image' => $post->node->thumbnail_src,
-					'created' => date("Y-m-d H:i:s", $post->node->taken_at_timestamp),
-					'likes' => $post->node->edge_liked_by->count,
-					'comments' => $post->node->edge_media_to_comment->count,
-				);
-			}
-
-			delete_post_meta($this->id, $this->meta_prefix.'error');
-		}
-
-		else
-		{
-			update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
-		}
-	}
-
-	function fetch_instagram()
-	{
-		$filter = "";
-
-		//$url = "https://api.instagram.com/v1/users/self/?access_token=".$this->instagram_access_token;
-		$url = "https://graph.facebook.com/me/accounts?fields=instagram_business_account,access_token&limit=500&access_token=".$this->instagram_access_token;
+		$url = "https://graph.facebook.com/me/accounts?fields=instagram_business_account,access_token&limit=5&access_token=".$this->instagram_access_token;
+		/*{
+		   "data": [
+			  {
+				 "instagram_business_account": {
+					"id": "[number]"
+				 },
+				 "access_token": "[token]",
+				 "id": "[number]"
+			  }
+		   ]
+		}*/
 
 		$result = wp_remote_retrieve_body(wp_remote_get($url));
 		$json = json_decode($result);
 
 		if(isset($json->data))
 		{
+			$arr_ids = array();
+
 			if(get_option('setting_social_debug') == 'yes')
 			{
 				do_log("Instagram: ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
 			}
 
-			//if(isset($json->data->id))
-			if(isset($json->data[0]->id))
+			foreach($json->data as $data_account)
 			{
-				// Get username/name
-				/*{
-				   "name": "[name]",
-				   "username": "[username]",
-				   "profile_picture_url": "[url]",
-				}*/
-				//https://graph.facebook.com/[id]?fields=name,username,profile_picture_url&access_token=[token]
-				//https://graph.facebook.com/[id]?fields=instagram_business_account,name&access_token=[token]
-
-				//$filter = "users/".$json->data->id."/media/recent";
-				$filter = $json->data[0]->id;
-
-				delete_post_meta($this->id, $this->meta_prefix.'error');
+				if(isset($data_account->instagram_business_account->id))
+				{
+					$arr_ids[] = $data_account->instagram_business_account->id;
+				}
 			}
 
-			else
+			if(count($arr_ids) > 0)
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back did not contain an ID", 'lang_social_feed')."</a>");
+				return $arr_ids;
 			}
 		}
 
@@ -2273,10 +2252,51 @@ class mf_social_feed
 			update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
 		}
 
-		if($filter != '')
+		return $url;
+	}
+
+	function get_instagram_business_name($id)
+	{
+		$url = "https://graph.facebook.com/".$id."?fields=name,username,profile_picture_url&access_token=".$this->instagram_access_token;
+		/*{
+		   "name": "[text]",
+		   "username": "[text]",
+		   "profile_picture_url": "[url]",
+		   "id": "[number]"
+		}*/
+
+		$result = wp_remote_retrieve_body(wp_remote_get($url));
+		$json = json_decode($result);
+
+		if(isset($json->name))
 		{
-			//$url = "https://api.instagram.com/v1/".$filter."?access_token=".$this->instagram_access_token;
-			$url = "https://graph.facebook.com/".$filter."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$this->instagram_access_token;
+			if(get_option('setting_social_debug') == 'yes')
+			{
+				do_log("Instagram: ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
+			}
+
+			return array(
+				'name' => $json->name,
+				'username' => $json->username,
+				'profile_picture' => $json->profile_picture_url,
+			);
+		}
+
+		else
+		{
+			update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
+		}
+
+		return $url;
+	}
+
+	function fetch_instagram()
+	{
+		$instagram_id = get_post_meta($this->id, $this->meta_prefix.'instagram_id', true);
+
+		if($instagram_id != '')
+		{
+			$url = "https://graph.facebook.com/".$instagram_id."/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children{media_url,id,media_type,timestamp,permalink,thumbnail_url}&limit=20&access_token=".$this->instagram_access_token;
 
 			$result = wp_remote_retrieve_body(wp_remote_get($url));
 			$json = json_decode($result);
@@ -2290,54 +2310,40 @@ class mf_social_feed
 
 				foreach($json->data as $post)
 				{
-					/*array('location' => NULL,
-						'caption' => stdClass::__set_state(array('text' => 'Text #hashtag', 'created_time' => '[id]',
-							'from' => stdClass::__set_state(array('profile_picture' => 'https://instagram.com/x.jpg', 'username' => 'username', 'id' => '[id]', 'full_name' => 'Name'))
-							, 'id' => '[id]'
-						)),
-						'id' => '[id]_[id]', 'tags' => array(0 => 'hashtags'), 'user_has_liked' => false,
-						'users_in_photo' => array(0 => stdClass::__set_state(array(
-							'user' => stdClass::__set_state(array(
-								'profile_picture' => 'https://instagram.com/x.jpg', 'username' => 'username', 'id' => '[id]', 'full_name' => 'Name'
-							)),
-							'position' => stdClass::__set_state(array('y' => 0.435, 'x' => 0.237))
-						))),
-						'created_time' => '1487162314', 'filter' => 'Valencia',
-						'user' => stdClass::__set_state(array('profile_picture' => 'https://instagram.com/x.jpg', 'username' => 'username', 'id' => '[id]', 'full_name' => 'Name')),
-						'type' => 'image', 'link' => 'https://www.instagram.com/p/[id]/', 'attribution' => NULL,
-						'images' => stdClass::__set_state(array(
-							'standard_resolution' => stdClass::__set_state(array('height' => 640, 'width' => 640, 'url' => 'https://instagram.com/x.jpg')),
-							'thumbnail' => stdClass::__set_state(array('height' => 150, 'width' => 150, 'url' => 'https://instagram.com/x.jpg')),
-							'low_resolution' => stdClass::__set_state(array('height' => 320, 'width' => 320, 'url' => 'https://instagram.com/x.jpg'))
-						)),
-						'likes' => stdClass::__set_state(array('count' => 51)),
-						'comments' => stdClass::__set_state(array('count' => 3))
-					)*/
-
-					/*$this->arr_posts[] = array(
-						'type' => $this->type,
-						'id' => $post->id,
-						'user_id' => isset($post->caption->from->id) ? $post->caption->from->id : 0,
-						'name' => isset($post->caption->from->username) ? $post->caption->from->username : $this->search,
-						'text' => isset($post->caption->text) ? $post->caption->text : "",
-						'link' => $post->link,
-						'image' => $post->images->standard_resolution->url,
-						'created' => date("Y-m-d H:i:s", $post->created_time),
-						'likes' => $post->likes->count,
-						'comments' => $post->comments->count,
-					);*/
+					/*{
+						"data": [
+							{
+								"media_url": "[url]",
+								"caption": "[text]",
+								"id": "[number]",
+								"media_type": "IMAGE",
+								"timestamp": "2019-11-15T16:20:58+0000",
+								"username": "dgesverige",
+								"comments_count": 4,
+								"like_count": 8,
+								"permalink": "[url]"
+							},
+						],
+						"paging": {
+							"cursors": {
+								"before": "QVF...",
+								"after": "QVF..."
+							},
+							"next": "[url]"
+						}
+					}*/
 
 					$this->arr_posts[] = array(
 						'type' => $this->type,
 						'id' => $post->id,
-						//'user_id' => isset($post->caption->from->id) ? $post->caption->from->id : 0,
-						'name' => $this->search,
-						'text' => isset($post->message) ? $post->message : "",
-						'link' => "//instagram.com/p/".$post->id,
-						'image' => isset($post->full_picture) && $post->full_picture != '' ? $post->full_picture : "",
-						'created' => date("Y-m-d H:i:s", strtotime($post->created_time)),
-						//'likes' => $post->likes->count,
-						//'comments' => $post->comments->count,
+						'user_id' => $post->id,
+						'name' => $post->username,
+						'text' => isset($post->caption) ? $post->caption : "",
+						'link' => $post->permalink,
+						'image' => $post->media_url,
+						'created' => date("Y-m-d H:i:s", strtotime($post->timestamp)),
+						'likes' => $post->like_count,
+						'comments' => $post->comments_count,
 					);
 				}
 
