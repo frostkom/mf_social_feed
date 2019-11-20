@@ -10,8 +10,6 @@ class mf_social_feed
 		$this->post_type = 'mf_social_feed';
 		$this->post_type_post = 'mf_social_feed_post';
 		$this->meta_prefix = $this->post_type.'_';
-
-		$this->parent_url = "https://frostkom.se";
 	}
 
 	function cron_base()
@@ -108,104 +106,155 @@ class mf_social_feed
 	{
 		$options_area_orig = $options_area = __FUNCTION__;
 
+		$data_temp = array(
+			'post_type' => $this->post_type,
+			'meta' => array(
+				$this->meta_prefix.'type' => 'facebook',
+			),
+		);
+
+		$has_facebook = does_post_exists($data_temp);
+
+		$data_temp = array(
+			'post_type' => $this->post_type,
+			'meta' => array(
+				$this->meta_prefix.'type' => 'instagram',
+			),
+		);
+
+		$has_instagram = does_post_exists($data_temp);
+
 		//Generic
 		############################
 		add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
 		$arr_settings = array();
+
+		if($has_facebook || $has_instagram)
+		{
+			$arr_settings['setting_social_api_url'] = __("API URL", 'lang_social_feed');
+		}
+
 		$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
-		$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
-		$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
-		$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 
-		if(class_exists('mf_theme_core'))
+		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
-			$obj_theme_core = new mf_theme_core();
-			$obj_theme_core->get_params();
+			$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
+			$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
+			$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 
-			$website_max_width = isset($obj_theme_core->options['website_max_width']) ? $obj_theme_core->options['website_max_width'] : 0;
+			if(class_exists('mf_theme_core'))
+			{
+				$obj_theme_core = new mf_theme_core();
+				$obj_theme_core->get_params();
+
+				$website_max_width = isset($obj_theme_core->options['website_max_width']) ? $obj_theme_core->options['website_max_width'] : 0;
+			}
+
+			else
+			{
+				$website_max_width = 0;
+			}
+
+			$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed').($website_max_width > 0 ? " (> ".$website_max_width.")" : "");
+
+			if($website_max_width > 0)
+			{
+				$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");
+			}
+
+			$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
 		}
 
-		else
-		{
-			$website_max_width = 0;
-		}
-
-		$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed').($website_max_width > 0 ? " (> ".$website_max_width.")" : "");
-
-		if($website_max_width > 0)
-		{
-			$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");
-		}
-
-		$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
 		$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
 
 		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
 		############################
 
 		//Facebook
-		//$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id AND meta_key = '".$this->meta_prefix."type' WHERE post_type = %s AND post_status = 'publish' AND meta_value = '%s' LIMIT 0, 1", $this->post_type, 'facebook'));
 		############################
-		if(get_site_url() == $this->parent_url)
+		/*if($has_facebook)
 		{
 			$options_area = $options_area_orig."_facebook";
 
 			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
 			$arr_settings = array();
-			$arr_settings['setting_facebook_api_id'] = __("App ID", 'lang_social_feed');
-			$arr_settings['setting_facebook_api_secret'] = __("Secret", 'lang_social_feed');
+
+			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
+		}*/
+		############################
+
+		//Instagram
+		############################
+		if($has_instagram)
+		{
+			$options_area = $options_area_orig."_instagram";
+
+			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
+
+			$arr_settings = array(
+				'setting_instagram_client_id' => __("Client ID", 'lang_social_feed'),
+			);
 
 			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
 		}
 		############################
 
-		//Instagram
-		############################
-		$options_area = $options_area_orig."_instagram";
-
-		add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
-
-		$arr_settings = array();
-		$arr_settings['setting_instagram_activate_alt_fetch'] = __("Activate Alternative Fetch", 'lang_social_feed');
-
-		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
-		############################
-
 		//LinkedIn
 		############################
-		$options_area = $options_area_orig."_linkedin";
+		$data_temp = array(
+			'post_type' => $this->post_type,
+			'meta' => array(
+				$this->meta_prefix.'type' => 'linkedin',
+			),
+		);
 
-		add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
-
-		$arr_settings = array();
-		$arr_settings['setting_linkedin_api_id'] = __("Client ID", 'lang_social_feed');
-		$arr_settings['setting_linkedin_api_secret'] = __("Client Secret", 'lang_social_feed');
-
-		if(get_option('setting_linkedin_api_id') != '' && get_option('setting_linkedin_api_secret') != '')
+		if(does_post_exists($data_temp))
 		{
-			$arr_settings['setting_linkedin_redirect_url'] = __("Redirect URL", 'lang_social_feed');
-			$arr_settings['setting_linkedin_authorize'] = __("Authorize", 'lang_social_feed');
-			$arr_settings['setting_linkedin_email_when_expired'] = __("Email when Expired", 'lang_social_feed');
-		}
+			$options_area = $options_area_orig."_linkedin";
 
-		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
+			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
+
+			$arr_settings = array();
+			$arr_settings['setting_linkedin_api_id'] = __("Client ID", 'lang_social_feed');
+			$arr_settings['setting_linkedin_api_secret'] = __("Client Secret", 'lang_social_feed');
+
+			if(get_option('setting_linkedin_api_id') != '' && get_option('setting_linkedin_api_secret') != '')
+			{
+				$arr_settings['setting_linkedin_redirect_url'] = __("Redirect URL", 'lang_social_feed');
+				$arr_settings['setting_linkedin_authorize'] = __("Authorize", 'lang_social_feed');
+				$arr_settings['setting_linkedin_email_when_expired'] = __("Email when Expired", 'lang_social_feed');
+			}
+
+			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
+		}
 		############################
 
 		//Twitter
 		############################
-		$options_area = $options_area_orig."_twitter";
+		$data_temp = array(
+			'post_type' => $this->post_type,
+			'meta' => array(
+				$this->meta_prefix.'type' => 'twitter',
+			),
+		);
 
-		add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
+		if(does_post_exists($data_temp))
+		{
+			$options_area = $options_area_orig."_twitter";
 
-		$arr_settings = array();
-		$arr_settings['setting_twitter_api_key'] = __("Key", 'lang_social_feed');
-		$arr_settings['setting_twitter_api_secret'] = __("Secret", 'lang_social_feed');
-		$arr_settings['setting_twitter_api_token'] = __("Access Token", 'lang_social_feed');
-		$arr_settings['setting_twitter_api_token_secret'] = __("Access Token Secret", 'lang_social_feed');
+			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
-		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
+			$arr_settings = array(
+				'setting_twitter_api_key' => __("Key", 'lang_social_feed'),
+				'setting_twitter_api_secret' => __("Secret", 'lang_social_feed'),
+				'setting_twitter_api_token' => __("Access Token", 'lang_social_feed'),
+				'setting_twitter_api_token_secret' => __("Access Token Secret", 'lang_social_feed'),
+			);
+
+			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
+		}
 		############################
 	}
 
@@ -242,6 +291,14 @@ class mf_social_feed
 		$setting_key = get_setting_key(__FUNCTION__);
 
 		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - Twitter");
+	}
+
+	function setting_social_api_url_callback()
+	{
+		$setting_key = get_setting_key(__FUNCTION__);
+		$option = get_option($setting_key);
+
+		echo show_textfield(array('type' => 'url', 'name' => $setting_key, 'value' => $option, 'placeholder' => get_site_url()));
 	}
 
 	function get_setting_min()
@@ -344,33 +401,12 @@ class mf_social_feed
 		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
 	}
 
-	function setting_facebook_api_id_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option($setting_key);
-
-		$description = "<ol>
-			<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='//developers.facebook.com'>Facebook</a>")."</li>
-			<li>".sprintf(__("Create a new app and copy %s and %s to paste here", 'lang_social_feed'), "App ID", "App Secret")."</li>
-		</ol>";
-
-		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'description' => $description));
-	}
-
-	function setting_facebook_api_secret_callback()
+	function setting_instagram_client_id_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option($setting_key);
 
 		echo show_textfield(array('name' => $setting_key, 'value' => $option));
-	}
-
-	function setting_instagram_activate_alt_fetch_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option_or_default($setting_key, 'no');
-
-		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
 	}
 
 	function setting_linkedin_api_id_callback()
@@ -472,44 +508,66 @@ class mf_social_feed
 	{
 		global $pagenow;
 
-		if($pagenow == 'edit.php')
+		switch($pagenow)
 		{
-			$plugin_include_url = plugin_dir_url(__FILE__);
-			$plugin_version = get_plugin_version(__FILE__);
+			case 'admin.php':
+				if(isset($_GET['page']) && isset($_GET['access_token']))
+				{
+					switch($_GET['page'])
+					{
+						case 'cff-top':
+							$this->get_api_credentials('facebook');
 
-			switch(check_var('post_type'))
-			{
-				case $this->post_type:
-					mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
-				break;
+							mf_redirect($this->facebook_redirect_url."&access_token=".check_var('access_token'));
+						break;
 
-				case $this->post_type_post:
-					mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
-					mf_enqueue_script('script_social_feed', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')), $plugin_version);
-				break;
-			}
+						case 'sb-instagram-feed':
+							$this->get_api_credentials('instagram');
+
+							mf_redirect($this->instagram_redirect_url."&access_token=".check_var('access_token'));
+						break;
+					}
+				}
+			break;
+
+			case 'edit.php':
+				$plugin_include_url = plugin_dir_url(__FILE__);
+				$plugin_version = get_plugin_version(__FILE__);
+
+				switch(check_var('post_type'))
+				{
+					case $this->post_type:
+						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
+					break;
+
+					case $this->post_type_post:
+						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
+						mf_enqueue_script('script_social_feed', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')), $plugin_version);
+					break;
+				}
+			break;
 		}
 	}
 
-	/*function admin_menu()
+	function admin_menu()
 	{
-		$menu_root = 'mf_social_feed/';
+		/*$menu_root = 'mf_social_feed/';
 		$menu_start = "edit.php?post_type=".$this->post_type;
 		$menu_capability = override_capability(array('page' => $menu_start, 'default' => 'edit_pages'));
 
 		$menu_title = __("Posts", 'lang_social_feed');
-		add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_post);
-	}*/
+		add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_post);*/
+
+		$menu_capability = 'edit_posts';
+		$menu_title = __("Posts", 'lang_social_feed');
+		add_submenu_page('cff-top', $menu_title, $menu_title, $menu_capability, 'cff-top', 'cff_settings_page');
+		add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', 'sb_instagram_settings_page');
+	}
 
 	function meta_feed_facebook_info()
 	{
 		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='facebook'>".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</p>";
 	}
-
-	/*function get_current_url()
-	{
-		return (is_ssl() ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-	}*/
 
 	function meta_feed_facebook_access_token_info()
 	{
@@ -532,9 +590,27 @@ class mf_social_feed
 			{
 				$this->get_api_credentials('facebook');
 
-				$out .= "<ol>"
-					."<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_redirect_url."&client_id=".$this->facebook_api_id."&client_secret=".$this->facebook_api_secret."&callback_url=".urlencode($edit_url)."'>Facebook</a>")."</li>"
-				."</ol>";
+				if($this->setting_social_api_url != '')
+				{
+					if(!session_id())
+					{
+						@session_start();
+					}
+
+					$_SESSION['sesCallbackURL'] = $edit_url;
+
+					$out .= "<ol>"
+						//."<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_redirect_url."&callback_url=".urlencode($edit_url)."'>Facebook</a>")."</li>"
+						."<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</li>"
+					."</ol>";
+				}
+
+				else
+				{
+					$out .= "<ol>"
+						."<li>".sprintf(__("Go to %sSettings%s and add an API URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</li>"
+					."</ol>";
+				}
 			}
 
 		$out .= "</div>";
@@ -544,7 +620,7 @@ class mf_social_feed
 
 	function meta_feed_instagram_info()
 	{
-		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</p>";
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>".__("Posts can be fetched from @users", 'lang_social_feed')."</p>";
 	}
 
 	function meta_feed_instagram_access_token_info()
@@ -566,24 +642,38 @@ class mf_social_feed
 
 			else
 			{
-				$instagram_client_id = get_post_meta($post_id, $this->meta_prefix.'instagram_client_id', true);
+				$this->get_api_credentials('instagram');
 
-				if($instagram_client_id != '')
+				if($this->setting_social_api_url != '')
 				{
-					$out .= "<ol>"
-						."<li><a href='//instagram.com/oauth/authorize/?client_id=".$instagram_client_id."&redirect_uri=".$edit_url."&response_type=token'>".__("Authorize Here", 'lang_social_feed')."</a></li>" //&scope=public_content
-						."<li>".sprintf(__("When you arrive back here after authorization, just copy the access token from the address bar and paste it in the %s field above", 'lang_social_feed'), __("Access Token", 'lang_social_feed'))."</li>"
-					."</ol>";
+					if($this->instagram_client_id != '')
+					{
+						if(!session_id())
+						{
+							@session_start();
+						}
+
+						$_SESSION['sesCallbackURL'] = $edit_url;
+
+						$out .= "<ol>"
+							."<li><a href='".$this->instagram_authorize_url."'>".__("Authorize Here", 'lang_social_feed')."</a></li>"
+							//."<li>".sprintf(__("When you arrive back here after authorization, just copy the access token from the address bar and paste it in the %s field above", 'lang_social_feed'), __("Access Token", 'lang_social_feed'))."</li>"
+						."</ol>";
+					}
+
+					/*else
+					{
+						$out .= "<ol>"
+							."<li><a href='".$this->instagram_redirect_url."&callback_url=".urlencode($edit_url)."'>".__("Authorize Here", 'lang_social_feed')."</a></li>"
+							."<li>".sprintf(__("When you arrive back here after authorization, just copy the access token from the address bar and paste it in the %s field above", 'lang_social_feed'), __("Access Token", 'lang_social_feed'))."</li>"
+						."</ol>";
+					}*/
 				}
 
 				else
 				{
 					$out .= "<ol>"
-						."<li>".sprintf(__("Go to %sInstagram for Developers%s and Log in. It is important that you log in with the account that you want to fetch posts from", 'lang_social_feed'), "<a href='//instagram.com/developer/'>", "</a>")."</li>"
-						."<li>".sprintf(__("Enter the fields in the form %s and press %s", 'lang_social_feed'), "Developer Signup", "Sign up")."</li>" //Your website, Phone number, What do you want to build with API
-						."<li>".sprintf(__("Click on %s or %s and then %s", 'lang_social_feed'), "Register Your Application", "Manage Clients", "Register a New Client")."</li>"
-						."<li>".sprintf(__("Enter the fields in the form %s and press %s. It is important that you enter all the fields and that %s is set to %s. You should also uncheck %s", 'lang_social_feed'), "Register new Client ID", "Register", "Valid redirect URIs", $edit_url, "Disable implicit OAuth")."</li>"
-						."<li>".sprintf(__("Copy %s and enter into the %s field above", 'lang_social_feed'), "CLIENT ID", __("Client ID", 'lang_social_feed'))."</li>"
+						."<li>".sprintf(__("Go to %sSettings%s and add an API URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</li>"
 					."</ol>";
 				}
 			}
@@ -680,12 +770,18 @@ class mf_social_feed
 
 		if($post_id > 0)
 		{
-			//$facebook_access_token = check_var('code');
-			$facebook_access_token = check_var('access_token');
+			$facebook_access_token = check_var('facebook_access_token');
 
 			if($facebook_access_token != '')
 			{
 				update_post_meta($post_id, $this->meta_prefix.'facebook_access_token', $facebook_access_token);
+			}
+			
+			$instagram_access_token = check_var('instagram_access_token');
+
+			if($instagram_access_token != '')
+			{
+				update_post_meta($post_id, $this->meta_prefix.'instagram_access_token', $instagram_access_token);
 			}
 		}
 
@@ -767,7 +863,7 @@ class mf_social_feed
 					'type' => 'custom_html',
 					'callback' => array($this, 'meta_feed_instagram_info'),
 				),
-				array(
+				/*array(
 					'name' => __("Client ID", 'lang_social_feed'),
 					'id' => $this->meta_prefix.'instagram_client_id',
 					'type' => 'text',
@@ -776,7 +872,7 @@ class mf_social_feed
 						'condition_selector' => $this->meta_prefix.'type',
 						'condition_value' => 'instagram',
 					),
-				),
+				),*/
 				array(
 					'name' => __("Access Token", 'lang_social_feed'),
 					'id' => $this->meta_prefix.'instagram_access_token',
@@ -1813,11 +1909,18 @@ class mf_social_feed
 		switch($this->type)
 		{
 			case 'facebook':
-				$this->facebook_code_url = "https://facebook.com/dialog/oauth";
-				$this->facebook_access_token_url = "https://graph.facebook.com/oauth/access_token";
-				$this->facebook_redirect_url = $this->parent_url."/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=fb_login";
-				$this->facebook_api_id = get_option('setting_facebook_api_id');
-				$this->facebook_api_secret = get_option('setting_facebook_api_secret');
+				$this->setting_social_api_url = get_option('setting_social_api_url');
+
+				$this->facebook_authorize_url = $this->setting_social_api_url."/facebook-login.php?state=".admin_url("admin.php?page=cff-top");
+				$this->facebook_redirect_url = get_site_url()."/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=fb_login";
+			break;
+
+			case 'instagram':
+				$this->setting_social_api_url = get_option('setting_social_api_url');
+				$this->instagram_client_id = get_option('setting_instagram_client_id');
+
+				$this->instagram_redirect_url = get_site_url()."/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=instagram_login";
+				$this->instagram_authorize_url = "//facebook.com/dialog/oauth?client_id=".$this->instagram_client_id."&redirect_uri=".$this->setting_social_api_url."/instagram-graph-api-redirect.php&scope=manage_pages,instagram_basic,instagram_manage_insights,instagram_manage_comments&state=".admin_url("admin.php?page=sb-instagram-feed");
 			break;
 
 			case 'linkedin':
@@ -1859,15 +1962,25 @@ class mf_social_feed
 			switch($this->type)
 			{
 				case 'facebook':
-					$this->fetch_facebook();
+					$this->facebook_access_token = get_post_meta($this->id, $this->meta_prefix.'facebook_access_token', true);
+
+					if($this->facebook_access_token == '')
+					{
+						update_post_meta($this->id, $this->meta_prefix.'error', __("Edit and add an access token", 'lang_social_feed'));
+					}
+
+					else
+					{
+						$this->fetch_facebook();
+					}
 				break;
 
 				case 'instagram':
-					$this->instagram_api_token = get_post_meta($this->id, $this->meta_prefix.'instagram_access_token', true);
+					$this->instagram_access_token = get_post_meta($this->id, $this->meta_prefix.'instagram_access_token', true);
 
-					if($this->instagram_api_token == '')
+					if($this->instagram_access_token == '')
 					{
-						update_post_meta($this->id, $this->meta_prefix.'error', __("You have to edit this account and add an access token", 'lang_social_feed'));
+						update_post_meta($this->id, $this->meta_prefix.'error', __("Edit and add an access token", 'lang_social_feed'));
 					}
 
 					else
@@ -1916,8 +2029,9 @@ class mf_social_feed
 	{
 		$this->search = $this->filter_search_for($this->search);
 
-		$fb_access_token = $this->facebook_api_id."|".$this->facebook_api_secret;
-		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$fb_access_token; //&limit=10
+		//$facebook_access_token = $this->facebook_api_id."|".$this->facebook_api_secret;
+		$facebook_access_token = $this->facebook_access_token;
+		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$facebook_access_token; //&limit=10
 
 		list($content, $headers) = get_url_content(array('url' => $fb_feed_url, 'catch_head' => true));
 		$json = json_decode($content, true);
@@ -2117,39 +2231,52 @@ class mf_social_feed
 	{
 		$filter = "";
 
-		if(substr($this->search, 0, 1) == "#")
+		//$url = "https://api.instagram.com/v1/users/self/?access_token=".$this->instagram_access_token;
+		$url = "https://graph.facebook.com/me/accounts?fields=instagram_business_account,access_token&limit=500&access_token=".$this->instagram_access_token;
+
+		$result = wp_remote_retrieve_body(wp_remote_get($url));
+		$json = json_decode($result);
+
+		if(isset($json->data))
 		{
-			if(get_option('setting_instagram_activate_alt_fetch') == 'yes')
+			if(get_option('setting_social_debug') == 'yes')
 			{
-				$this->fetch_alt_instagram();
+				do_log("Instagram: ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
 			}
 
-			$filter = "tags/".substr($this->search, 1)."/media/recent";
-		}
-
-		else
-		{
-			$url = "https://api.instagram.com/v1/users/self/?access_token=".$this->instagram_api_token;
-
-			$result = wp_remote_retrieve_body(wp_remote_get($url));
-			$json = json_decode($result);
-
-			if(isset($json->data->id))
+			//if(isset($json->data->id))
+			if(isset($json->data[0]->id))
 			{
-				$filter = "users/".$json->data->id."/media/recent";
+				// Get username/name
+				/*{
+				   "name": "[name]",
+				   "username": "[username]",
+				   "profile_picture_url": "[url]",
+				}*/
+				//https://graph.facebook.com/[id]?fields=name,username,profile_picture_url&access_token=[token]
+				//https://graph.facebook.com/[id]?fields=instagram_business_account,name&access_token=[token]
+
+				//$filter = "users/".$json->data->id."/media/recent";
+				$filter = $json->data[0]->id;
 
 				delete_post_meta($this->id, $this->meta_prefix.'error');
 			}
 
 			else
 			{
-				update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
+				update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back did not contain an ID", 'lang_social_feed')."</a>");
 			}
+		}
+
+		else
+		{
+			update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
 		}
 
 		if($filter != '')
 		{
-			$url = "https://api.instagram.com/v1/".$filter."?access_token=".$this->instagram_api_token; //."&count=".$instagram_amount
+			//$url = "https://api.instagram.com/v1/".$filter."?access_token=".$this->instagram_access_token;
+			$url = "https://graph.facebook.com/".$filter."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$this->instagram_access_token;
 
 			$result = wp_remote_retrieve_body(wp_remote_get($url));
 			$json = json_decode($result);
@@ -2187,7 +2314,7 @@ class mf_social_feed
 						'comments' => stdClass::__set_state(array('count' => 3))
 					)*/
 
-					$this->arr_posts[] = array(
+					/*$this->arr_posts[] = array(
 						'type' => $this->type,
 						'id' => $post->id,
 						'user_id' => isset($post->caption->from->id) ? $post->caption->from->id : 0,
@@ -2198,6 +2325,19 @@ class mf_social_feed
 						'created' => date("Y-m-d H:i:s", $post->created_time),
 						'likes' => $post->likes->count,
 						'comments' => $post->comments->count,
+					);*/
+
+					$this->arr_posts[] = array(
+						'type' => $this->type,
+						'id' => $post->id,
+						//'user_id' => isset($post->caption->from->id) ? $post->caption->from->id : 0,
+						'name' => $this->search,
+						'text' => isset($post->message) ? $post->message : "",
+						'link' => "//instagram.com/p/".$post->id,
+						'image' => isset($post->full_picture) && $post->full_picture != '' ? $post->full_picture : "",
+						'created' => date("Y-m-d H:i:s", strtotime($post->created_time)),
+						//'likes' => $post->likes->count,
+						//'comments' => $post->comments->count,
 					);
 				}
 
@@ -2302,7 +2442,7 @@ class mf_social_feed
 
 		else
 		{
-			update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: ".__("Token has expired", 'lang_social_feed'));
+			update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: <a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_linkedin")."'>".__("Token has expired", 'lang_social_feed')."</a>");
 		}
 	}
 
