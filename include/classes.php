@@ -778,8 +778,7 @@ class mf_social_feed
 		$post_date = $post->post_date;
 
 		$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
-		//$feed_id = $post->post_excerpt;
-		//$feed_id = $post->post_parent;
+		//$post_feed = $post->post_parent;
 
 		$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 		$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
@@ -1271,7 +1270,7 @@ class mf_social_feed
 
 						else if($amount > 0)
 						{
-							$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_excerpt = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $id)); // post_excerpt -> post_parent
+							$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $id));
 
 							echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$id)."'>".$amount."</a>"
 							."<div class='row-actions'>"
@@ -1286,11 +1285,10 @@ class mf_social_feed
 				switch($col)
 				{
 					case 'type':
-						$parent_id = get_post_meta($id, $this->meta_prefix.'feed_id', true);
-						//$feed_id = $post->post_excerpt;
-						//$feed_id = $post->post_parent;
+						$post_feed = get_post_meta($id, $this->meta_prefix.'feed_id', true);
+						//$post_feed = $post->post_parent;
 
-						$post_meta = get_post_meta($parent_id, $this->meta_prefix.$col, true);
+						$post_meta = get_post_meta($post_feed, $this->meta_prefix.$col, true);
 
 						if($post_meta != '')
 						{
@@ -1299,7 +1297,7 @@ class mf_social_feed
 
 						else
 						{
-							//do_log("The parent ".$parent_id." does not exist anymore");
+							//do_log("The parent ".$post_feed." does not exist anymore");
 
 							wp_trash_post($id);
 						}
@@ -1349,11 +1347,10 @@ class mf_social_feed
 					break;
 
 					case 'info':
-						$parent_id = get_post_meta($id, $this->meta_prefix.'feed_id', true);
-						//$feed_id = $post->post_excerpt;
-						//$feed_id = $post->post_parent;
+						$post_feed = get_post_meta($id, $this->meta_prefix.'feed_id', true);
+						//$post_feed = $post->post_parent;
 
-						$post_meta = get_post_meta($parent_id, $this->meta_prefix.'type', true);
+						$post_meta = get_post_meta($post_feed, $this->meta_prefix.'type', true);
 
 						switch($post_meta)
 						{
@@ -1416,14 +1413,13 @@ class mf_social_feed
 
 			$post_id = $post->ID;
 
-			$feed_id = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
-			//$feed_id = $post->post_excerpt;
-			//$feed_id = $post->post_parent;
+			$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+			//$post_feed = $post->post_parent;
 
 			$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
 
 			$post_username = "@".$post_username;
-			$feed_name = get_post_meta($feed_id, $this->meta_prefix.'search_for', true);
+			$feed_name = get_post_meta($post_feed, $this->meta_prefix.'search_for', true);
 
 			if($post->post_status == 'publish')
 			{
@@ -1476,7 +1472,7 @@ class mf_social_feed
 
 		if(get_post_type($post_id) == $this->post_type)
 		{
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_excerpt = '%d'", $this->post_type_post, $post_id)); //post_excerpt -> post_parent
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = '%d'", $this->post_type_post, $post_id));
 
 			foreach($result as $r)
 			{
@@ -2044,7 +2040,7 @@ class mf_social_feed
 
 		//do_log("get_amount: ".$wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = '".$this->meta_prefix."feed_id' AND meta_value = '%d'", $this->post_type_post, 'publish', $this->id));
 
-		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = '".$this->meta_prefix."feed_id' AND meta_value = '%d'", $this->post_type_post, 'publish', $this->id)); // post_excerpt -> post_parent // AND post_excerpt = '%d'
+		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = '".$this->meta_prefix."feed_id' AND meta_value = '%d'", $this->post_type_post, 'publish', $this->id));
 	}
 
 	function fetch_feed()
@@ -2836,7 +2832,7 @@ class mf_social_feed
 				'post_name' => $post_name,
 				'post_title' => $post_title,
 				'post_content' => $post['text'],
-				'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
+				//'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
 				'post_parent' => $this->id,
 				'meta_input' => array(
 					$this->meta_prefix.'service' => $post['type'],
@@ -2857,13 +2853,14 @@ class mf_social_feed
 				}
 			}
 
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_excerpt = '%d'", $this->post_type_post, 'publish', $post_title, $post_name, $this->id)); // post_excerpt -> post_parent
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts.$query_join." WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d'", $this->post_type_post, 'publish', $post_title, $post_name, $this->id));
+			//$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d' AND (meta_key = %s AND meta_value != '' AND meta_value = %s OR meta_key = %s AND meta_value != '' AND meta_value = %s)", $this->post_type_post, 'publish', $post_title, $post_name, $this->id, $this->meta_prefix.'image', $post['image'], $this->meta_prefix.'link', $post['link']));
 
 			if($wpdb->num_rows == 0)
 			{
 				if($this->check_is_settings($post))
 				{
-					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_excerpt = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name'])); // post_excerpt -> post_parent
+					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
 					$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
 
 					/*if($post_status == 'draft')
@@ -2956,7 +2953,7 @@ class mf_social_feed
 
 			/*while(count($arr_post_posts) < $data['amount'])
 			{*/
-				$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_excerpt, post_parent, post_date, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_excerpt IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".($data['amount'] + 1), $this->post_type_post, 'publish'));
+				$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".($data['amount'] + 1), $this->post_type_post, 'publish')); //
 				$rows = $wpdb->num_rows;
 
 				if($rows > 0)
@@ -2971,6 +2968,8 @@ class mf_social_feed
 							$post_date = $r->post_date;
 
 							$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+							//$post_feed = $r->post_parent;
+
 							$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 							$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
 							$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
