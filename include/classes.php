@@ -2853,7 +2853,7 @@ class mf_social_feed
 				}
 			}
 
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts.$query_join." WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d'", $this->post_type_post, 'publish', $post_title, $post_name, $this->id));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d'", $this->post_type_post, 'publish', $post_title, $post_name, $this->id));
 			//$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d' AND (meta_key = %s AND meta_value != '' AND meta_value = %s OR meta_key = %s AND meta_value != '' AND meta_value = %s)", $this->post_type_post, 'publish', $post_title, $post_name, $this->id, $this->meta_prefix.'image', $post['image'], $this->meta_prefix.'link', $post['link']));
 
 			if($wpdb->num_rows == 0)
