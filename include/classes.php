@@ -10,6 +10,11 @@ class mf_social_feed
 		$this->post_type = 'mf_social_feed';
 		$this->post_type_post = 'mf_social_feed_post';
 		$this->meta_prefix = $this->post_type.'_';
+
+		$this->sync_settings = array(
+			'setting_social_api_url',
+			'setting_instagram_client_id',
+		);
 	}
 
 	function cron_base()
@@ -33,6 +38,45 @@ class mf_social_feed
 		}
 
 		$obj_cron->end();
+	}
+
+	function cron_sync($json)
+	{
+		global $wpdb;
+
+		if(isset($json['settings']) && count($json['settings']) > 0)
+		{
+			foreach($this->sync_settings as $setting_key)
+			{
+				if(isset($json['settings'][$setting_key]) && $json['settings'][$setting_key] != '')
+				{
+					if(get_option($setting_key) == '')
+					{
+						update_option($setting_key, $json['settings'][$setting_key]);
+					}
+				}
+			}
+		}
+	}
+
+	function api_sync($json_output, $data = array())
+	{
+		if(!isset($json_output['settings']))
+		{
+			$json_output['settings'] = array();
+		}
+
+		foreach($this->sync_settings as $setting_key)
+		{
+			$setting_value = get_option($setting_key);
+
+			if($setting_value != '')
+			{
+				$json_output['settings'][$setting_key] = $setting_value;
+			}
+		}
+
+		return $json_output;
 	}
 
 	/*function get_message_error_amount($data = array())
