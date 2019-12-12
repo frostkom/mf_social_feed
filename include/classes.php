@@ -1536,7 +1536,7 @@ class mf_social_feed
 			$setting_social_debug = get_option('setting_social_debug');
 
 			mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
-			mf_enqueue_style('style_bb', $plugin_base_include_url."backbone/style.css", $plugin_version);
+			mf_enqueue_style('style_base_bb', $plugin_base_include_url."backbone/style.css", $plugin_version);
 
 			mf_enqueue_script('underscore');
 			mf_enqueue_script('backbone');

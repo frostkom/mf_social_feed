@@ -23,29 +23,32 @@ switch($type)
 			@session_start();
 		}
 
-		$access_token = check_var('access_token');
+		$sesCallbackURL = check_var('sesCallbackURL');
 
-		if($access_token != '')
+		if($sesCallbackURL != '')
 		{
-			$sesCallbackURL = check_var('sesCallbackURL');
+			$url = html_entity_decode($sesCallbackURL);
 
-			if($sesCallbackURL != '')
+			$access_token = check_var('access_token');
+
+			if($access_token != '')
 			{
-				unset($_SESSION['sesCallbackURL']);
+				$arr_vars = array('facebook_access_token' => $access_token);
 
-				$url = html_entity_decode($sesCallbackURL);
-				mf_redirect($url, array('facebook_access_token' => $access_token));
+				unset($_SESSION['sesCallbackURL']);
 			}
 
 			else
 			{
-				do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).", ".var_export($_SESSION, true).")");
+				$arr_vars = array(); //'facebook_message' => __("", '')
 			}
+
+			mf_redirect($url, $arr_vars);
 		}
 
 		else
 		{
-			do_log("API Error (".$type."): Malformed request (".var_export($_REQUEST, true).")");
+			do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).", ".var_export($_SESSION, true).")");
 		}
 	break;
 
