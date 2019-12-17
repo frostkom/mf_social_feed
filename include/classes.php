@@ -2354,13 +2354,14 @@ class mf_social_feed
 						"data": [
 							{
 								"media_url": "[url]",
+								'thumbnail_url' => '[url]',
 								"caption": "[text]",
 								"id": "[number]",
-								"media_type": "IMAGE",
-								"timestamp": "2019-11-15T16:20:58+0000",
-								"username": "dgesverige",
-								"comments_count": 4,
-								"like_count": 8,
+								"media_type": "[IMAGE/VIDEO]",
+								"timestamp": "YYYY-MM-DDTHH:MM:SS+0000",
+								"username": "[username]",
+								"comments_count": [number],
+								"like_count": [number],
 								"permalink": "[url]"
 							},
 						],
@@ -2380,7 +2381,7 @@ class mf_social_feed
 						'name' => $post->username,
 						'text' => isset($post->caption) ? $post->caption : "",
 						'link' => $post->permalink,
-						'image' => $post->media_url,
+						'image' => ($post->media_type == 'IMAGE' ? $post->media_url : $post->thumbnail_url),
 						'created' => date("Y-m-d H:i:s", strtotime($post->timestamp)),
 						'likes' => $post->like_count,
 						'comments' => $post->comments_count,
