@@ -762,7 +762,7 @@ class mf_social_feed
 
 				else if($this->instagram_client_id == '')
 				{
-					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add a Client URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_instagram")."'>", "</a>")."</strong>";
+					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add a %s", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_instagram")."'>", "</a>", "Client URL")."</strong>";
 				}
 
 				else

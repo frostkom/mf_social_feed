@@ -40,7 +40,7 @@ switch($type)
 
 			else
 			{
-				$arr_vars = array(); //'facebook_message' => __("", '')
+				$arr_vars = array(); //'facebook_message' => 
 			}
 
 			mf_redirect($url, $arr_vars);
