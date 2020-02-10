@@ -2374,6 +2374,24 @@ class mf_social_feed
 						}
 					}*/
 
+					switch($post->media_type)
+					{
+						case 'IMAGE':
+						case 'CAROUSEL_ALBUM':
+							$post_image = $post->media_url;
+						break;
+
+						case 'VIDEO':
+							$post_image = $post->thumbnail_url;
+						break;
+
+						default:
+							do_log("Unknown media type: ".$post->media_type." (".var_export($post, true).")");
+
+							$post_image = "";
+						break;
+					}
+
 					$this->arr_posts[] = array(
 						'type' => $this->type,
 						'id' => $post->id,
@@ -2381,7 +2399,7 @@ class mf_social_feed
 						'name' => $post->username,
 						'text' => isset($post->caption) ? $post->caption : "",
 						'link' => $post->permalink,
-						'image' => ($post->media_type == 'IMAGE' ? $post->media_url : $post->thumbnail_url),
+						'image' => $post_image,
 						'created' => date("Y-m-d H:i:s", strtotime($post->timestamp)),
 						'likes' => $post->like_count,
 						'comments' => $post->comments_count,
