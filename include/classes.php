@@ -179,6 +179,8 @@ class mf_social_feed
 			$arr_settings['setting_social_api_url'] = __("API URL", 'lang_social_feed');
 		}
 
+		$arr_settings['setting_social_keep_posts'] = __("Keep Posts", 'lang_social_feed');
+
 		$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
 
 		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
@@ -363,6 +365,14 @@ class mf_social_feed
 				return 15;
 			break;
 		}
+	}
+
+	function setting_social_keep_posts_callback()
+	{
+		$setting_key = get_setting_key(__FUNCTION__);
+		$option = get_option_or_default($setting_key, 12);
+
+		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='120'", 'suffix' => __("months", 'lang_social_feed')));
 	}
 
 	function setting_social_time_limit_callback()
@@ -2797,81 +2807,93 @@ class mf_social_feed
 	{
 		$out = true;
 
-		switch($post['type'])
+		$setting_social_keep_posts = get_option_or_default('setting_social_keep_posts', 12);
+
+		if($post['created'] < date("Y-m-d", strtotime("-".$setting_social_keep_posts." month")))
 		{
-			case 'facebook':
-				if($post['is_owner'] == true)
-				{
-					// Do nothing
-				}
+			//do_log($post['created']." is older than ".date("Y-m-d", strtotime("-".$setting_social_keep_posts." month"))." (".var_export($post, true).")");
 
-				else
-				{
-					$post_include = get_post_meta($this->id, $this->meta_prefix.'facebook_include', false);
+			$out = false;
+		}
 
-					if(is_array($post_include) && count($post_include) > 0)
+		if($out == true)
+		{
+			switch($post['type'])
+			{
+				case 'facebook':
+					if($post['is_owner'] == true)
 					{
-						if(!in_array('other', $post_include))
-						{
-							$out = false;
-
-							//do_log("Hide because other (".var_export($post, true).")");
-						}
+						// Do nothing
 					}
 
 					else
 					{
-						$out = false;
+						$post_include = get_post_meta($this->id, $this->meta_prefix.'facebook_include', false);
 
-						//do_log("Hide because no FB include (".var_export($post, true).")");
+						if(is_array($post_include) && count($post_include) > 0)
+						{
+							if(!in_array('other', $post_include))
+							{
+								$out = false;
+
+								//do_log("Hide because other (".var_export($post, true).")");
+							}
+						}
+
+						else
+						{
+							$out = false;
+
+							//do_log("Hide because no FB include (".var_export($post, true).")");
+						}
 					}
-				}
-			break;
+				break;
 
-			case 'twitter':
-				if($post['is_owner'] == true && $post['is_reply'] == false && $post['is_retweet'] == false)
-				{
-					// Do nothing
-
-					//do_log("Do nothing. It's from the owner and neither a reply or a retweet (".var_export($post, true).")");
-				}
-
-				else
-				{
-					$post_include = get_post_meta($this->id, $this->meta_prefix.'twitter_include', false);
-
-					if(is_array($post_include) && count($post_include) > 0)
+				case 'twitter':
+					if($post['is_owner'] == true && $post['is_reply'] == false && $post['is_retweet'] == false)
 					{
-						if($post['is_owner'] == false && !in_array('other', $post_include))
-						{
-							$out = false;
+						// Do nothing
 
-							//do_log("Hide because not owner (".var_export($post, true).")");
-						}
-
-						else if($post['is_reply'] == true && !in_array('reply', $post_include))
-						{
-							$out = false;
-
-							//do_log("Hide because reply (".var_export($post, true).")");
-						}
-
-						else if($post['is_retweet'] == true && !in_array('retweet', $post_include))
-						{
-							$out = false;
-
-							//do_log("Hide because retweet (".var_export($post, true).")");
-						}
+						//do_log("Do nothing. It's from the owner and neither a reply or a retweet (".var_export($post, true).")");
 					}
 
 					else
 					{
-						$out = false;
+						$post_include = get_post_meta($this->id, $this->meta_prefix.'twitter_include', false);
 
-						//do_log("Hide because no Twitter include (".var_export($post, true).")");
+						if(is_array($post_include) && count($post_include) > 0)
+						{
+							if($post['is_owner'] == false && !in_array('other', $post_include))
+							{
+								$out = false;
+
+								//do_log("Hide because not owner (".var_export($post, true).")");
+							}
+
+							else if($post['is_reply'] == true && !in_array('reply', $post_include))
+							{
+								$out = false;
+
+								//do_log("Hide because reply (".var_export($post, true).")");
+							}
+
+							else if($post['is_retweet'] == true && !in_array('retweet', $post_include))
+							{
+								$out = false;
+
+								//do_log("Hide because retweet (".var_export($post, true).")");
+							}
+						}
+
+						else
+						{
+							$out = false;
+
+							//do_log("Hide because no Twitter include (".var_export($post, true).")");
+						}
 					}
-				}
-			break;
+				break;
+			}
 		}
 
 		return $out;
@@ -2886,83 +2908,109 @@ class mf_social_feed
 			do_log("Social Posts: ".htmlspecialchars(var_export($this->arr_posts, true)));
 		}
 
-		foreach($this->arr_posts as $post)
+		if(count($this->arr_posts) > 0)
 		{
-			$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type']." ".$post['id']);
-			$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
-
-			$post_data = array(
-				'post_name' => $post_name,
-				'post_title' => $post_title,
-				'post_content' => $post['text'],
-				//'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
-				'post_parent' => $this->id,
-				'meta_input' => array(
-					$this->meta_prefix.'service' => $post['type'],
-					$this->meta_prefix.'feed_id' => $this->id, //This can be removed when post_parent is used everywhere
-					$this->meta_prefix.'name' => $post['name'],
-					$this->meta_prefix.'image' => $post['image'],
-					$this->meta_prefix.'link' => $post['link'],
-				),
-			);
-
-			$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id', 'likes', 'comments');
-
-			foreach($arr_meta_input_types as $meta_input_type)
+			foreach($this->arr_posts as $post)
 			{
-				if(isset($post[$meta_input_type]) && $post[$meta_input_type] > 0)
+				$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type']." ".$post['id']);
+				$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
+
+				$post_data = array(
+					'post_name' => $post_name,
+					'post_title' => $post_title,
+					'post_content' => $post['text'],
+					//'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
+					'post_parent' => $this->id,
+					'meta_input' => array(
+						$this->meta_prefix.'service' => $post['type'],
+						$this->meta_prefix.'feed_id' => $this->id, //This can be removed when post_parent is used everywhere
+						$this->meta_prefix.'name' => $post['name'],
+						$this->meta_prefix.'image' => $post['image'],
+						$this->meta_prefix.'link' => $post['link'],
+					),
+				);
+
+				$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id', 'likes', 'comments');
+
+				foreach($arr_meta_input_types as $meta_input_type)
 				{
-					$post_data['meta_input'][$this->meta_prefix.$meta_input_type] = $post[$meta_input_type];
-				}
-			}
-
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d'", $this->post_type_post, 'publish', $post_title, $post_name, $this->id));
-			//$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d' AND (meta_key = %s AND meta_value != '' AND meta_value = %s OR meta_key = %s AND meta_value != '' AND meta_value = %s)", $this->post_type_post, 'publish', $post_title, $post_name, $this->id, $this->meta_prefix.'image', $post['image'], $this->meta_prefix.'link', $post['link']));
-
-			if($wpdb->num_rows == 0)
-			{
-				if($this->check_is_settings($post))
-				{
-					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
-					$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
-
-					/*if($post_status == 'draft')
+					if(isset($post[$meta_input_type]) && $post[$meta_input_type] > 0)
 					{
-						do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
-					}*/
-
-					$post_data['post_type'] = $this->post_type_post;
-					$post_data['post_status'] = $post_status;
-					$post_data['post_date'] = $post['created'];
-
-					$post_id = wp_insert_post($post_data);
-				}
-			}
-
-			else
-			{
-				$i = 0;
-
-				foreach($result as $r)
-				{
-					$post_id = $r->ID;
-
-					if($this->check_is_settings($post) && $i == 0)
-					{
-						$post_data['ID'] = $post_id;
-
-						wp_update_post($post_data);
-
-						$i++;
+						$post_data['meta_input'][$this->meta_prefix.$meta_input_type] = $post[$meta_input_type];
 					}
+				}
 
-					else
+				$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d'", $this->post_type_post, 'publish', $post_title, $post_name, $this->id));
+
+				if($wpdb->num_rows == 0)
+				{
+					if($this->check_is_settings($post))
 					{
-						wp_trash_post($post_id);
+						$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
+						$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
+
+						/*if($post_status == 'draft')
+						{
+							do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
+						}*/
+
+						$post_data['post_type'] = $this->post_type_post;
+						$post_data['post_status'] = $post_status;
+						$post_data['post_date'] = $post['created'];
+
+						$post_id = wp_insert_post($post_data);
+					}
+				}
+
+				else
+				{
+					$i = 0;
+
+					foreach($result as $r)
+					{
+						$post_id = $r->ID;
+
+						if($this->check_is_settings($post) && $i == 0)
+						{
+							$post_data['ID'] = $post_id;
+
+							wp_update_post($post_data);
+
+							$i++;
+						}
+
+						else
+						{
+							wp_trash_post($post_id);
+						}
 					}
 				}
 			}
 		}
+
+		// Remove old posts
+		###########
+		$setting_social_keep_posts = get_option_or_default('setting_social_keep_posts', 12);
+
+		$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND (post_excerpt = '%d' OR post_parent = '%d') AND post_status = %s AND post_date < %s", $this->post_type_post, $this->id, $this->id, 'publish', date("Y-m-d", strtotime("-".$setting_social_keep_posts." month"))));
+
+		if($wpdb->num_rows > 0)
+		{
+			foreach($result as $r)
+			{
+				$post_id = $r->ID;
+
+				//do_log("Remove ".get_post_title($post_id)." because it is older than ".date("Y-m-d", strtotime("-".$setting_social_keep_posts." month")));
+
+				wp_trash_post($post_id);
+			}
+		}
+
+		/*else
+		{
+			do_log("There were no old posts to remove (".$wpdb->last_query.")");
+		}*/
+		###########
 	}
 	#########################
 
