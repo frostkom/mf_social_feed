@@ -342,7 +342,8 @@ class mf_social_feed
 	function setting_social_api_url_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option($setting_key);
+		settings_save_site_wide($setting_key);
+		$option = get_site_option($setting_key, get_option($setting_key));
 
 		echo show_textfield(array('type' => 'url', 'name' => $setting_key, 'value' => $option, 'placeholder' => get_site_url()));
 	}
@@ -458,7 +459,8 @@ class mf_social_feed
 	function setting_instagram_client_id_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option($setting_key);
+		settings_save_site_wide($setting_key);
+		$option = get_site_option($setting_key, get_option($setting_key));
 
 		echo show_textfield(array('name' => $setting_key, 'value' => $option));
 	}
@@ -772,7 +774,7 @@ class mf_social_feed
 
 				else if($this->instagram_client_id == '')
 				{
-					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add a %s", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_instagram")."'>", "</a>", "Client URL")."</strong>";
+					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add a %s", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_instagram")."'>", "</a>", __("Client ID", 'lang_social_feed'))."</strong>";
 				}
 
 				else
@@ -2055,15 +2057,15 @@ class mf_social_feed
 		switch($this->type)
 		{
 			case 'facebook':
-				$this->setting_social_api_url = get_option('setting_social_api_url');
+				$this->setting_social_api_url = get_site_option('setting_social_api_url', get_option('setting_social_api_url'));
 
 				$this->facebook_authorize_url = $this->setting_social_api_url."/facebook-login.php?state=".admin_url("admin.php?page=cff-top");
 				$this->facebook_redirect_url = get_site_url()."/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=fb_login";
 			break;
 
 			case 'instagram':
-				$this->setting_social_api_url = get_option('setting_social_api_url');
-				$this->instagram_client_id = get_option('setting_instagram_client_id');
+				$this->setting_social_api_url = get_site_option('setting_social_api_url', get_option('setting_social_api_url'));
+				$this->instagram_client_id = get_site_option('setting_instagram_client_id', get_option('setting_instagram_client_id'));
 
 				$this->instagram_redirect_url = get_site_url()."/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=instagram_login";
 				$this->instagram_authorize_url = "//facebook.com/dialog/oauth?client_id=".$this->instagram_client_id."&redirect_uri=".$this->setting_social_api_url."/instagram-graph-api-redirect.php&scope=manage_pages,instagram_basic,instagram_manage_insights,instagram_manage_comments&state=".admin_url("admin.php?page=sb-instagram-feed");
