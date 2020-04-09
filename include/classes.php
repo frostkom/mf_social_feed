@@ -79,7 +79,7 @@ class mf_social_feed
 		return $json_output;
 	}
 
-	/*function get_message_error_amount($data = array())
+	function get_message_error_amount($data = array())
 	{
 		global $wpdb;
 
@@ -96,16 +96,16 @@ class mf_social_feed
 		}
 
 		return $out;
-	}*/
+	}
 
 	function init()
 	{
-		//$count_message = $this->get_message_error_amount();
+		$count_message = $this->get_message_error_amount();
 
 		$labels = array(
 			'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
 			'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
-			'menu_name' => __("Social Feeds", 'lang_social_feed'), //.$count_message // This will be rendered as visible HTML tags in the menu
+			'menu_name' => __("Social Feeds", 'lang_social_feed').$count_message,
 		);
 
 		$args = array(
@@ -1326,12 +1326,16 @@ class mf_social_feed
 
 						else if($amount > 0)
 						{
+							echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$id)."'>".$amount."</a>";
+
 							$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $id));
 
-							echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$id)."'>".$amount."</a>"
-							."<div class='row-actions'>"
-								.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
-							."</div>";
+							if($post_latest > DEFAULT_DATE)
+							{
+								echo "<div class='row-actions'>"
+									.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
+								."</div>";
+							}
 						}
 					break;
 				}
