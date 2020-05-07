@@ -134,7 +134,7 @@ echo "@media all
 				.$post_item_desktop
 				."margin: 0 0 1em;
 				overflow: hidden;
-				padding: .5em;
+				/*padding: .5em;*/
 				position: relative;
 				text-align: left;
 			}
@@ -171,7 +171,7 @@ echo "@media all
 						border-top: 0;
 						margin-right: .5%;
 						margin-left: .5%;
-						padding: 1em;
+						/*padding: 1em;*/
 					}";
 				}
 
@@ -191,86 +191,95 @@ echo "@media all
 				."}";
 			}
 
-				echo ".widget.social_feed .meta
+				echo ".widget.social_feed img
 				{
-					display: -webkit-box;
-					display: -ms-flexbox;
-					display: -webkit-flex;
-					display: flex;
+					display: block;
+					/*margin-top: .5em;*/
 				}
-
-					.widget.social_feed .sf_posts li .meta .fa, .widget.social_feed .sf_posts li .meta .fab
-					{
-						-webkit-box-flex: 0 0 auto;
-						-webkit-flex: 0 0 auto;
-						-ms-flex: 0 0 auto;
-						flex: 0 0 auto;
-						margin-right: .5em;
-					}
-
-						.sf_facebook .fa, .sf_facebook .fab, .column-type .fa-facebook
-						{
-							color: #3b5998;
-						}
-
-						.sf_instagram .fa, .sf_instagram .fab, .column-type .fa-instagram
-						{
-							color: #c02f2e;
-						}
-
-						.sf_linkedin .fa, .sf_linkedin .fab, .column-type .fa-linkedin-in
-						{
-							color: #0077b5;
-						}
-
-						.sf_rss .fa, .sf_rss .fab, .column-type .fa-rss
-						{
-							color: #e9bb63;
-						}
-
-						.sf_twitter .fa, .sf_twitter .fab, .column-type .fa-twitter
-						{
-							color: #55acee;
-						}
-
-					.widget.social_feed .title, .widget.social_feed .name
-					{
-						-webkit-box-flex: 0 auto auto;
-						-webkit-flex: 0 auto auto;
-						-ms-flex: 0 auto auto;
-						flex: 0 auto auto;
-						font-size: .7em;
-						line-height: 1.5;
-						margin-right: .5em;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;
-					}
-
-					.widget.social_feed .date
-					{
-						color: #ccc;
-						-webkit-box-flex: 1 0 0;
-						-webkit-flex: 1 0 0;
-						-ms-flex: 1 0 0;
-						flex: 1 0 0;
-						font-size: .6em;
-						line-height: 1.8;
-						text-align: right;
-					}
 
 				.widget.social_feed .content
 				{
 					clear: both;
 					display: block;
 					overflow: hidden;
-				}
+					padding: .5em;
+				}";
 
-					.widget.social_feed img
+					if($setting_social_display_border == 'yes')
 					{
-						display: block;
-						margin-top: .5em;
+						echo ".widget.social_feed .content
+						{
+							padding: 1em;	
+						}";
 					}
+
+					echo ".widget.social_feed .meta
+					{
+						display: -webkit-box;
+						display: -ms-flexbox;
+						display: -webkit-flex;
+						display: flex;
+					}
+
+						.widget.social_feed .sf_posts li .meta .fa, .widget.social_feed .sf_posts li .meta .fab
+						{
+							-webkit-box-flex: 0 0 auto;
+							-webkit-flex: 0 0 auto;
+							-ms-flex: 0 0 auto;
+							flex: 0 0 auto;
+							margin-right: .5em;
+						}
+
+							.sf_facebook .fa, .sf_facebook .fab, .column-type .fa-facebook
+							{
+								color: #3b5998;
+							}
+
+							.sf_instagram .fa, .sf_instagram .fab, .column-type .fa-instagram
+							{
+								color: #c02f2e;
+							}
+
+							.sf_linkedin .fa, .sf_linkedin .fab, .column-type .fa-linkedin-in
+							{
+								color: #0077b5;
+							}
+
+							.sf_rss .fa, .sf_rss .fab, .column-type .fa-rss
+							{
+								color: #e9bb63;
+							}
+
+							.sf_twitter .fa, .sf_twitter .fab, .column-type .fa-twitter
+							{
+								color: #55acee;
+							}
+
+						.widget.social_feed .title, .widget.social_feed .name
+						{
+							-webkit-box-flex: 0 auto auto;
+							-webkit-flex: 0 auto auto;
+							-ms-flex: 0 auto auto;
+							flex: 0 auto auto;
+							font-size: .7em;
+							line-height: 1.5;
+							margin-right: .5em;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
+						}
+
+						.widget.social_feed .date
+						{
+							color: #ccc;
+							-webkit-box-flex: 1 0 0;
+							-webkit-flex: 1 0 0;
+							-ms-flex: 1 0 0;
+							flex: 1 0 0;
+							font-size: .6em;
+							line-height: 1.8;
+							text-align: right;
+						}
 
 					.widget.social_feed p, .widget.social_feed .text
 					{
@@ -307,7 +316,6 @@ echo "@media all
 									display: inline-block;
 									margin: .5em 0 0 !important;
 									position: relative;
-									text-decoration: none;
 									z-index: 1;
 								}
 

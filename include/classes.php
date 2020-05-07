@@ -1595,29 +1595,28 @@ class mf_social_feed
 
 		<script type='text/template' id='template_feed_post'>
 			<li class='sf_<%= service %> sf_feed_<%= feed %>'>
-				<div class='meta'>
-					<i class='<%= icon %>'></i>
-
-					<% if(service == 'rss')
-					{ %>
-						<span class='name'><%= feed_title %></span>
-					<% }
-
-					else if(name != '')
-					{ %>
-						<span class='name'><%= name %></span>
-					<% } %>
-
-					<span class='date'><%= date %></span>
-				</div>
+				<% if(image != '')
+				{ %>
+					<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
+				<% } %>
 				<a href='<%= link %>' class='content'>
+					<div class='meta'>
+						<i class='<%= icon %>'></i>
 
-					<% if(image != '')
-					{ %>
-						<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
-					<% }
+						<% if(service == 'rss')
+						{ %>
+							<span class='name'><%= feed_title %></span>
+						<% }
 
-					if(service == 'rss' && title != '')
+						else if(name != '')
+						{ %>
+							<span class='name'><%= name %></span>
+						<% } %>
+
+						<span class='date'><%= date %></span>
+					</div>
+
+					<% if(service == 'rss' && title != '')
 					{ %>
 						<p><%= title %></p>
 					<% }
@@ -1634,7 +1633,6 @@ class mf_social_feed
 							<i class='fa fa-comment'></i><span><%= comments %></span>
 						</div>
 					<% } %>
-
 				</a>
 			</li>
 		</script>";
