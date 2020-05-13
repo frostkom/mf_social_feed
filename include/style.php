@@ -209,7 +209,7 @@ echo "@media all
 					{
 						echo ".widget.social_feed .content
 						{
-							padding: 1em;	
+							padding: 1em;
 						}";
 					}
 

@@ -25,6 +25,11 @@ switch($type)
 
 		$sesCallbackURL = check_var('sesCallbackURL');
 
+		if($sesCallbackURL == '')
+		{
+			$sesCallbackURL = get_option('option_social_callback_url');
+		}
+
 		if($sesCallbackURL != '')
 		{
 			$url = html_entity_decode($sesCallbackURL);
@@ -36,6 +41,7 @@ switch($type)
 				$arr_vars = array('facebook_access_token' => $access_token);
 
 				unset($_SESSION['sesCallbackURL']);
+				delete_option('option_social_callback_url');
 			}
 
 			else
@@ -68,9 +74,15 @@ switch($type)
 			{
 				$sesCallbackURL = check_var('sesCallbackURL');
 
+				if($sesCallbackURL == '')
+				{
+					$sesCallbackURL = get_option('option_social_callback_url');
+				}
+
 				if($sesCallbackURL != '')
 				{
 					unset($_SESSION['sesCallbackURL']);
+					delete_option('option_social_callback_url');
 
 					$url = html_entity_decode($sesCallbackURL);
 					mf_redirect($url, array('instagram_access_token' => $access_token));

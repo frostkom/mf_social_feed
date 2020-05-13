@@ -654,6 +654,7 @@ class mf_social_feed
 					}
 
 					$_SESSION['sesCallbackURL'] = $edit_url;
+					update_option('option_social_callback_url', $edit_url, 'no');
 
 					$out .= "<strong>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</strong>";
 				}
@@ -785,6 +786,7 @@ class mf_social_feed
 					}
 
 					$_SESSION['sesCallbackURL'] = $edit_url;
+					update_option('option_social_callback_url', $edit_url, 'no');
 
 					$out .= "<strong><a href='".$this->instagram_authorize_url."'>".__("Authorize Here", 'lang_social_feed')."</a></strong>";
 				}
