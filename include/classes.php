@@ -100,12 +100,12 @@ class mf_social_feed
 
 	function init()
 	{
-		$count_message = $this->get_message_error_amount();
+		//$count_message = $this->get_message_error_amount();
 
 		$labels = array(
 			'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
 			'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
-			'menu_name' => __("Social Feeds", 'lang_social_feed').$count_message,
+			'menu_name' => __("Social Feeds", 'lang_social_feed'), //.$count_message // This will display HTML code in the menu. It has to be added with JS instead
 		);
 
 		$args = array(
