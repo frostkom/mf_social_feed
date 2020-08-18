@@ -1172,6 +1172,7 @@ class mf_social_feed
 
 				$cols['type'] = __("Service", 'lang_social_feed');
 				$cols['search_for'] = __("Search for", 'lang_social_feed');
+				$cols['in_use'] = __("In Use", 'lang_social_feed');
 				$cols['amount_of_posts'] = __("Amount", 'lang_social_feed');
 			break;
 
@@ -1288,6 +1289,37 @@ class mf_social_feed
 								.$fetch_link
 								.__("Fetched", 'lang_social_feed').": ".format_date($post_modified)
 							."</div>";
+						}
+					break;
+
+					case 'in_use':
+						$option_widgets = get_option('widget_social-feed-widget');
+
+						if(is_array($option_widgets))
+						{
+							//echo var_export($option_widgets, true);
+
+							$is_in_use = false;
+
+							foreach($option_widgets as $arr_widget)
+							{
+								if(isset($arr_widget['social_feeds']) && (count($arr_widget['social_feeds']) == 0 || in_array($id, $arr_widget['social_feeds'])))
+								{
+									$is_in_use = true;
+
+									break;
+								}
+							}
+
+							if($is_in_use)
+							{
+								echo "<i class='fa fa-check green'></i>";
+							}
+
+							else
+							{
+								echo "<i class='fa fa-times red'></i>";
+							}
 						}
 					break;
 
@@ -1525,6 +1557,8 @@ class mf_social_feed
 			{
 				$this->fetch_feed();
 			}
+
+			delete_post_meta($this->id, $this->meta_prefix.'error');
 		}
 	}
 
