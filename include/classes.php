@@ -3223,7 +3223,7 @@ class widget_social_feed extends WP_Widget
 {
 	function __construct()
 	{
-		$widget_ops = array(
+		$this->widget_ops = array(
 			'classname' => 'social_feed',
 			'description' => __("Display Social Feeds", 'lang_social_feed')
 		);
@@ -3240,7 +3240,7 @@ class widget_social_feed extends WP_Widget
 			'social_read_more' => 'yes',
 		);
 
-		parent::__construct('social-feed-widget', __("Social Feed", 'lang_social_feed'), $widget_ops);
+		parent::__construct(str_replace("_", "-", $this->widget_ops['classname']).'-widget', __("Social Feed", 'lang_social_feed'), $this->widget_ops);
 
 		$this->obj_social_feed = new mf_social_feed();
 	}
@@ -3334,7 +3334,7 @@ class widget_social_feed extends WP_Widget
 		get_post_children(array('post_type' => $this->obj_social_feed->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
 
 		echo "<div class='mf_form'>"
-			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='social-title'"));
+			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='".$this->widget_ops['classname']."-title'"));
 
 			if(count($arr_data_feeds) > 1)
 			{
