@@ -564,6 +564,11 @@ class mf_social_feed
 	{
 		global $pagenow;
 
+		if(!is_plugin_active("mf_base/index.php"))
+		{
+			deactivate_plugins(str_replace("include/classes.php", "index.php", plugin_basename(__FILE__)));
+		}
+
 		switch($pagenow)
 		{
 			case 'admin.php':
