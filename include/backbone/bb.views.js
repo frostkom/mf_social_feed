@@ -183,8 +183,8 @@ var SocialView = Backbone.View.extend(
 
 		dom_obj.find(".fa-spinner").addClass('hide');
 
-		if(amount < 3){		dom_obj.find(".sf_posts").addClass('one_column');}
-		else{				dom_obj.find(".sf_posts").removeClass('one_column');}
+		if(amount < 3){	dom_obj.find(".sf_posts").addClass('one_column');}
+		else{			dom_obj.find(".sf_posts").removeClass('one_column');}
 
 		if(amount > 0)
 		{
@@ -205,9 +205,10 @@ var SocialView = Backbone.View.extend(
 
 		dom_obj.find(".sf_posts.show_read_more .text").shorten();
 
-		dom_obj.find(".sf_posts img").on("error", function()
+		/* Just in case image errors have occured, it has been cached through JS and then retrieved by someone else, we have to first display images and then check again */
+		dom_obj.find(".sf_posts img").removeClass('hide').on("error", function()
 		{
-			jQuery(this).hide();
+			jQuery(this).addClass('hide');
 		});
 
 		if(this.model.get('has_more_posts'))

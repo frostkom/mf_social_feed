@@ -1640,31 +1640,33 @@ class mf_social_feed
 				{ %>
 					<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
 				<% } %>
-				<a href='<%= link %>' class='content'>
+				<div class='content'>
 					<div class='meta'>
-						<i class='<%= icon %>'></i>
+						<a href='<%= link %>'>
+							<i class='<%= icon %>'></i>
 
-						<% if(service == 'rss')
-						{ %>
-							<span class='name'><%= feed_title %></span>
-						<% }
+							<% if(service == 'rss')
+							{ %>
+								<span class='name'><%= feed_title %></span>
+							<% }
 
-						else if(name != '')
-						{ %>
-							<span class='name'><%= name %></span>
-						<% } %>
+							else if(name != '')
+							{ %>
+								<span class='name'><%= name %></span>
+							<% } %>
 
-						<span class='date'><%= date %></span>
+							<span class='date'><%= date %></span>
+						</a>
 					</div>
 
 					<% if(service == 'rss' && title != '')
 					{ %>
-						<p><%= title %></p>
+						<p><a href='<%= link %>'><%= title %></a></p>
 					<% }
 
 					if(content != '')
 					{ %>
-						<div class='text'><%= content %></div>
+						<div class='text'><a href='<%= link %>'><%= content %></a></div>
 					<% }
 
 					if(likes != '' || comments != '')
@@ -2317,8 +2319,6 @@ class mf_social_feed
 			$this->save_error(array('message' => "Facebook: ".$json['error']['message']));
 			//update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
 		}
-
-		
 	}
 
 	function get_instagram_business_id()

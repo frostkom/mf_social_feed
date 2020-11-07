@@ -316,6 +316,7 @@ echo "@media all
 									display: inline-block;
 									margin: .5em 0 0 !important;
 									position: relative;
+									text-decoration: underline;
 									z-index: 1;
 								}
 
