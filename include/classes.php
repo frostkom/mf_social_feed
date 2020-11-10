@@ -110,7 +110,8 @@ class mf_social_feed
 
 		$args = array(
 			'labels' => $labels,
-			'public' => true,
+			'public' => false, // Previously true but changed to hide in sitemap.xml
+			'show_ui' => true,
 			'show_in_nav_menus' => false,
 			'exclude_from_search' => true,
 			'capability_type' => 'page',
@@ -131,7 +132,8 @@ class mf_social_feed
 
 		$args = array(
 			'labels' => $labels,
-			'public' => true,
+			'public' => false, // Previously true but changed to hide in sitemap.xml
+			'show_ui' => true,
 			'show_in_menu' => false,
 			'show_in_nav_menus' => false,
 			'exclude_from_search' => true,
