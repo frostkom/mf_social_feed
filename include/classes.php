@@ -193,7 +193,13 @@ class mf_social_feed
 
 			if(class_exists('mf_theme_core'))
 			{
-				$obj_theme_core = new mf_theme_core();
+				global $obj_theme_core;
+
+				if(!isset($obj_theme_core))
+				{
+					$obj_theme_core = new mf_theme_core();
+				}
+
 				$obj_theme_core->get_params();
 
 				$website_max_width = isset($obj_theme_core->options['website_max_width']) ? $obj_theme_core->options['website_max_width'] : 0;
