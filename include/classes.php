@@ -652,7 +652,17 @@ class mf_social_feed
 
 			if($facebook_access_token != '')
 			{
-				$out .= "<strong><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
+				$facebook_access_token_expiry_date = get_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', true);
+
+				if($facebook_access_token_expiry_date > DEFAULT_DATE && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+10 day")))
+				{
+					$out .= "<i class='fa fa-exclamation-triangle yellow display_warning'></i> ".sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date);
+				}
+
+				else
+				{
+					$out .= "<strong title='".sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date)."'><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
+				}
 			}
 
 			else
@@ -901,6 +911,7 @@ class mf_social_feed
 			if($facebook_access_token != '')
 			{
 				update_post_meta($post_id, $this->meta_prefix.'facebook_access_token', $facebook_access_token);
+				update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', date("Y-m-d", strtotime("+60 day")));
 			}
 
 			$instagram_access_token = check_var('instagram_access_token');
