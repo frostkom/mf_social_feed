@@ -26,6 +26,7 @@ class mf_social_feed
 
 		if($obj_cron->is_running == false)
 		{
+			#####################
 			$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
 
 			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_modified < DATE_SUB(NOW(), INTERVAL ".$setting_social_time_limit." MINUTE) ORDER BY RAND()", $this->post_type, 'publish'));
@@ -35,6 +36,60 @@ class mf_social_feed
 				$this->set_id($r->ID);
 				$this->fetch_feed();
 			}
+			#####################
+
+			#####################
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title FROM ".$wpdb->posts." WHERE post_type = %s", $this->post_type));
+
+			foreach($result as $r)
+			{
+				$post_id = $r->ID;
+				$post_title = $r->post_title;
+
+				$post_meta_type = get_post_meta($post_id, $this->meta_prefix.'type', true);
+
+				if($post_meta_type == 'facebook')
+				{
+					$facebook_access_token_expiry_date = get_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', true);
+
+					if($facebook_access_token_expiry_date > DEFAULT_DATE)
+					{
+						$facebook_access_token_message_sent = get_post_meta($post_id, $this->meta_prefix.'facebook_access_token_message_sent', true);
+
+						//$facebook_report_days = get_post_meta($post_id, $this->meta_prefix.'facebook_report_days', true);
+						$facebook_report_days = 7;
+						$facebook_report_to = get_post_meta($post_id, $this->meta_prefix.'facebook_report_to', false);
+
+						if(is_array($facebook_report_to) && count($facebook_report_to) > 0 && $facebook_access_token_message_sent <= date("Y-m-d", strtotime("+".round($facebook_report_days / 2)." day")) && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+".$facebook_report_days." day")))
+						{
+							$mail_subject = sprintf(__("Expiry Date on %s", 'lang_social_feed'), remove_protocol(array('url' => get_site_url(), 'clean' => true)));
+							$mail_content = sprintf(__("%s expires %s", 'lang_social_feed'), $post_title, $facebook_access_token_expiry_date);
+
+							foreach($facebook_report_to as $user_id)
+							{
+								$user_data = get_userdata($user_id);
+
+								$mail_to = $user_data->user_email;
+
+								//$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
+								do_log("Send e-mail to ".$mail_to." (".$mail_subject.", ".$mail_content.")");
+								$sent = true;
+
+								if($sent)
+								{
+									update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_message_sent', date("Y-m-d H:i:s"));
+								}
+
+								else
+								{
+									do_log(sprintf("I could not send the message with: %s", $mail_content));
+								}
+							}
+						}
+					}
+				}
+			}
+			#####################
 		}
 
 		$obj_cron->end();
@@ -611,10 +666,26 @@ class mf_social_feed
 
 					case $this->post_type_post:
 						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
-						mf_enqueue_script('script_social_feed', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')), $plugin_version);
+
+						mf_enqueue_script('script_social_feed_wp', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')), $plugin_version);
 					break;
 				}
 			break;
+
+			/*case 'post.php':
+			case 'post-new.php':
+				$post_id = check_var('post');
+
+				switch(get_post_type($post_id))
+				{
+					case $this->post_type:
+						$plugin_include_url = plugin_dir_url(__FILE__);
+						$plugin_version = get_plugin_version(__FILE__);
+
+						mf_enqueue_style('style_social_feed_wp', $plugin_include_url."style_wp.css", $plugin_version);
+					break;
+				}
+			break;*/
 		}
 	}
 
@@ -859,7 +930,6 @@ class mf_social_feed
 		$post_date = $post->post_date;
 
 		$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
-		//$post_feed = $post->post_parent;
 
 		$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 		$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
@@ -932,6 +1002,8 @@ class mf_social_feed
 			}
 		}
 
+		$arr_data_report_to = get_users_for_select(array('add_choose_here' => false));
+
 		$meta_boxes[] = array(
 			'id' => $this->meta_prefix.'settings',
 			'title' => __("Settings", 'lang_social_feed'),
@@ -980,6 +1052,33 @@ class mf_social_feed
 					'id' => $this->meta_prefix.'facebook_access_token_info',
 					'type' => 'custom_html',
 					'callback' => array($this, 'meta_feed_facebook_access_token_info'),
+				),
+				/*array(
+					'name' => __("Report Limit", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'facebook_report_days',
+					'type' => 'number',
+					'attributes' => array(
+						'min' => 1,
+						'max' => 14,
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'facebook',
+					),
+					'desc' => __("days before expiry", 'lang_social_feed'),
+				),*/
+				array(
+					'name' => __("Report to", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'facebook_report_to',
+					'type' => 'select',
+					'options' => $arr_data_report_to,
+					'multiple' => true,
+					'attributes' => array(
+						'size' => get_select_size(array('count' => count($arr_data_report_to))),
+						'condition_type' => 'show_this_if',
+						'condition_selector' => $this->meta_prefix.'type',
+						'condition_value' => 'facebook',
+					),
+					'desc' => __("A message is sent when the access token is about to expire", 'lang_social_feed'),
 				),
 				array(
 					'name' => __("Include", 'lang_social_feed'),
@@ -1234,13 +1333,14 @@ class mf_social_feed
 
 					case 'search_for':
 						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
-						$service = get_post_meta($id, $this->meta_prefix.'type', true);
 
 						$post_meta_filtered = $this->filter_search_for($post_meta);
 
 						if($post_meta_filtered != '')
 						{
-							switch($service)
+							$post_meta_type = get_post_meta($id, $this->meta_prefix.'type', true);
+
+							switch($post_meta_type)
 							{
 								case 'facebook':
 									$feed_url = "//facebook.com/".$post_meta_filtered;
@@ -1466,7 +1566,6 @@ class mf_social_feed
 
 					case 'info':
 						$post_feed = get_post_meta($id, $this->meta_prefix.'feed_id', true);
-						//$post_feed = $post->post_parent;
 
 						$post_meta = get_post_meta($post_feed, $this->meta_prefix.'type', true);
 
@@ -3173,7 +3272,6 @@ class mf_social_feed
 							$post_date = $r->post_date;
 
 							$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
-							//$post_feed = $r->post_parent;
 
 							$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 							$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
