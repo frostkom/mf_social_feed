@@ -662,6 +662,7 @@ class mf_social_feed
 				{
 					case $this->post_type:
 						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
+						mf_enqueue_style('style_social_feed_wp', $plugin_include_url."style_wp.css", $plugin_version);
 					break;
 
 					case $this->post_type_post:
@@ -1437,12 +1438,12 @@ class mf_social_feed
 
 							if($is_in_use)
 							{
-								echo "<i class='fa fa-check green'></i>";
+								echo "<i class='fa fa-check green fa-2x'></i>";
 							}
 
 							else
 							{
-								echo "<i class='fa fa-times red'></i>";
+								echo "<i class='fa fa-times red fa-2x'></i>";
 							}
 						}
 					break;
@@ -2267,6 +2268,31 @@ class mf_social_feed
 			'post_status' => 'draft',
 		);
 
+		$arr_exclude = $arr_include = array();
+
+		// Facebook
+		$arr_exclude[] = "An unknown error occurred";
+		$arr_include[] = __("An unknown error occurred", 'lang_social_feed');
+
+		$arr_exclude[] = "Error validating access token";
+		$arr_include[] = __("The access token is not valid anymore. Renew it by editing this feed.", 'lang_social_feed');
+
+		$arr_exclude[] = "Session has expired";
+		$arr_include[] = __("The access token has expired. Renew it by editing this feed.", 'lang_social_feed');
+
+		$arr_exclude[] = "This endpoint requires the 'manage_pages' or 'pages_read_user_content' permission";
+		$arr_include[] = __("The access token was not accepted. Renew it by editing this feed and logging in with an account that is admin on the page.", 'lang_social_feed');
+
+		foreach($arr_exclude as $key => $value)
+		{
+			if(strpos($data['message'], $value) !== false)
+			{
+				$data['message'] = $arr_include[$key];
+
+				break;
+			}
+		}
+
 		wp_update_post($post_data);
 
 		update_post_meta($this->id, $this->meta_prefix.'error', $data['message']);
@@ -2288,7 +2314,6 @@ class mf_social_feed
 					if($this->facebook_access_token == '')
 					{
 						$this->save_error(array('message' => __("Edit and add an access token", 'lang_social_feed')));
-						//update_post_meta($this->id, $this->meta_prefix.'error', __("Edit and add an access token", 'lang_social_feed'));
 					}
 
 					else
@@ -2303,7 +2328,6 @@ class mf_social_feed
 					if($this->instagram_access_token == '')
 					{
 						$this->save_error(array('message' => __("Edit and add an access token", 'lang_social_feed')));
-						//update_post_meta($this->id, $this->meta_prefix.'error', __("Edit and add an access token", 'lang_social_feed'));
 					}
 
 					else
@@ -2434,8 +2458,7 @@ class mf_social_feed
 				do_log("Facebook: ".$fb_feed_url." -> ".$json['error']['message']);
 			}
 
-			$this->save_error(array('message' => "Facebook: ".$json['error']['message']));
-			//update_post_meta($this->id, $this->meta_prefix.'error', $json['error']['message']);
+			$this->save_error(array('message' => $json['error']['message'])); //"Facebook: ".
 		}
 	}
 
@@ -2482,8 +2505,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "Instagram: <a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>"));
-			//update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
+			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>")); //Instagram: 
 		}
 
 		return $url;
@@ -2518,8 +2540,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "Instagram: <a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>"));
-			//update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
+			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>")); //Instagram: 
 		}
 
 		return $url;
@@ -2606,8 +2627,7 @@ class mf_social_feed
 
 			else
 			{
-				$this->save_error(array('message' => "Instagram: <a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>"));
-				//update_post_meta($this->id, $this->meta_prefix.'error', "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>");
+				$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>")); //Instagram: 
 			}
 		}
 	}
@@ -2627,14 +2647,12 @@ class mf_social_feed
 		{
 			if(isset($json['message']))
 			{
-				$this->save_error(array('message' => "LinkedIn: ".$json['message']));
-				//update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: ".$json['message']);
+				$this->save_error(array('message' => $json['message'])); //"LinkedIn: ".
 			}
 
 			else
 			{
-				$this->save_error(array('message' => "LinkedIn: No key found (".var_export($json, true).")"));
-				//update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: No key found (".var_export($json, true).")");
+				$this->save_error(array('message' => __("No key found", 'lang_social_feed')." (".var_export($json, true).")")); //LinkedIn: 
 			}
 
 			return false;
@@ -2705,8 +2723,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "LinkedIn: <a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_linkedin")."'>".__("Token has expired", 'lang_social_feed')."</a>"));
-			//update_post_meta($this->id, $this->meta_prefix.'error', "LinkedIn: <a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_linkedin")."'>".__("Token has expired", 'lang_social_feed')."</a>");
+			$this->save_error(array('message' => "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_linkedin")."'>".__("Token has expired", 'lang_social_feed')."</a>")); //LinkedIn: 
 		}
 	}
 
@@ -2764,8 +2781,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "RSS: ".__("I could not find a feed", 'lang_social_feed')));
-			//update_post_meta($this->id, $this->meta_prefix.'error', __("I could not find a feed", 'lang_social_feed'));
+			$this->save_error(array('message' => __("I could not find a feed", 'lang_social_feed'))); //"RSS: ".
 		}
 	}
 
@@ -2784,8 +2800,7 @@ class mf_social_feed
 
 			catch(TwitterException $e)
 			{
-				$this->save_error(array('message' => "Twitter: ".var_export($e->getMessage(), true)));
-				//update_post_meta($this->id, $this->meta_prefix.'error', "Twitter: ".var_export($e->getMessage(), true));
+				$this->save_error(array('message' => var_export($e->getMessage(), true))); //"Twitter: ".
 			}
 		}
 
@@ -2803,8 +2818,7 @@ class mf_social_feed
 
 			catch(TwitterException $e)
 			{
-				$this->save_error(array('message' => "Twitter: ".var_export($e->getMessage(), true)));
-				//update_post_meta($this->id, $this->meta_prefix.'error', "Twitter: ".var_export($e->getMessage(), true));
+				$this->save_error(array('message' => var_export($e->getMessage(), true))); //"Twitter: ".
 			}
 		}
 
@@ -2817,8 +2831,7 @@ class mf_social_feed
 
 			catch(TwitterException $e)
 			{
-				$this->save_error(array('message' => "Twitter: ".var_export($e->getMessage(), true)));
-				//update_post_meta($this->id, $this->meta_prefix.'error', "Twitter: ".var_export($e->getMessage(), true));
+				$this->save_error(array('message' => var_export($e->getMessage(), true))); //"Twitter: ".
 			}
 		}
 

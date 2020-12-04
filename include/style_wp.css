@@ -1,8 +1,13 @@
 @media all
 {
-	#mf_social_feed_settings .rwmb-number + .description
+	.amount_of_posts .row-actions
+	{
+		white-space: unset;
+	}
+
+	/*#mf_social_feed_settings .rwmb-number + .description
 	{
 		display: inline-block;
 		margin-left: .5em;
-	}
+	}*/
 }
