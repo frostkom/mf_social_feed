@@ -194,8 +194,13 @@ echo "@media all
 				echo ".widget.social_feed img
 				{
 					display: block;
-					/*margin-top: .5em;*/
+					transition: all .4s ease;
 				}
+
+					.widget.social_feed li:hover img
+					{
+						filter: brightness(85%);
+					}
 
 				.widget.social_feed .content
 				{
