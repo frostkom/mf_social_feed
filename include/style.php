@@ -134,7 +134,6 @@ echo "@media all
 				.$post_item_desktop
 				."margin: 0 0 1em;
 				overflow: hidden;
-				/*padding: .5em;*/
 				position: relative;
 				text-align: left;
 			}
@@ -164,15 +163,20 @@ echo "@media all
 
 				if($setting_social_display_border == 'yes')
 				{
-					echo ".widget.social_feed .sf_posts li
+					echo ".widget.social_feed .sf_posts
 					{
-						background: #fff;
-						box-shadow: 0 .5rem .75rem rgba(0, 0, 0, .15);
-						border-top: 0;
-						margin-right: .5%;
-						margin-left: .5%;
-						/*padding: 1em;*/
-					}";
+						margin-right: -.5%;
+						margin-left: -.5%;
+					}
+					
+						.widget.social_feed .sf_posts li
+						{
+							background: #fff;
+							box-shadow: 0 .5rem .75rem rgba(0, 0, 0, .15);
+							border-top: 0;
+							margin-right: .5%;
+							margin-left: .5%;
+						}";
 				}
 
 			if($post_item_tablet != '')
