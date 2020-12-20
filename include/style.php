@@ -132,7 +132,7 @@ echo "@media all
 			echo ".widget.social_feed .sf_posts li
 			{"
 				.$post_item_desktop
-				."margin: 0 0 1em;
+				."margin: 0 0 .6em;
 				overflow: hidden;
 				position: relative;
 				text-align: left;
