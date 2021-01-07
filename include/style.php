@@ -168,7 +168,7 @@ echo "@media all
 						margin-right: -.5%;
 						margin-left: -.5%;
 					}
-					
+
 						.widget.social_feed .sf_posts li
 						{
 							background: #fff;
