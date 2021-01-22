@@ -517,6 +517,8 @@ class mf_social_feed
 		$option = get_option_or_default($setting_key, 'no');
 
 		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
+
+		setting_time_limit(array('key' => $setting_key, 'value' => $option));
 	}
 
 	function setting_instagram_client_id_callback()
@@ -974,6 +976,9 @@ class mf_social_feed
 		$default_type = "";
 
 		$post_id = check_var('post');
+		/*$post_id = get_rwmb_post_id(array(
+			'meta_key' => 'meta_social_feed_',
+		));*/
 
 		if($post_id > 0)
 		{
