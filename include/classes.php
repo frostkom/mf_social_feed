@@ -60,7 +60,7 @@ class mf_social_feed
 						$facebook_report_days = 7;
 						$facebook_report_to = get_post_meta($post_id, $this->meta_prefix.'facebook_report_to', false);
 
-						if(is_array($facebook_report_to) && count($facebook_report_to) > 0 && $facebook_access_token_message_sent <= date("Y-m-d", strtotime("+".round($facebook_report_days / 2)." day")) && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+".$facebook_report_days." day")))
+						if(is_array($facebook_report_to) && count($facebook_report_to) > 0 && $facebook_access_token_message_sent <= date("Y-m-d", strtotime("-".round($facebook_report_days / 2)." day")) && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+".$facebook_report_days." day")))
 						{
 							$mail_subject = sprintf(__("Expiry Date on %s", 'lang_social_feed'), remove_protocol(array('url' => get_site_url(), 'clean' => true)));
 							$mail_content = sprintf(__("%s expires %s", 'lang_social_feed'), $post_title, $facebook_access_token_expiry_date);
@@ -71,9 +71,9 @@ class mf_social_feed
 
 								$mail_to = $user_data->user_email;
 
-								//$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
-								do_log("Send e-mail to ".$mail_to." (".$mail_subject.", ".$mail_content.")");
-								$sent = true;
+								$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
+								//do_log("Send e-mail to ".$mail_to." (".$mail_subject.", ".$mail_content.")");
+								//$sent = true;
 
 								if($sent)
 								{
@@ -730,7 +730,22 @@ class mf_social_feed
 
 				if($facebook_access_token_expiry_date > DEFAULT_DATE && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+10 day")))
 				{
-					$out .= "<i class='fa fa-exclamation-triangle yellow display_warning'></i> ".sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date);
+					$out .= "<p><i class='fa fa-exclamation-triangle yellow display_warning'></i> ".sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date)."</p>";
+
+					$this->get_api_credentials('facebook');
+
+					if($this->setting_social_api_url != '')
+					{
+						if(!session_id())
+						{
+							@session_start();
+						}
+
+						$_SESSION['sesCallbackURL'] = $edit_url;
+						update_option('option_social_callback_url', $edit_url, 'no');
+
+						$out .= "<p>".sprintf(__("Go to %s and log in to renew", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</p>";
+					}
 				}
 
 				else
