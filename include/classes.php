@@ -3138,7 +3138,7 @@ class mf_social_feed
 		{
 			foreach($this->arr_posts as $post)
 			{
-				$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type'].($post['id'] != '' ? " ".$post['id'] : ''));
+				$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type'].(isset($post['id']) && $post['id'] != '' ? " ".$post['id'] : ''));
 				$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
 
 				$post_data = array(
