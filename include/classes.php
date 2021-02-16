@@ -10,6 +10,7 @@ class mf_social_feed
 		$this->post_type = 'mf_social_feed';
 		$this->post_type_post = 'mf_social_feed_post';
 		$this->meta_prefix = $this->post_type.'_';
+		$this->lang_key = 'lang_social_feed';
 
 		$this->sync_settings = array(
 			'setting_social_api_url',
@@ -48,45 +49,48 @@ class mf_social_feed
 
 				$post_meta_type = get_post_meta($post_id, $this->meta_prefix.'type', true);
 
-				if($post_meta_type == 'facebook')
+				switch($post_meta_type)
 				{
-					$facebook_access_token_expiry_date = get_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', true);
+					case 'facebook':
+						$facebook_access_token_expiry_date = get_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', true);
 
-					if($facebook_access_token_expiry_date > DEFAULT_DATE)
-					{
-						$facebook_access_token_message_sent = get_post_meta($post_id, $this->meta_prefix.'facebook_access_token_message_sent', true);
-
-						//$facebook_report_days = get_post_meta($post_id, $this->meta_prefix.'facebook_report_days', true);
-						$facebook_report_days = 7;
-						$facebook_report_to = get_post_meta($post_id, $this->meta_prefix.'facebook_report_to', false);
-
-						if(is_array($facebook_report_to) && count($facebook_report_to) > 0 && $facebook_access_token_message_sent <= date("Y-m-d", strtotime("-".round($facebook_report_days / 2)." day")) && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+".$facebook_report_days." day")))
+						if($facebook_access_token_expiry_date > DEFAULT_DATE)
 						{
-							$mail_subject = sprintf(__("Expiry Date on %s", 'lang_social_feed'), remove_protocol(array('url' => get_site_url(), 'clean' => true)));
-							$mail_content = sprintf(__("%s expires %s", 'lang_social_feed'), $post_title, $facebook_access_token_expiry_date);
+							$facebook_access_token_message_sent = get_post_meta($post_id, $this->meta_prefix.'facebook_access_token_message_sent', true);
 
-							foreach($facebook_report_to as $user_id)
+							$facebook_report_days = 7;
+							$facebook_report_to = get_post_meta($post_id, $this->meta_prefix.'facebook_report_to', false);
+
+							if(is_array($facebook_report_to) && count($facebook_report_to) > 0 && $facebook_access_token_message_sent <= date("Y-m-d", strtotime("-".round($facebook_report_days / 2)." day")) && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+".$facebook_report_days." day")))
 							{
-								$user_data = get_userdata($user_id);
+								//do_log("FB Expires: ".$facebook_access_token_message_sent." <= ".date("Y-m-d", strtotime("-".round($facebook_report_days / 2)." day"))." && ".$facebook_access_token_expiry_date." <= ".date("Y-m-d", strtotime("+".$facebook_report_days." day")));
 
-								$mail_to = $user_data->user_email;
+								$mail_subject = sprintf(__("Expiry Date on %s", $this->lang_key), remove_protocol(array('url' => get_site_url(), 'clean' => true)));
+								$mail_content = sprintf(__("%s expires %s", $this->lang_key), $post_title, $facebook_access_token_expiry_date);
 
-								$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
-								//do_log("Send e-mail to ".$mail_to." (".$mail_subject.", ".$mail_content.")");
-								//$sent = true;
-
-								if($sent)
+								foreach($facebook_report_to as $user_id)
 								{
-									update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_message_sent', date("Y-m-d H:i:s"));
-								}
+									$user_data = get_userdata($user_id);
 
-								else
-								{
-									do_log(sprintf("I could not send the message with: %s", $mail_content));
+									$mail_to = $user_data->user_email;
+
+									$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
+									//do_log("Send e-mail to ".$mail_to." (".$mail_subject.", ".$mail_content.")");
+									//$sent = true;
+
+									if($sent)
+									{
+										update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_message_sent', date("Y-m-d H:i:s"));
+									}
+
+									else
+									{
+										do_log(sprintf("I could not send the message with: %s", $mail_content));
+									}
 								}
 							}
 						}
-					}
+					break;
 				}
 			}
 			#####################
@@ -145,7 +149,7 @@ class mf_social_feed
 
 		if($rows > 0)
 		{
-			$out = "&nbsp;<span class='update-plugins' title='".__("Errors", 'lang_social_feed')."'>
+			$out = "&nbsp;<span class='update-plugins' title='".__("Errors", $this->lang_key)."'>
 				<span>".$rows."</span>
 			</span>";
 		}
@@ -158,9 +162,9 @@ class mf_social_feed
 		//$count_message = $this->get_message_error_amount();
 
 		$labels = array(
-			'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
-			'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
-			'menu_name' => __("Social Feeds", 'lang_social_feed'), //.$count_message // This will display HTML code in the menu. It has to be added with JS instead
+			'name' => _x(__("Social Feeds", $this->lang_key), 'post type general name'),
+			'singular_name' => _x(__("Social Feed", $this->lang_key), 'post type singular name'),
+			'menu_name' => __("Social Feeds", $this->lang_key), //.$count_message // This will display HTML code in the menu. It has to be added with JS instead
 		);
 
 		$args = array(
@@ -180,9 +184,9 @@ class mf_social_feed
 		register_post_type($this->post_type, $args);
 
 		$labels = array(
-			'name' => _x(__("Posts", 'lang_social_feed'), 'post type general name'),
-			'singular_name' => _x(__("Post", 'lang_social_feed'), 'post type singular name'),
-			'menu_name' => __("Posts", 'lang_social_feed')
+			'name' => _x(__("Posts", $this->lang_key), 'post type general name'),
+			'singular_name' => _x(__("Post", $this->lang_key), 'post type singular name'),
+			'menu_name' => __("Posts", $this->lang_key)
 		);
 
 		$args = array(
@@ -233,18 +237,18 @@ class mf_social_feed
 
 		if($has_facebook || $has_instagram)
 		{
-			$arr_settings['setting_social_api_url'] = __("API URL", 'lang_social_feed');
+			$arr_settings['setting_social_api_url'] = __("API URL", $this->lang_key);
 		}
 
-		$arr_settings['setting_social_keep_posts'] = __("Keep Posts", 'lang_social_feed');
+		$arr_settings['setting_social_keep_posts'] = __("Keep Posts", $this->lang_key);
 
-		$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
+		$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", $this->lang_key);
 
 		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
-			$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
-			$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
-			$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
+			$arr_settings['setting_social_reload'] = __("Interval to Reload Site", $this->lang_key);
+			$arr_settings['setting_social_design'] = __("Design", $this->lang_key);
+			$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", $this->lang_key);
 
 			if(class_exists('mf_theme_core'))
 			{
@@ -265,17 +269,17 @@ class mf_social_feed
 				$website_max_width = 0;
 			}
 
-			$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed').($website_max_width > 0 ? " (> ".$website_max_width.")" : "");
+			$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", $this->lang_key).($website_max_width > 0 ? " (> ".$website_max_width.")" : "");
 
 			if($website_max_width > 0)
 			{
-				$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");
+				$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", $this->lang_key).($website_max_width > 0 ? " (< ".$website_max_width.")" : "");
 			}
 
-			$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
+			$arr_settings['setting_social_display_border'] = __("Display Border", $this->lang_key);
 		}
 
-		$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
+		$arr_settings['setting_social_debug'] = __("Debug", $this->lang_key);
 
 		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
 		############################
@@ -303,7 +307,7 @@ class mf_social_feed
 			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
 			$arr_settings = array(
-				'setting_instagram_client_id' => __("Client ID", 'lang_social_feed'),
+				'setting_instagram_client_id' => __("Client ID", $this->lang_key),
 			);
 
 			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
@@ -326,14 +330,14 @@ class mf_social_feed
 			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
 			$arr_settings = array();
-			$arr_settings['setting_linkedin_api_id'] = __("Client ID", 'lang_social_feed');
-			$arr_settings['setting_linkedin_api_secret'] = __("Client Secret", 'lang_social_feed');
+			$arr_settings['setting_linkedin_api_id'] = __("Client ID", $this->lang_key);
+			$arr_settings['setting_linkedin_api_secret'] = __("Client Secret", $this->lang_key);
 
 			if(get_option('setting_linkedin_api_id') != '' && get_option('setting_linkedin_api_secret') != '')
 			{
-				$arr_settings['setting_linkedin_redirect_url'] = __("Redirect URL", 'lang_social_feed');
-				$arr_settings['setting_linkedin_authorize'] = __("Authorize", 'lang_social_feed');
-				$arr_settings['setting_linkedin_email_when_expired'] = __("Email when Expired", 'lang_social_feed');
+				$arr_settings['setting_linkedin_redirect_url'] = __("Redirect URL", $this->lang_key);
+				$arr_settings['setting_linkedin_authorize'] = __("Authorize", $this->lang_key);
+				$arr_settings['setting_linkedin_email_when_expired'] = __("Email when Expired", $this->lang_key);
 			}
 
 			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
@@ -356,10 +360,10 @@ class mf_social_feed
 			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
 			$arr_settings = array(
-				'setting_twitter_api_key' => __("Key", 'lang_social_feed'),
-				'setting_twitter_api_secret' => __("Secret", 'lang_social_feed'),
-				'setting_twitter_api_token' => __("Access Token", 'lang_social_feed'),
-				'setting_twitter_api_token_secret' => __("Access Token Secret", 'lang_social_feed'),
+				'setting_twitter_api_key' => __("Key", $this->lang_key),
+				'setting_twitter_api_secret' => __("Secret", $this->lang_key),
+				'setting_twitter_api_token' => __("Access Token", $this->lang_key),
+				'setting_twitter_api_token_secret' => __("Access Token Secret", $this->lang_key),
 			);
 
 			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
@@ -371,35 +375,35 @@ class mf_social_feed
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed'));
+		echo settings_header($setting_key, __("Social Feeds", $this->lang_key));
 	}
 
 	function settings_social_feed_facebook_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - Facebook");
+		echo settings_header($setting_key, __("Social Feeds", $this->lang_key)." - Facebook");
 	}
 
 	function settings_social_feed_instagram_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - Instagram");
+		echo settings_header($setting_key, __("Social Feeds", $this->lang_key)." - Instagram");
 	}
 
 	function settings_social_feed_linkedin_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - LinkedIn");
+		echo settings_header($setting_key, __("Social Feeds", $this->lang_key)." - LinkedIn");
 	}
 
 	function settings_social_feed_twitter_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - Twitter");
+		echo settings_header($setting_key, __("Social Feeds", $this->lang_key)." - Twitter");
 	}
 
 	function setting_social_api_url_callback()
@@ -436,7 +440,7 @@ class mf_social_feed
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option_or_default($setting_key, 12);
 
-		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='120'", 'suffix' => __("months", 'lang_social_feed')));
+		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='120'", 'suffix' => __("months", $this->lang_key)));
 	}
 
 	function setting_social_time_limit_callback()
@@ -448,7 +452,7 @@ class mf_social_feed
 
 		$option = max($option, $setting_min);
 
-		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='1440'", 'suffix' => __("min", 'lang_social_feed')." (".__("Between each API request", 'lang_social_feed').")"));
+		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='1440'", 'suffix' => __("min", $this->lang_key)." (".__("Between each API request", $this->lang_key).")"));
 	}
 
 	function setting_social_reload_callback()
@@ -463,7 +467,7 @@ class mf_social_feed
 			$option = max($option, $setting_min, (get_option('setting_social_time_limit') / 2));
 		}
 
-		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
+		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='60'", 'suffix' => __("min", $this->lang_key)." (0 = ".__("no reload", $this->lang_key).")"));
 	}
 
 	function setting_social_design_callback()
@@ -472,8 +476,8 @@ class mf_social_feed
 		$option = get_option($setting_key);
 
 		$arr_data = array(
-			'' => __("Square", 'lang_social_feed')." (".__("Default", 'lang_social_feed').")",
-			'masonry' => __("Masonry", 'lang_social_feed'),
+			'' => __("Square", $this->lang_key)." (".__("Default", $this->lang_key).")",
+			'masonry' => __("Masonry", $this->lang_key),
 		);
 
 		echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option));
@@ -546,10 +550,10 @@ class mf_social_feed
 		if($option == '')
 		{
 			$description = "<ol>
-				<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='//linkedin.com/developer/apps/'>LinkedIn</a>")."</li>
-				<li>".__("Create a new app if you do not have one already and edit the app", 'lang_social_feed')."</li>
-				<li>".sprintf(__("Copy %s and %s to these fields", 'lang_social_feed'), "Client ID", "Client Secret")."</li>
-				<li>".sprintf(__("Make sure that %s is checked", 'lang_social_feed'), "<em>rw_company_admin</em>")."</li>
+				<li>".sprintf(__("Go to %s and log in", $this->lang_key), "<a href='//linkedin.com/developer/apps/'>LinkedIn</a>")."</li>
+				<li>".__("Create a new app if you do not have one already and edit the app", $this->lang_key)."</li>
+				<li>".sprintf(__("Copy %s and %s to these fields", $this->lang_key), "Client ID", "Client Secret")."</li>
+				<li>".sprintf(__("Make sure that %s is checked", $this->lang_key), "<em>rw_company_admin</em>")."</li>
 			</ol>";
 		}
 
@@ -568,7 +572,7 @@ class mf_social_feed
 		$this->init_linkedin_auth();
 		$option = $this->settings_url;
 
-		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'xtra' => "readonly onclick='this.select()'", 'description' => sprintf(__("Add this URL to your Apps %s", 'lang_social_feed'), "<a href='//linkedin.com/developer/apps/'>Authorized Redirect URLs</a>")));
+		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'xtra' => "readonly onclick='this.select()'", 'description' => sprintf(__("Add this URL to your Apps %s", $this->lang_key), "<a href='//linkedin.com/developer/apps/'>Authorized Redirect URLs</a>")));
 	}
 
 	function setting_linkedin_authorize_callback()
@@ -593,9 +597,9 @@ class mf_social_feed
 		$option = get_option($setting_key);
 
 		$description = "<ol>
-			<li>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "apps.twitter.com")."</li>
-			<li>".sprintf(__("Click the tab %s", 'lang_social_feed'), "Keys and Access Tokens")."</li>
-			<li>".sprintf(__("Copy %s, %s, %s and %s to paste here", 'lang_social_feed'), "Consumer Key (API Key)", "Consumer Secret (API Secret)", "Access Token", "Access Token Secret")."</li>
+			<li>".sprintf(__("Go to %s and log in", $this->lang_key), "apps.twitter.com")."</li>
+			<li>".sprintf(__("Click the tab %s", $this->lang_key), "Keys and Access Tokens")."</li>
+			<li>".sprintf(__("Copy %s, %s, %s and %s to paste here", $this->lang_key), "Consumer Key (API Key)", "Consumer Secret (API Secret)", "Access Token", "Access Token Secret")."</li>
 		</ol>";
 
 		echo show_textfield(array('name' => $setting_key, 'value' => $option, 'description' => $description));
@@ -698,18 +702,18 @@ class mf_social_feed
 		$menu_start = "edit.php?post_type=".$this->post_type;
 		$menu_capability = override_capability(array('page' => $menu_start, 'default' => 'edit_pages'));
 
-		$menu_title = __("Posts", 'lang_social_feed');
+		$menu_title = __("Posts", $this->lang_key);
 		add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_post);*/
 
 		$menu_capability = 'edit_posts';
-		$menu_title = __("Posts", 'lang_social_feed');
+		$menu_title = __("Posts", $this->lang_key);
 		add_submenu_page('cff-top', $menu_title, $menu_title, $menu_capability, 'cff-top', 'cff_settings_page');
 		add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', 'sb_instagram_settings_page');
 	}
 
 	function meta_feed_facebook_info()
 	{
-		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='facebook'>".__("Posts can only be fetched from Facebook Pages, not personal Profiles", 'lang_social_feed')."</p>";
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='facebook'>".__("Posts can only be fetched from Facebook Pages, not personal Profiles", $this->lang_key)."</p>";
 	}
 
 	function meta_feed_facebook_access_token_info()
@@ -730,7 +734,7 @@ class mf_social_feed
 
 				if($facebook_access_token_expiry_date > DEFAULT_DATE && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+10 day")))
 				{
-					$out .= "<p><i class='fa fa-exclamation-triangle yellow display_warning'></i> ".sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date)."</p>";
+					$out .= "<p><i class='fa fa-exclamation-triangle yellow display_warning'></i> ".sprintf(__("The access token will expire %s", $this->lang_key), $facebook_access_token_expiry_date)."</p>";
 
 					$this->get_api_credentials('facebook');
 
@@ -744,13 +748,13 @@ class mf_social_feed
 						$_SESSION['sesCallbackURL'] = $edit_url;
 						update_option('option_social_callback_url', $edit_url, 'no');
 
-						$out .= "<p>".sprintf(__("Go to %s and log in to renew", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</p>";
+						$out .= "<p>".sprintf(__("Go to %s and log in to renew", $this->lang_key), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</p>";
 					}
 				}
 
 				else
 				{
-					$out .= "<strong title='".sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date)."'><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
+					$out .= "<strong title='".sprintf(__("The access token will expire %s", $this->lang_key), $facebook_access_token_expiry_date)."'><i class='fa fa-check green'></i> ".__("All Done!", $this->lang_key)."</strong>";
 				}
 			}
 
@@ -768,12 +772,12 @@ class mf_social_feed
 					$_SESSION['sesCallbackURL'] = $edit_url;
 					update_option('option_social_callback_url', $edit_url, 'no');
 
-					$out .= "<strong>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</strong>";
+					$out .= "<strong>".sprintf(__("Go to %s and log in", $this->lang_key), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</strong>";
 				}
 
 				else
 				{
-					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add an API URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</strong>";
+					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add an API URL", $this->lang_key), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</strong>";
 				}
 			}
 
@@ -784,7 +788,7 @@ class mf_social_feed
 
 	function meta_feed_instagram_info()
 	{
-		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>".__("Posts can be fetched from @users", 'lang_social_feed')."</p>";
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='instagram'>".__("Posts can be fetched from @users", $this->lang_key)."</p>";
 	}
 
 	function meta_feed_instagram_access_token_info()
@@ -823,7 +827,7 @@ class mf_social_feed
 
 					if(is_array($result_id) && count($result_id) > 0)
 					{
-						$out .= "<h3>".__("Choose an Account", 'lang_social_feed')."</h3>
+						$out .= "<h3>".__("Choose an Account", $this->lang_key)."</h3>
 						<ul>";
 
 							foreach($result_id as $instagram_id)
@@ -844,7 +848,7 @@ class mf_social_feed
 								{
 									$out .= "<li>
 										<a href='".$result_name."'>"
-											.__("I could not get the name for the business account", 'lang_social_feed')
+											.__("I could not get the name for the business account", $this->lang_key)
 										."</a>
 									</li>";
 								}
@@ -855,7 +859,7 @@ class mf_social_feed
 
 					else
 					{
-						$out .= "<strong><i class='fa fa-times red'></i> <a href='".$result_id."'>".__("There are no business accounts connected to the login that you used", 'lang_social_feed')."</a></strong>";
+						$out .= "<strong><i class='fa fa-times red'></i> <a href='".$result_id."'>".__("There are no business accounts connected to the login that you used", $this->lang_key)."</a></strong>";
 					}
 				}
 
@@ -871,7 +875,7 @@ class mf_social_feed
 
 					else
 					{
-						$out .= "<strong><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
+						$out .= "<strong><i class='fa fa-check green'></i> ".__("All Done!", $this->lang_key)."</strong>";
 					}
 				}
 			}
@@ -882,12 +886,12 @@ class mf_social_feed
 
 				if($this->setting_social_api_url == '')
 				{
-					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add an API URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</strong>";
+					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add an API URL", $this->lang_key), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</strong>";
 				}
 
 				else if($this->instagram_client_id == '')
 				{
-					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add a %s", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_instagram")."'>", "</a>", __("Client ID", 'lang_social_feed'))."</strong>";
+					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add a %s", $this->lang_key), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_instagram")."'>", "</a>", __("Client ID", $this->lang_key))."</strong>";
 				}
 
 				else
@@ -900,7 +904,7 @@ class mf_social_feed
 					$_SESSION['sesCallbackURL'] = $edit_url;
 					update_option('option_social_callback_url', $edit_url, 'no');
 
-					$out .= "<strong><a href='".$this->instagram_authorize_url."'>".__("Authorize Here", 'lang_social_feed')."</a></strong>";
+					$out .= "<strong><a href='".$this->instagram_authorize_url."'>".__("Authorize Here", $this->lang_key)."</a></strong>";
 				}
 			}
 
@@ -911,17 +915,17 @@ class mf_social_feed
 
 	function meta_feed_linkedin_info()
 	{
-		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='linkedin'>".__("Posts can be fetched with company ID as seen in the URL when visiting the page", 'lang_social_feed')."</p>";
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='linkedin'>".__("Posts can be fetched with company ID as seen in the URL when visiting the page", $this->lang_key)."</p>";
 	}
 
 	function meta_feed_rss_info()
 	{
-		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='rss'>".__("Posts can only be fetched by entering the full URL to the feed", 'lang_social_feed')."</p>";
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='rss'>".__("Posts can only be fetched by entering the full URL to the feed", $this->lang_key)."</p>";
 	}
 
 	function meta_feed_twitter_info()
 	{
-		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='twitter'>".__("Posts can either be fetched from @users or #hashtags", 'lang_social_feed')."</p>";
+		return "<p condition_type='show_this_if' condition_selector='".$this->meta_prefix."type' condition_value='twitter'>".__("Posts can either be fetched from @users or #hashtags", $this->lang_key)."</p>";
 	}
 
 	function get_post_icon($post_service)
@@ -1027,20 +1031,20 @@ class mf_social_feed
 
 		$meta_boxes[] = array(
 			'id' => $this->meta_prefix.'settings',
-			'title' => __("Settings", 'lang_social_feed'),
+			'title' => __("Settings", $this->lang_key),
 			'post_types' => array($this->post_type),
 			//'context' => 'side',
 			'priority' => 'low',
 			'fields' => array(
 				array(
-					'name' => __("Service", 'lang_social_feed'),
+					'name' => __("Service", $this->lang_key),
 					'id' => $this->meta_prefix.'type',
 					'type' => 'select',
 					'options' => $arr_data_social_types,
 					'std' => $default_type,
 				),
 				array(
-					'name' => __("Search for", 'lang_social_feed'),
+					'name' => __("Search for", $this->lang_key),
 					'id' => $this->meta_prefix.'search_for',
 					'type' => 'text',
 				),
@@ -1050,7 +1054,7 @@ class mf_social_feed
 					'callback' => array($this, 'meta_feed_facebook_info'),
 				),
 				/*array(
-					'name' => __("Page ID", 'lang_social_feed'),
+					'name' => __("Page ID", $this->lang_key),
 					'id' => $this->meta_prefix.'facebook_page_id',
 					'type' => 'text',
 					'attributes' => array(
@@ -1060,7 +1064,7 @@ class mf_social_feed
 					),
 				),*/
 				array(
-					'name' => __("Access Token", 'lang_social_feed'),
+					'name' => __("Access Token", $this->lang_key),
 					'id' => $this->meta_prefix.'facebook_access_token',
 					'type' => 'text',
 					'attributes' => array(
@@ -1074,21 +1078,8 @@ class mf_social_feed
 					'type' => 'custom_html',
 					'callback' => array($this, 'meta_feed_facebook_access_token_info'),
 				),
-				/*array(
-					'name' => __("Report Limit", 'lang_social_feed'),
-					'id' => $this->meta_prefix.'facebook_report_days',
-					'type' => 'number',
-					'attributes' => array(
-						'min' => 1,
-						'max' => 14,
-						'condition_type' => 'show_this_if',
-						'condition_selector' => $this->meta_prefix.'type',
-						'condition_value' => 'facebook',
-					),
-					'desc' => __("days before expiry", 'lang_social_feed'),
-				),*/
 				array(
-					'name' => __("Report to", 'lang_social_feed'),
+					'name' => __("Report to", $this->lang_key),
 					'id' => $this->meta_prefix.'facebook_report_to',
 					'type' => 'select',
 					'options' => $arr_data_report_to,
@@ -1099,14 +1090,14 @@ class mf_social_feed
 						'condition_selector' => $this->meta_prefix.'type',
 						'condition_value' => 'facebook',
 					),
-					'desc' => __("A message is sent when the access token is about to expire", 'lang_social_feed'),
+					'desc' => __("A message is sent when the access token is about to expire", $this->lang_key),
 				),
 				array(
-					'name' => __("Include", 'lang_social_feed'),
+					'name' => __("Include", $this->lang_key),
 					'id' => $this->meta_prefix.'facebook_include',
 					'type' => 'select',
 					'options' => array(
-						'other' => __("Others", 'lang_social_feed'),
+						'other' => __("Others", $this->lang_key),
 					),
 					'multiple' => true,
 					'attributes' => array(
@@ -1121,7 +1112,7 @@ class mf_social_feed
 					'callback' => array($this, 'meta_feed_instagram_info'),
 				),
 				/*array(
-					'name' => __("Client ID", 'lang_social_feed'),
+					'name' => __("Client ID", $this->lang_key),
 					'id' => $this->meta_prefix.'instagram_client_id',
 					'type' => 'text',
 					'attributes' => array(
@@ -1131,7 +1122,7 @@ class mf_social_feed
 					),
 				),*/
 				array(
-					'name' => __("Access Token", 'lang_social_feed'),
+					'name' => __("Access Token", $this->lang_key),
 					'id' => $this->meta_prefix.'instagram_access_token',
 					'type' => 'text',
 					'attributes' => array(
@@ -1141,7 +1132,7 @@ class mf_social_feed
 					),
 				),
 				array(
-					'name' => __("ID", 'lang_social_feed'),
+					'name' => __("ID", $this->lang_key),
 					'id' => $this->meta_prefix.'instagram_id',
 					'type' => 'text',
 					'attributes' => array(
@@ -1151,7 +1142,7 @@ class mf_social_feed
 					),
 				),
 				array(
-					'name' => __("Name", 'lang_social_feed'),
+					'name' => __("Name", $this->lang_key),
 					'id' => $this->meta_prefix.'instagram_name',
 					'type' => 'text',
 					'attributes' => array(
@@ -1161,7 +1152,7 @@ class mf_social_feed
 					),
 				),
 				array(
-					'name' => __("Username", 'lang_social_feed'),
+					'name' => __("Username", $this->lang_key),
 					'id' => $this->meta_prefix.'instagram_username',
 					'type' => 'text',
 					'attributes' => array(
@@ -1171,7 +1162,7 @@ class mf_social_feed
 					),
 				),
 				array(
-					'name' => __("Profile Picture", 'lang_social_feed'),
+					'name' => __("Profile Picture", $this->lang_key),
 					'id' => $this->meta_prefix.'instagram_profile_picture',
 					'type' => 'text',
 					'attributes' => array(
@@ -1201,12 +1192,12 @@ class mf_social_feed
 					'callback' => array($this, 'meta_feed_twitter_info'),
 				),
 				array(
-					'name' => __("Include", 'lang_social_feed'),
+					'name' => __("Include", $this->lang_key),
 					'id' => $this->meta_prefix.'twitter_include',
 					'type' => 'select',
 					'options' => array(
-						'other' => __("Others", 'lang_social_feed'),
-						'reply' => __("Replies", 'lang_social_feed'),
+						'other' => __("Others", $this->lang_key),
+						'reply' => __("Replies", $this->lang_key),
 						'retweet' => "Retweets",
 					),
 					'multiple' => true,
@@ -1221,7 +1212,7 @@ class mf_social_feed
 
 		$meta_boxes[] = array(
 			'id' => $this->meta_prefix.'info',
-			'title' => __("Information", 'lang_social_feed'),
+			'title' => __("Information", $this->lang_key),
 			'post_types' => array($this->post_type_post),
 			'context' => 'side',
 			'priority' => 'high',
@@ -1298,7 +1289,7 @@ class mf_social_feed
 
 		if(count($arr_data) > 1)
 		{
-			$out .= "<h3>".__("Choose a Social Feed", 'lang_social_feed')."</h3>"
+			$out .= "<h3>".__("Choose a Social Feed", $this->lang_key)."</h3>"
 			.show_select(array('data' => $arr_data, 'xtra' => "rel='".$this->post_type." amount=3 filter=group border=no text=yes likes=no'"));
 		}
 
@@ -1314,23 +1305,23 @@ class mf_social_feed
 			case $this->post_type:
 				unset($cols['date']);
 
-				$cols['type'] = __("Service", 'lang_social_feed');
-				$cols['search_for'] = __("Search for", 'lang_social_feed');
-				$cols['in_use'] = __("In Use", 'lang_social_feed');
-				$cols['amount_of_posts'] = __("Amount", 'lang_social_feed');
+				$cols['type'] = __("Service", $this->lang_key);
+				$cols['search_for'] = __("Search for", $this->lang_key);
+				$cols['in_use'] = __("In Use", $this->lang_key);
+				$cols['amount_of_posts'] = __("Amount", $this->lang_key);
 			break;
 
 			case $this->post_type_post:
 				unset($cols['title']);
 				unset($cols['date']);
 
-				$cols['type'] = __("Type", 'lang_social_feed');
-				$cols['name'] = __("Username", 'lang_social_feed');
-				$cols['text'] = __("Text", 'lang_social_feed');
-				$cols['image'] = __("Image", 'lang_social_feed');
-				//$cols['post_id'] = __("ID", 'lang_social_feed');
-				$cols['info'] = __("Information", 'lang_social_feed');
-				$cols['date'] = __("Date", 'lang_social_feed');
+				$cols['type'] = __("Type", $this->lang_key);
+				$cols['name'] = __("Username", $this->lang_key);
+				$cols['text'] = __("Text", $this->lang_key);
+				$cols['image'] = __("Image", $this->lang_key);
+				//$cols['post_id'] = __("ID", $this->lang_key);
+				$cols['info'] = __("Information", $this->lang_key);
+				$cols['date'] = __("Date", $this->lang_key);
 			break;
 		}
 
@@ -1387,7 +1378,7 @@ class mf_social_feed
 									$feed_url = $post_meta;
 
 									$post_meta_parts = parse_url($post_meta);
-									$post_meta = isset($post_meta_parts['host']) ? $post_meta_parts['host'] : "(".__("unknown", 'lang_social_feed').")";
+									$post_meta = isset($post_meta_parts['host']) ? $post_meta_parts['host'] : "(".__("unknown", $this->lang_key).")";
 								break;
 
 								case 'twitter':
@@ -1423,7 +1414,7 @@ class mf_social_feed
 
 								else
 								{
-									$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=".$this->post_type."&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
+									$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=".$this->post_type."&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", $this->lang_key)."</a> | ";
 								}
 							}
 
@@ -1432,7 +1423,7 @@ class mf_social_feed
 							echo "<a href='".$feed_url."'>".$post_meta."</a>
 							<div class='row-actions'>"
 								.$fetch_link
-								.__("Fetched", 'lang_social_feed').": ".format_date($post_modified)
+								.__("Fetched", $this->lang_key).": ".format_date($post_modified)
 							."</div>";
 						}
 					break;
@@ -1476,7 +1467,7 @@ class mf_social_feed
 						if($post_error != '')
 						{
 							echo "<i class='fa fa-times red fa-2x'></i>
-							<div class='row-actions'>".($post_error != '' ? $post_error : __("I got an error when accessing the feed", 'lang_social_feed'))."</div>";
+							<div class='row-actions'>".($post_error != '' ? $post_error : __("I got an error when accessing the feed", $this->lang_key))."</div>";
 						}
 
 						else if($amount == 0)
@@ -1498,7 +1489,7 @@ class mf_social_feed
 								else
 								{
 									echo "<i class='fa fa-spinner fa-spin fa-2x'></i>
-									<div class='row-actions'>".__("I am waiting to get access to the feed", 'lang_social_feed')."</div>";
+									<div class='row-actions'>".__("I am waiting to get access to the feed", $this->lang_key)."</div>";
 								}
 							}
 						}
@@ -1512,7 +1503,7 @@ class mf_social_feed
 							if($post_latest > DEFAULT_DATE)
 							{
 								echo "<div class='row-actions'>"
-									.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
+									.__("Latest", $this->lang_key).": ".format_date($post_latest)
 								."</div>";
 							}
 						}
@@ -1557,11 +1548,11 @@ class mf_social_feed
 						switch($post_status)
 						{
 							case 'pending':
-								echo "<span class='strong nowrap'> - ".__("Ignored", 'lang_social_feed')."</span>";
+								echo "<span class='strong nowrap'> - ".__("Ignored", $this->lang_key)."</span>";
 							break;
 
 							case 'draft':
-								echo "<span class='strong nowrap'> - ".__("Hidden", 'lang_social_feed')."</span>";
+								echo "<span class='strong nowrap'> - ".__("Hidden", $this->lang_key)."</span>";
 							break;
 						}
 					break;
@@ -1597,12 +1588,12 @@ class mf_social_feed
 
 								if($post_owner == 1)
 								{
-									echo "<i class='fa fa-user fa-2x' title='".__("Owner", 'lang_social_feed')."'></i>";
+									echo "<i class='fa fa-user fa-2x' title='".__("Owner", $this->lang_key)."'></i>";
 								}
 
 								else if($post_owner === 0)
 								{
-									echo "<span class='fa-stack fa-lg' title='".__("Not Owner", 'lang_social_feed')."'>
+									echo "<span class='fa-stack fa-lg' title='".__("Not Owner", $this->lang_key)."'>
 										<i class='fa fa-user fa-stack-1x'></i>
 										<i class='fa fa-ban fa-stack-2x red'></i>
 									</span>";
@@ -1614,12 +1605,12 @@ class mf_social_feed
 
 								if($post_owner == 1)
 								{
-									echo "<i class='fa fa-user fa-2x' title='".__("Owner", 'lang_social_feed')."'></i>";
+									echo "<i class='fa fa-user fa-2x' title='".__("Owner", $this->lang_key)."'></i>";
 								}
 
 								else if($post_owner === 0)
 								{
-									echo "<span class='fa-stack fa-lg' title='".__("Not Owner", 'lang_social_feed')."'>
+									echo "<span class='fa-stack fa-lg' title='".__("Not Owner", $this->lang_key)."'>
 										<i class='fa fa-user fa-stack-1x'></i>
 										<i class='fa fa-ban fa-stack-2x red'></i>
 									</span>";
@@ -1627,7 +1618,7 @@ class mf_social_feed
 
 								if(get_post_meta($id, $this->meta_prefix.'is_reply', true) == 1)
 								{
-									echo "<i class='fa fa-reply fa-2x' title='".__("Answer", 'lang_social_feed')."'></i>";
+									echo "<i class='fa fa-reply fa-2x' title='".__("Answer", $this->lang_key)."'></i>";
 								}
 
 								if(get_post_meta($id, $this->meta_prefix.'is_retweet', true) == 1)
@@ -1663,11 +1654,11 @@ class mf_social_feed
 			{
 				unset($actions['trash']);
 
-				$actions['social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; //draft
+				$actions['social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_hide' confirm_text='".__("Are you sure?", $this->lang_key)."'>".__("Hide", $this->lang_key)."</a>"; //draft
 
 				if($post_username != $feed_name)
 				{
-					$actions['social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!", 'lang_social_feed'), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
+					$actions['social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!", $this->lang_key), $post_username)."'>".__("Ignore Future Posts", $this->lang_key)."</a>"; //pending
 				}
 			}
 		}
@@ -1682,9 +1673,9 @@ class mf_social_feed
 
 		if(count($arr_data) > 0)
 		{
-			$content .= "<h3>".__("Social Feed", 'lang_social_feed')."</h3>
+			$content .= "<h3>".__("Social Feed", $this->lang_key)."</h3>
 			<p>"
-				.__("Posts from social feeds are stored in the database to make it possible to present them in the fastest way possible to you as a visitor.", 'lang_social_feed')
+				.__("Posts from social feeds are stored in the database to make it possible to present them in the fastest way possible to you as a visitor.", $this->lang_key)
 			."</p>";
 		}
 
@@ -1762,11 +1753,11 @@ class mf_social_feed
 		}
 
 		echo "<script type='text/template' id='template_feed_message'>
-			<li>".__("There are no posts to display", 'lang_social_feed')."</li>
+			<li>".__("There are no posts to display", $this->lang_key)."</li>
 		</script>
 
 		<script type='text/template' id='template_feed_all'>
-			<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>
+			<li class='active'><a href='#'>".__("All", $this->lang_key)."</a></li>
 		</script>
 
 		<script type='text/template' id='template_feed'>
@@ -1777,7 +1768,7 @@ class mf_social_feed
 			<li class='sf_<%= service %> sf_feed_<%= feed %>'>
 				<% if(image != '')
 				{ %>
-					<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
+					<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", $this->lang_key), "<%= name %>")."'>
 				<% } %>
 				<div class='content'>
 					<div class='meta'>
@@ -1861,7 +1852,7 @@ class mf_social_feed
 
 				if($load_more_posts == 'yes')
 				{
-					$out .= "<div class='form_button'><a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a></div>";
+					$out .= "<div class='form_button'><a href='#' class='load_more_posts button hide'>".__("View More", $this->lang_key)."</a></div>";
 				}
 
 			$out .= "</div>
@@ -1887,12 +1878,12 @@ class mf_social_feed
 
 		if($wpdb->rows_affected > 0)
 		{
-			$done_text = __("I have hidden the post for you now", 'lang_social_feed');
+			$done_text = __("I have hidden the post for you now", $this->lang_key);
 		}
 
 		else
 		{
-			$error_text = __("I could not hide the post for you. If the problem persists, please contact an admin", 'lang_social_feed');
+			$error_text = __("I could not hide the post for you. If the problem persists, please contact an admin", $this->lang_key);
 		}
 
 		$out = get_notification();
@@ -1925,12 +1916,12 @@ class mf_social_feed
 
 		if($wpdb->rows_affected > 0)
 		{
-			$done_text = __("I have ignored the post for you now. This means that all future posts by this user will be ignored aswell", 'lang_social_feed');
+			$done_text = __("I have ignored the post for you now. This means that all future posts by this user will be ignored aswell", $this->lang_key);
 		}
 
 		else
 		{
-			$error_text = __("I could not ignore the post for you. If the problem persists, please contact an admin", 'lang_social_feed');
+			$error_text = __("I could not ignore the post for you. If the problem persists, please contact an admin", $this->lang_key);
 		}
 
 		$out = get_notification();
@@ -1975,14 +1966,14 @@ class mf_social_feed
 
 		if($this->auth_options)
 		{
-			$authorize_string = __("Generate new Access Token", 'lang_social_feed');
+			$authorize_string = __("Generate new Access Token", $this->lang_key);
 			$authorization_message = "<p>".$this->get_auth_expiration_string($this->auth_options['expires_in'])."</p>";
 		}
 
 		else
 		{
-			$authorize_string = __("Generate Access Token", 'lang_social_feed');
-			$authorization_message = "<p>".__("You must authorize in order to use the API", 'lang_social_feed')."</p>";
+			$authorize_string = __("Generate Access Token", $this->lang_key);
+			$authorization_message = "<p>".__("You must authorize in order to use the API", $this->lang_key)."</p>";
 		}
 
 		$out = "<a href='https://linkedin.com/uas/oauth2/authorization?".http_build_query($params)."' class='button-secondary'>"
@@ -2022,8 +2013,8 @@ class mf_social_feed
 	function email_when_expired()
 	{
 		$mail_to = get_bloginfo('admin_email');
-		$mail_subject = "[".get_bloginfo('name')."] ".sprintf(__("%s Access Token has Expired", 'lang_social_feed'), "LinkedIn");
-		$mail_content = sprintf(__("Please generate a new Access Token for %s %sHere%s", 'lang_social_feed'), "LinkedIn", "<a href='".$this->settings_url."#settings_social_feed_linkedin'>", "</a>");
+		$mail_subject = "[".get_bloginfo('name')."] ".sprintf(__("%s Access Token has Expired", $this->lang_key), "LinkedIn");
+		$mail_content = sprintf(__("Please generate a new Access Token for %s %sHere%s", $this->lang_key), "LinkedIn", "<a href='".$this->settings_url."#settings_social_feed_linkedin'>", "</a>");
 
 		$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
 	}
@@ -2048,7 +2039,7 @@ class mf_social_feed
 			}
 
 			$out .= sprintf(
-				__("Expires in %s days, %s hours", 'lang_social_feed'),
+				__("Expires in %s days, %s hours", $this->lang_key),
 				$times['days'],
 				$times['hours']
 			);
@@ -2056,7 +2047,7 @@ class mf_social_feed
 
 		else
 		{
-			$out .= __("The Access Token has expired. Please generate a new", 'lang_social_feed');
+			$out .= __("The Access Token has expired. Please generate a new", $this->lang_key);
 		}
 
 		return $out;
@@ -2168,7 +2159,7 @@ class mf_social_feed
 
 			if(false === $token)
 			{
-				$error_text = __("I could not update the Access Token for you", 'lang_social_feed');
+				$error_text = __("I could not update the Access Token for you", $this->lang_key);
 			}
 
 			else
@@ -2187,7 +2178,7 @@ class mf_social_feed
 				update_option('option_linkedin_authkey', $auth_options, 'no');
 				delete_option('option_linkedin_emailed');
 
-				$done_text = __("I updated the Access Token for you", 'lang_social_feed');
+				$done_text = __("I updated the Access Token for you", $this->lang_key);
 			}
 
 			return get_notification()
@@ -2292,16 +2283,16 @@ class mf_social_feed
 
 		// Facebook
 		$arr_exclude[] = "An unknown error occurred";
-		$arr_include[] = __("An unknown error occurred", 'lang_social_feed');
+		$arr_include[] = __("An unknown error occurred", $this->lang_key);
 
 		$arr_exclude[] = "Error validating access token";
-		$arr_include[] = __("The access token is not valid anymore. Renew it by editing this feed.", 'lang_social_feed');
+		$arr_include[] = __("The access token is not valid anymore. Renew it by editing this feed.", $this->lang_key);
 
 		$arr_exclude[] = "Session has expired";
-		$arr_include[] = __("The access token has expired. Renew it by editing this feed.", 'lang_social_feed');
+		$arr_include[] = __("The access token has expired. Renew it by editing this feed.", $this->lang_key);
 
 		$arr_exclude[] = "This endpoint requires the 'manage_pages' or 'pages_read_user_content' permission";
-		$arr_include[] = __("The access token was not accepted. Renew it by editing this feed and logging in with an account that is admin on the page.", 'lang_social_feed');
+		$arr_include[] = __("The access token was not accepted. Renew it by editing this feed and logging in with an account that is admin on the page.", $this->lang_key);
 
 		foreach($arr_exclude as $key => $value)
 		{
@@ -2333,7 +2324,7 @@ class mf_social_feed
 
 					if($this->facebook_access_token == '')
 					{
-						$this->save_error(array('message' => __("Edit and add an access token", 'lang_social_feed')));
+						$this->save_error(array('message' => __("Edit and add an access token", $this->lang_key)));
 					}
 
 					else
@@ -2347,7 +2338,7 @@ class mf_social_feed
 
 					if($this->instagram_access_token == '')
 					{
-						$this->save_error(array('message' => __("Edit and add an access token", 'lang_social_feed')));
+						$this->save_error(array('message' => __("Edit and add an access token", $this->lang_key)));
 					}
 
 					else
@@ -2525,7 +2516,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>")); //Instagram: 
+			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", $this->lang_key)."</a>")); //Instagram: 
 		}
 
 		return $url;
@@ -2560,7 +2551,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>")); //Instagram: 
+			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", $this->lang_key)."</a>")); //Instagram: 
 		}
 
 		return $url;
@@ -2647,7 +2638,7 @@ class mf_social_feed
 
 			else
 			{
-				$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>")); //Instagram: 
+				$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", $this->lang_key)."</a>")); //Instagram: 
 			}
 		}
 	}
@@ -2672,7 +2663,7 @@ class mf_social_feed
 
 			else
 			{
-				$this->save_error(array('message' => __("No key found", 'lang_social_feed')." (".var_export($json, true).")")); //LinkedIn: 
+				$this->save_error(array('message' => __("No key found", $this->lang_key)." (".var_export($json, true).")")); //LinkedIn: 
 			}
 
 			return false;
@@ -2743,7 +2734,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_linkedin")."'>".__("Token has expired", 'lang_social_feed')."</a>")); //LinkedIn: 
+			$this->save_error(array('message' => "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_linkedin")."'>".__("Token has expired", $this->lang_key)."</a>")); //LinkedIn: 
 		}
 	}
 
@@ -2801,7 +2792,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => __("I could not find a feed", 'lang_social_feed'))); //"RSS: ".
+			$this->save_error(array('message' => __("I could not find a feed", $this->lang_key))); //"RSS: ".
 		}
 	}
 
@@ -3403,9 +3394,11 @@ class widget_social_feed extends WP_Widget
 {
 	function __construct()
 	{
+		$this->obj_social_feed = new mf_social_feed();
+
 		$this->widget_ops = array(
 			'classname' => 'social_feed',
-			'description' => __("Display Social Feeds", 'lang_social_feed')
+			'description' => __("Display Social Feeds", $this->obj_social_feed->lang_key)
 		);
 
 		$this->arr_default = array(
@@ -3420,9 +3413,7 @@ class widget_social_feed extends WP_Widget
 			'social_read_more' => 'yes',
 		);
 
-		parent::__construct(str_replace("_", "-", $this->widget_ops['classname']).'-widget', __("Social Feed", 'lang_social_feed'), $this->widget_ops);
-
-		$this->obj_social_feed = new mf_social_feed();
+		parent::__construct(str_replace("_", "-", $this->widget_ops['classname']).'-widget', __("Social Feed", $this->obj_social_feed->lang_key), $this->widget_ops);
 	}
 
 	function widget($args, $instance)
@@ -3472,7 +3463,7 @@ class widget_social_feed extends WP_Widget
 
 				if($instance['social_load_more_posts'] == 'yes')
 				{
-					echo "<div class='form_button'><a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a></div>";
+					echo "<div class='form_button'><a href='#' class='load_more_posts button hide'>".__("View More", $this->obj_social_feed->lang_key)."</a></div>";
 				}
 
 			echo "</div>"
@@ -3500,9 +3491,9 @@ class widget_social_feed extends WP_Widget
 	function get_display_filter_for_select()
 	{
 		return array(
-			'no' => __("No", 'lang_social_feed'),
-			'yes' => __("Yes", 'lang_social_feed')." (".__("Individually", 'lang_social_feed').")",
-			'group' => __("Yes", 'lang_social_feed')." (".__("Grouped", 'lang_social_feed').")",
+			'no' => __("No", $this->obj_social_feed->lang_key),
+			'yes' => __("Yes", $this->obj_social_feed->lang_key)." (".__("Individually", $this->obj_social_feed->lang_key).")",
+			'group' => __("Yes", $this->obj_social_feed->lang_key)." (".__("Grouped", $this->obj_social_feed->lang_key).")",
 		);
 	}
 
@@ -3514,42 +3505,42 @@ class widget_social_feed extends WP_Widget
 		get_post_children(array('post_type' => $this->obj_social_feed->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
 
 		echo "<div class='mf_form'>"
-			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='".$this->widget_ops['classname']."-title'"));
+			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", $this->obj_social_feed->lang_key), 'value' => $instance['social_heading'], 'xtra' => " id='".$this->widget_ops['classname']."-title'"));
 
 			if(count($arr_data_feeds) > 1)
 			{
 				echo "<div class='flex_flow'>"
-					.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']));
+					.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", $this->obj_social_feed->lang_key), 'value' => $instance['social_feeds']));
 
 					if(count($instance['social_feeds']) != 1)
 					{
-						echo show_select(array('data' => $this->get_display_filter_for_select(), 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']));
+						echo show_select(array('data' => $this->get_display_filter_for_select(), 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", $this->obj_social_feed->lang_key), 'value' => $instance['social_filter']));
 					}
 
 				echo "</div>";
 			}
 
 			echo "<div class='flex_flow'>"
-				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']));
+				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", $this->obj_social_feed->lang_key), 'value' => $instance['social_amount']));
 
 				if($instance['social_limit_source'] != 'yes')
 				{
-					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_load_more_posts'), 'text' => __("Load More Posts", 'lang_social_feed'), 'value' => $instance['social_load_more_posts']));
+					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_load_more_posts'), 'text' => __("Load More Posts", $this->obj_social_feed->lang_key), 'value' => $instance['social_load_more_posts']));
 				}
 
 				if(count($instance['social_feeds']) != 1)
 				{
-					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_limit_source'), 'text' => __("Limit Source", 'lang_social_feed')." <i class='fa fa-info-circle blue' title='".__("This will prevent one source from taking over the whole feed if it is posted to much more often than the other sources", 'lang_social_feed')."'></i>", 'value' => $instance['social_limit_source']));
+					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_limit_source'), 'text' => __("Limit Source", $this->obj_social_feed->lang_key)." <i class='fa fa-info-circle blue' title='".__("This will prevent one source from taking over the whole feed if it is posted to much more often than the other sources", $this->obj_social_feed->lang_key)."'></i>", 'value' => $instance['social_limit_source']));
 				}
 
 			echo "</div>
 			<div class='flex_flow'>"
-				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_text'), 'text' => __("Display Text", 'lang_social_feed'), 'value' => $instance['social_text']));
+				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_text'), 'text' => __("Display Text", $this->obj_social_feed->lang_key), 'value' => $instance['social_text']));
 
 				if($instance['social_text'] == 'yes')
 				{
-					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_read_more'), 'text' => __("Display Read More", 'lang_social_feed'), 'value' => $instance['social_read_more']))
-					.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Display Likes", 'lang_social_feed'), 'value' => $instance['social_likes']));
+					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_read_more'), 'text' => __("Display Read More", $this->obj_social_feed->lang_key), 'value' => $instance['social_read_more']))
+					.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Display Likes", $this->obj_social_feed->lang_key), 'value' => $instance['social_likes']));
 				}
 
 			echo "</div>
