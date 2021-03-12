@@ -694,6 +694,19 @@ class mf_social_feed
 				}
 			break;*/
 		}
+
+		if(function_exists('wp_add_privacy_policy_content'))
+		{
+			$arr_data = array();
+			get_post_children(array('add_choose_here' => false, 'post_type' => $this->post_type), $arr_data);
+
+			if(count($arr_data) > 0)
+			{
+				$content = __("Posts from social feeds are stored in the database to make it possible to present them in the fastest way possible to you as a visitor.", $this->lang_key);
+
+				wp_add_privacy_policy_content(__("Social Feed", $this->lang_key), $content);
+			}
+		}
 	}
 
 	function admin_menu()
@@ -1666,7 +1679,7 @@ class mf_social_feed
 		return $actions;
 	}
 
-	function add_policy($content)
+	/*function add_policy($content)
 	{
 		$arr_data = array();
 		get_post_children(array('add_choose_here' => false, 'post_type' => $this->post_type), $arr_data);
@@ -1680,7 +1693,7 @@ class mf_social_feed
 		}
 
 		return $content;
-	}
+	}*/
 
 	function save_post($post_id, $post, $update)
 	{
