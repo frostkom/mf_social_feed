@@ -66,7 +66,7 @@ class mf_social_feed
 								//do_log("FB Expires: ".$facebook_access_token_message_sent." <= ".date("Y-m-d", strtotime("-".round($facebook_report_days / 2)." day"))." && ".$facebook_access_token_expiry_date." <= ".date("Y-m-d", strtotime("+".$facebook_report_days." day")));
 
 								$mail_subject = sprintf(__("Expiry Date on %s", $this->lang_key), remove_protocol(array('url' => get_site_url(), 'clean' => true)));
-								$mail_content = sprintf(__("%s expires %s", $this->lang_key), $post_title, $facebook_access_token_expiry_date);
+								$mail_content = "<a href='".admin_url("post.php?post=".$post_id."&action=edit")."'>".sprintf(__("%s expires %s", $this->lang_key), $post_title, $facebook_access_token_expiry_date)."</a>";
 
 								foreach($facebook_report_to as $user_id)
 								{
@@ -632,11 +632,6 @@ class mf_social_feed
 	function admin_init()
 	{
 		global $pagenow;
-
-		if(!is_plugin_active("mf_base/index.php"))
-		{
-			deactivate_plugins(str_replace("include/classes.php", "index.php", plugin_basename(__FILE__)));
-		}
 
 		switch($pagenow)
 		{
