@@ -2573,6 +2573,9 @@ class mf_social_feed
 		{
 			$url = "https://graph.facebook.com/".$instagram_id."/media?fields=media_url,thumbnail_url,caption,id,media_type,timestamp,username,comments_count,like_count,permalink,children{media_url,id,media_type,timestamp,permalink,thumbnail_url}&limit=20&access_token=".$this->instagram_access_token;
 
+			// Impressions
+			// "https://graph.facebook.com/".$instagram_id."/insights?metric=impressions,reach,profile_views&period=day&access_token=".$this->instagram_access_token;
+
 			$result = wp_remote_retrieve_body(wp_remote_get($url));
 			$json = json_decode($result);
 

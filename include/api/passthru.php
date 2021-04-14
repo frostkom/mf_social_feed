@@ -68,24 +68,23 @@ switch($type)
 				@session_start();
 			}
 
+			$sesCallbackURL = check_var('sesCallbackURL');
+
+			if($sesCallbackURL == '')
+			{
+				$sesCallbackURL = get_option('option_social_callback_url');
+			}
+
 			$access_token = check_var('access_token');
 
 			if($access_token != '')
 			{
-				$sesCallbackURL = check_var('sesCallbackURL');
-
-				if($sesCallbackURL == '')
-				{
-					$sesCallbackURL = get_option('option_social_callback_url');
-				}
-
 				if($sesCallbackURL != '')
 				{
 					unset($_SESSION['sesCallbackURL']);
 					delete_option('option_social_callback_url');
 
-					$url = html_entity_decode($sesCallbackURL);
-					mf_redirect($url, array('instagram_access_token' => $access_token));
+					mf_redirect(html_entity_decode($sesCallbackURL), array('instagram_access_token' => $access_token));
 				}
 
 				else
@@ -97,6 +96,11 @@ switch($type)
 			else
 			{
 				do_log("API Error (".$type."): Malformed request (".var_export($_REQUEST, true).")");
+
+				if($sesCallbackURL != '')
+				{
+					mf_redirect(html_entity_decode($sesCallbackURL));
+				}
 			}
 		}
 
