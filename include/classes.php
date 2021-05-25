@@ -691,10 +691,11 @@ class mf_social_feed
 
 		if(function_exists('wp_add_privacy_policy_content'))
 		{
-			$arr_data = array();
+			/*$arr_data = array();
 			get_post_children(array('add_choose_here' => false, 'post_type' => $this->post_type), $arr_data);
 
-			if(count($arr_data) > 0)
+			if(count($arr_data) > 0)*/
+			if(does_post_exists(array('post_type' => $this->post_type)))
 			{
 				$content = __("Posts from social feeds are stored in the database to make it possible to present them in the fastest way possible to you as a visitor.", 'lang_social_feed');
 
