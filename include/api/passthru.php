@@ -9,7 +9,10 @@ if(!defined('ABSPATH'))
 	require_once($folder."wp-load.php");
 }
 
-$obj_social_feed = new mf_social_feed();
+if(!isset($obj_social_feed))
+{
+	$obj_social_feed = new mf_social_feed();
+}
 
 $type = check_var('type', 'char');
 

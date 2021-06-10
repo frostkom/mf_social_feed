@@ -11,7 +11,10 @@ if(!defined('ABSPATH'))
 
 do_action('run_cache', array('suffix' => 'json'));
 
-$obj_social_feed = new mf_social_feed();
+if(!isset($obj_social_feed))
+{
+	$obj_social_feed = new mf_social_feed();
+}
 
 $json_output = array();
 

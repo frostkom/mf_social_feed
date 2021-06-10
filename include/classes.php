@@ -1746,7 +1746,7 @@ class mf_social_feed
 		}
 
 		echo "<script type='text/template' id='template_feed_message'>
-			<li>".__("There are no posts to display", 'lang_social_feed')."</li>
+			<li class='no_result'>".__("There are no posts to display", 'lang_social_feed')."</li>
 		</script>
 
 		<script type='text/template' id='template_feed_all'>
