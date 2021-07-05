@@ -742,7 +742,17 @@ class mf_social_feed
 
 				if($facebook_access_token_expiry_date > DEFAULT_DATE && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+10 day")))
 				{
-					$out .= "<p><i class='fa fa-exclamation-triangle yellow display_warning'></i> ".sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date)."</p>";
+					if($facebook_access_token_expiry_date > date("Y-m-d"))
+					{
+						$expiry_title = sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date);
+					}
+
+					else
+					{
+						$expiry_title = sprintf(__("The access token expired %s", 'lang_social_feed'), $facebook_access_token_expiry_date);
+					}
+
+					$out .= "<p><i class='fa fa-exclamation-triangle yellow display_warning'></i> ".$expiry_title."</p>";
 
 					$this->get_api_credentials('facebook');
 
@@ -762,7 +772,17 @@ class mf_social_feed
 
 				else
 				{
-					$out .= "<strong title='".sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date)."'><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
+					if($facebook_access_token_expiry_date > date("Y-m-d"))
+					{
+						$expiry_title = sprintf(__("The access token will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date);
+					}
+
+					else
+					{
+						$expiry_title = sprintf(__("The access token expired %s", 'lang_social_feed'), $facebook_access_token_expiry_date);
+					}
+
+					$out .= "<strong title='".$expiry_title."'><i class='fa fa-check green'></i> ".__("All Done!", 'lang_social_feed')."</strong>";
 				}
 			}
 
@@ -3459,7 +3479,9 @@ class widget_social_feed extends WP_Widget
 
 				if($instance['social_load_more_posts'] == 'yes')
 				{
-					echo "<div class='form_button'><a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a></div>";
+					echo "<div class='form_button'>
+						<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
+					</div>";
 				}
 
 			echo "</div>"

@@ -160,10 +160,10 @@ echo "@media all
 							margin-top: 0;
 							object-fit: cover;
 						}
-						
+
 				.widget.social_feed .sf_posts li.no_result
 				{
-					padding: 1em;	
+					padding: 1em;
 				}";
 
 				if($setting_social_display_border == 'yes')
