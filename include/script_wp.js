@@ -29,7 +29,7 @@ jQuery(function($)
 
 			$.ajax(
 			{
-				url: script_social_feed.ajax_url,
+				url: script_social_feed_wp.ajax_url,
 				type: 'post',
 				dataType: 'json',
 				data: {

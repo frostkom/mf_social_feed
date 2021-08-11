@@ -1478,7 +1478,9 @@ class mf_social_feed
 					break;
 
 					case 'amount_of_posts':
-						$amount = $this->get_amount($id);
+						$amount_publish = $this->get_amount(array('id' => $id));
+						$amount_draft = $this->get_amount(array('id' => $id, 'post_status' => 'draft'));
+						$amount_pending = $this->get_amount(array('id' => $id, 'post_status' => 'pending'));
 
 						$post_error = get_post_meta($id, $this->meta_prefix.'error', true);
 
@@ -1488,7 +1490,7 @@ class mf_social_feed
 							<div class='row-actions'>".($post_error != '' ? $post_error : __("I got an error when accessing the feed", 'lang_social_feed'))."</div>";
 						}
 
-						else if($amount == 0)
+						else if($amount_publish == 0)
 						{
 							$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
 
@@ -1512,9 +1514,31 @@ class mf_social_feed
 							}
 						}
 
-						else if($amount > 0)
+						else if($amount_publish > 0)
 						{
-							echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$id)."'>".$amount."</a>";
+							echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$id)."'>";
+
+								if($amount_draft > 0 || $amount_pending > 0)
+								{
+									echo "<span title='".__("Published", 'lang_social_feed')."'>".$amount_publish."</span>";
+
+									if($amount_draft > 0)
+									{
+										echo "/<span class='grey' title='".__("Hidden", 'lang_social_feed')."'>".$amount_draft."</span>";
+									}
+
+									if($amount_pending > 0)
+									{
+										echo "/<span class='grey' title='".__("Ignored", 'lang_social_feed')."'>".$amount_pending."</span>";
+									}
+								}
+
+								else
+								{
+									echo $amount_publish;
+								}
+
+							echo "</a>";
 
 							$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $id));
 
@@ -1887,7 +1911,7 @@ class mf_social_feed
 
 		$result = array();
 
-		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'draft' WHERE ID = '%d' AND post_type = %s", $action_id, $this->post_type_post));
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = %s WHERE ID = '%d' AND post_type = %s", 'draft', $action_id, $this->post_type_post));
 
 		if($wpdb->rows_affected > 0)
 		{
@@ -1925,7 +1949,7 @@ class mf_social_feed
 
 		$result = array();
 
-		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = 'pending' WHERE ID = '%d' AND post_type = %s", $action_id, $this->post_type_post));
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = %s WHERE ID = '%d' AND post_type = %s", 'pending', $action_id, $this->post_type_post));
 
 		if($wpdb->rows_affected > 0)
 		{
@@ -2273,16 +2297,19 @@ class mf_social_feed
 		}
 	}
 
-	function get_amount($id = 0)
+	function get_amount($data = array()) //$id = 0
 	{
 		global $wpdb;
 
-		if($id > 0)
+		if(!isset($data['id'])){			$data['id'] = 0;}
+		if(!isset($data['post_status'])){	$data['post_status'] = 'publish';}
+
+		if($data['id'] > 0)
 		{
-			$this->id = $id;
+			$this->id = $data['id'];
 		}
 
-		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = '".$this->meta_prefix."feed_id' AND meta_value = '%d'", $this->post_type_post, 'publish', $this->id));
+		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = '".$this->meta_prefix."feed_id' AND meta_value = '%d'", $this->post_type_post, $data['post_status'], $this->id));
 	}
 
 	function save_error($data)
