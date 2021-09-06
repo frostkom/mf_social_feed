@@ -635,20 +635,25 @@ class mf_social_feed
 		switch($pagenow)
 		{
 			case 'admin.php':
-				if(isset($_GET['page']) && isset($_GET['access_token']))
+				if(isset($_GET['page']) && isset($_GET['cff_access_token']))
 				{
 					switch($_GET['page'])
 					{
 						case 'cff-top':
 							$this->get_api_credentials('facebook');
 
-							mf_redirect($this->facebook_redirect_url."&access_token=".check_var('access_token'));
+							if(get_option('setting_social_debug') == 'yes')
+							{
+								do_log("Returned: ".$_SERVER['REQUEST_URI']." -> ".check_var('cff_access_token'));
+							}
+
+							mf_redirect($this->facebook_redirect_url."&access_token=".check_var('cff_access_token'));
 						break;
 
 						case 'sb-instagram-feed':
 							$this->get_api_credentials('instagram');
 
-							mf_redirect($this->instagram_redirect_url."&access_token=".check_var('access_token'));
+							mf_redirect($this->instagram_redirect_url."&access_token=".check_var('cff_access_token'));
 						break;
 					}
 				}
@@ -1029,12 +1034,126 @@ class mf_social_feed
 
 		if($post_id > 0)
 		{
-			$facebook_access_token = check_var('facebook_access_token');
+			$facebook_user_access_token = check_var('facebook_user_access_token');
 
-			if($facebook_access_token != '')
+			if($facebook_user_access_token != '')
 			{
-				update_post_meta($post_id, $this->meta_prefix.'facebook_access_token', $facebook_access_token);
-				update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', date("Y-m-d", strtotime("+60 day")));
+				$feed_name = get_post_meta($post_id, $this->meta_prefix.'search_for', true);
+				$feed_name = $this->filter_search_for($feed_name);
+
+				// Get page ID
+				########################
+				$url_page_id = "https://graph.facebook.com/".$feed_name."?limit=1&fields=id&access_token=".$facebook_user_access_token;
+
+				list($content, $headers) = get_url_content(array(
+					'url' => $url_page_id,
+					'catch_head' => true,
+				));
+
+				switch($headers['http_code'])
+				{
+					case 200:
+					case 201:
+						$json = json_decode($content, true);
+
+						/*{
+						   "id": "[number]"
+						}*/
+
+						if(isset($json['id']) && $json['id'] > 0)
+						{
+							$page_id = $json['id'];
+
+							// Get available tokens
+							########################
+							$url_available_access_tokens = "https://graph.facebook.com/me/accounts?limit=500&access_token=".$facebook_user_access_token;
+
+							list($content, $headers) = get_url_content(array(
+								'url' => $url_available_access_tokens,
+								'catch_head' => true,
+							));
+
+							switch($headers['http_code'])
+							{
+								case 200:
+								case 201:
+									$json = json_decode($content, true);
+
+									$page_access_token = "";
+
+									/*{
+									   "data": [
+										  {
+											 "access_token": "[token]",
+											 "category": "Public figure",
+											 "category_list": [
+												{
+												   "id": "[number]",
+												   "name": "Public figure"
+												}
+											 ],
+											 "name": "[page_name]",
+											 "id": "page_id",
+											 "tasks": [
+												"ADVERTISE",
+												"ANALYZE",
+												"CREATE_CONTENT",
+												"MANAGE",
+												"MESSAGING",
+												"MODERATE"
+											 ]
+										  },
+									   ],
+									   "paging": {
+										  "cursors": {
+											 "before": "MjE2NTI3ODcxNjk3NzA0",
+											 "after": "MTQ1NDQxNTI1MTUxMTY5OQZDZD"
+										  }
+									   }
+									}*/
+
+									foreach($json['data'] as $arr_page)
+									{
+										if($arr_page['id'] == $page_id)
+										{
+											$page_access_token = $arr_page['access_token'];
+										}
+									}
+
+									if($page_access_token != '')
+									{
+										update_post_meta($post_id, $this->meta_prefix.'facebook_access_token', $page_access_token);
+										update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', date("Y-m-d", strtotime("+60 day")));
+									}
+
+									else
+									{
+										do_log("I could not find a corresponding page ID to the FB Page (".$feed_name." - ".$page_id.") you have chosen in ".$url_available_access_tokens);
+									}
+								break;
+
+								default:
+									do_log("I could not get a proper response from ".$url_available_access_tokens);
+
+									return false;
+								break;
+							}
+						}
+
+						else
+						{
+							do_log("I could not get a page ID from ".$url_page_id);
+						}
+					break;
+
+					default:
+						do_log("I could not get a proper response from ".$url_page_id);
+					break;
+				}
+				########################
+
+				//update_post_meta($post_id, $this->meta_prefix.'facebook_access_token', $facebook_access_token);
+				//update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', date("Y-m-d", strtotime("+60 day")));
 			}
 
 			$instagram_access_token = check_var('instagram_access_token');
@@ -2297,7 +2416,7 @@ class mf_social_feed
 		}
 	}
 
-	function get_amount($data = array()) //$id = 0
+	function get_amount($data = array())
 	{
 		global $wpdb;
 

@@ -41,7 +41,7 @@ switch($type)
 
 			if($access_token != '')
 			{
-				$arr_vars = array('facebook_access_token' => $access_token);
+				$arr_vars = array('facebook_user_access_token' => $access_token);
 
 				unset($_SESSION['sesCallbackURL']);
 				delete_option('option_social_callback_url');
