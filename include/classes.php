@@ -1194,6 +1194,7 @@ class mf_social_feed
 					'name' => __("Search for", 'lang_social_feed'),
 					'id' => $this->meta_prefix.'search_for',
 					'type' => 'text',
+					'placeholder' => "@".__("page_name", 'lang_social_feed'),
 				),
 				array(
 					'id' => $this->meta_prefix.'facebook_info',
