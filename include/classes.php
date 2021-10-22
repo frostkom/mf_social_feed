@@ -3442,7 +3442,7 @@ class mf_social_feed
 				$query_group = " GROUP BY post_group";
 			}
 
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".($data['amount'] + 1), $this->post_type_post, 'publish')); //
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".($data['amount'] + 1), $this->post_type_post, 'publish'));
 			$rows = $wpdb->num_rows;
 
 			if($rows > 0)

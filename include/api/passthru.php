@@ -31,6 +31,11 @@ switch($type)
 		if($sesCallbackURL == '')
 		{
 			$sesCallbackURL = get_option('option_social_callback_url');
+
+			if(get_option('setting_social_debug') == 'yes')
+			{
+				do_log("Got Callback URL from Option: ".$sesCallbackURL);
+			}
 		}
 
 		if($sesCallbackURL != '')
@@ -45,11 +50,21 @@ switch($type)
 
 				unset($_SESSION['sesCallbackURL']);
 				delete_option('option_social_callback_url');
+
+				if(get_option('setting_social_debug') == 'yes')
+				{
+					do_log("Got access token ".$access_token." for ".$sesCallbackURL);
+				}
 			}
 
 			else
 			{
 				$arr_vars = array(); //'facebook_message' => 
+
+				if(get_option('setting_social_debug') == 'yes')
+				{
+					do_log("No access token for ".$sesCallbackURL);
+				}
 			}
 
 			mf_redirect($url, $arr_vars);
