@@ -74,6 +74,8 @@ switch($type)
 		{
 			do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).", ".var_export($_SESSION, true).")");
 		}
+
+		session_write_close();
 	break;
 
 	case 'instagram_login':
@@ -120,6 +122,8 @@ switch($type)
 					mf_redirect(html_entity_decode($sesCallbackURL));
 				}
 			}
+
+			session_write_close();
 		}
 
 		else

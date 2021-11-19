@@ -772,6 +772,8 @@ class mf_social_feed
 						update_option('option_social_callback_url', $edit_url, 'no');
 
 						$out .= "<p>".sprintf(__("Go to %s and log in to renew", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</p>";
+
+						session_write_close();
 					}
 				}
 
@@ -806,6 +808,8 @@ class mf_social_feed
 					update_option('option_social_callback_url', $edit_url, 'no');
 
 					$out .= "<strong>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</strong>";
+
+					session_write_close();
 				}
 
 				else
@@ -938,6 +942,8 @@ class mf_social_feed
 					update_option('option_social_callback_url', $edit_url, 'no');
 
 					$out .= "<strong><a href='".$this->instagram_authorize_url."'>".__("Authorize Here", 'lang_social_feed')."</a></strong>";
+
+					session_write_close();
 				}
 			}
 
