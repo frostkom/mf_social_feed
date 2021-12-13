@@ -21,14 +21,15 @@ switch($type)
 	case 'fb_login':
 		$obj_social_feed->get_api_credentials('facebook');
 
-		if(!session_id())
+		/*if(!session_id())
 		{
 			@session_start();
-		}
+		}*/
 
-		$sesCallbackURL = check_var('sesCallbackURL');
+		//$sesCallbackURL = check_var('sesCallbackURL');
+		$sesCallbackURL = get_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', true);
 
-		if($sesCallbackURL == '')
+		/*if($sesCallbackURL == '')
 		{
 			$sesCallbackURL = get_option('option_social_callback_url');
 
@@ -36,20 +37,22 @@ switch($type)
 			{
 				do_log("Got Callback URL from Option: ".$sesCallbackURL);
 			}
-		}
+		}*/
 
 		if($sesCallbackURL != '')
 		{
 			$url = html_entity_decode($sesCallbackURL);
 
 			$access_token = check_var('access_token');
+			//$access_token = get_user_meta(get_current_user_id(), 'meta_social_feed_access_token', true);
 
 			if($access_token != '')
 			{
 				$arr_vars = array('facebook_user_access_token' => $access_token);
 
-				unset($_SESSION['sesCallbackURL']);
-				delete_option('option_social_callback_url');
+				//unset($_SESSION['sesCallbackURL']);
+				delete_user_meta(get_current_user_id(), 'meta_social_feed_callback_url');
+				//delete_option('option_social_callback_url');
 
 				if(get_option('setting_social_debug') == 'yes')
 				{
@@ -72,10 +75,10 @@ switch($type)
 
 		else
 		{
-			do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).", ".var_export($_SESSION, true).")");
+			do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).")"); //.", ".var_export($_SESSION, true)
 		}
 
-		session_write_close();
+		//session_write_close();
 	break;
 
 	case 'instagram_login':
@@ -83,33 +86,36 @@ switch($type)
 
 		if($obj_social_feed->instagram_client_id != '')
 		{
-			if(!session_id())
+			/*if(!session_id())
 			{
 				@session_start();
-			}
+			}*/
 
-			$sesCallbackURL = check_var('sesCallbackURL');
+			//$sesCallbackURL = check_var('sesCallbackURL');
+			$sesCallbackURL = get_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', true);
 
-			if($sesCallbackURL == '')
+			/*if($sesCallbackURL == '')
 			{
 				$sesCallbackURL = get_option('option_social_callback_url');
-			}
+			}*/
 
 			$access_token = check_var('access_token');
+			//$access_token = get_user_meta(get_current_user_id(), 'meta_social_feed_access_token', true);
 
 			if($access_token != '')
 			{
 				if($sesCallbackURL != '')
 				{
-					unset($_SESSION['sesCallbackURL']);
-					delete_option('option_social_callback_url');
+					//unset($_SESSION['sesCallbackURL']);
+					delete_user_meta(get_current_user_id(), 'meta_social_feed_callback_url');
+					//delete_option('option_social_callback_url');
 
 					mf_redirect(html_entity_decode($sesCallbackURL), array('instagram_access_token' => $access_token));
 				}
 
 				else
 				{
-					do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).", ".var_export($_SESSION, true).")");
+					do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).")"); //.", ".var_export($_SESSION, true)
 				}
 			}
 
@@ -123,7 +129,7 @@ switch($type)
 				}
 			}
 
-			session_write_close();
+			//session_write_close();
 		}
 
 		else

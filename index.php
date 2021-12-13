@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 5.9.5
+Version: 5.9.6
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://frostkom.se
@@ -79,7 +79,7 @@ if(function_exists('is_plugin_active') && is_plugin_active("mf_base/index.php"))
 		require_plugin("meta-box/meta-box.php", "Meta Box");
 
 		mf_uninstall_plugin(array(
-			'options' => array('setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch'),
+			'options' => array('setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url'),
 		));
 	}
 
@@ -89,7 +89,8 @@ if(function_exists('is_plugin_active') && is_plugin_active("mf_base/index.php"))
 
 		mf_uninstall_plugin(array(
 			'uploads' => 'mf_social_feed',
-			'options' => array('setting_social_time_limit', 'setting_social_reload', 'setting_social_design', 'setting_social_full_width', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_display_border', 'setting_social_debug', 'setting_linkedin_api_id', 'setting_linkedin_api_secret', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_linkedin_email_when_expired', 'option_linkedin_emailed', 'option_linkedin_authkey', 'setting_twitter_api_key', 'setting_twitter_api_secret', 'setting_twitter_api_token', 'setting_twitter_api_token_secret', 'option_social_callback_url'),
+			'options' => array('setting_social_time_limit', 'setting_social_reload', 'setting_social_design', 'setting_social_full_width', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_display_border', 'setting_social_debug', 'setting_linkedin_api_id', 'setting_linkedin_api_secret', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_linkedin_email_when_expired', 'option_linkedin_emailed', 'option_linkedin_authkey', 'setting_twitter_api_key', 'setting_twitter_api_secret', 'setting_twitter_api_token', 'setting_twitter_api_token_secret'),
+			'meta' => array('meta_social_feed_callback_url', 'meta_social_feed_access_token'),
 			'post_types' => array($obj_social_feed->post_type, $obj_social_feed->post_type_post),
 		));
 	}

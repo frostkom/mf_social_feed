@@ -763,17 +763,18 @@ class mf_social_feed
 
 					if($this->setting_social_api_url != '')
 					{
-						if(!session_id())
+						/*if(!session_id())
 						{
 							@session_start();
 						}
 
 						$_SESSION['sesCallbackURL'] = $edit_url;
-						update_option('option_social_callback_url', $edit_url, 'no');
+
+						session_write_close();*/
+						update_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', $edit_url);
+						//update_option('option_social_callback_url', $edit_url, 'no');
 
 						$out .= "<p>".sprintf(__("Go to %s and log in to renew", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</p>";
-
-						session_write_close();
 					}
 				}
 
@@ -799,17 +800,18 @@ class mf_social_feed
 
 				if($this->setting_social_api_url != '')
 				{
-					if(!session_id())
+					/*if(!session_id())
 					{
 						@session_start();
 					}
 
 					$_SESSION['sesCallbackURL'] = $edit_url;
-					update_option('option_social_callback_url', $edit_url, 'no');
+
+					session_write_close();*/
+					update_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', $edit_url);
+					//update_option('option_social_callback_url', $edit_url, 'no');
 
 					$out .= "<strong>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</strong>";
-
-					session_write_close();
 				}
 
 				else
@@ -933,17 +935,18 @@ class mf_social_feed
 
 				else
 				{
-					if(!session_id())
+					/*if(!session_id())
 					{
 						@session_start();
 					}
 
 					$_SESSION['sesCallbackURL'] = $edit_url;
-					update_option('option_social_callback_url', $edit_url, 'no');
+
+					session_write_close();*/
+					update_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', $edit_url);
+					//update_option('option_social_callback_url', $edit_url, 'no');
 
 					$out .= "<strong><a href='".$this->instagram_authorize_url."'>".__("Authorize Here", 'lang_social_feed')."</a></strong>";
-
-					session_write_close();
 				}
 			}
 
@@ -2118,7 +2121,7 @@ class mf_social_feed
 	{
 		$this->check_token_life();
 
-		$_SESSION['state'] = $state = substr(md5(rand()), 0, 7);
+		$state = substr(md5(rand()), 0, 7); //$_SESSION['state'] = 
 
 		$params = array(
 			'response_type' => 'code',
@@ -2327,11 +2330,19 @@ class mf_social_feed
 
 			else
 			{
-				$end_date = time() + $token->expires_in;
+				$end_date = (time() + $token->expires_in);
+
+				if(!session_id())
+				{
+					@session_start();
+				}
 
 				$_SESSION['access_token'] = $token->access_token;
-				$_SESSION['expires_in'] = $token->expires_in;
-				$_SESSION['expires_at'] = $end_date;
+				//update_user_meta(get_current_user_id(), 'meta_social_feed_access_token', $token->access_token);
+				//$_SESSION['expires_in'] = $token->expires_in;
+				//$_SESSION['expires_at'] = $end_date;
+
+				session_write_close();
 
 				$this->auth_options = $auth_options = array(
 					'access_token' => $token->access_token,
