@@ -50,7 +50,6 @@ switch($type)
 			{
 				$arr_vars = array('facebook_user_access_token' => $access_token);
 
-				//unset($_SESSION['sesCallbackURL']);
 				delete_user_meta(get_current_user_id(), 'meta_social_feed_callback_url');
 				//delete_option('option_social_callback_url');
 
@@ -75,7 +74,7 @@ switch($type)
 
 		else
 		{
-			do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).")"); //.", ".var_export($_SESSION, true)
+			do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).")");
 		}
 
 		//session_write_close();
@@ -106,7 +105,6 @@ switch($type)
 			{
 				if($sesCallbackURL != '')
 				{
-					//unset($_SESSION['sesCallbackURL']);
 					delete_user_meta(get_current_user_id(), 'meta_social_feed_callback_url');
 					//delete_option('option_social_callback_url');
 
@@ -115,7 +113,7 @@ switch($type)
 
 				else
 				{
-					do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).")"); //.", ".var_export($_SESSION, true)
+					do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).")");
 				}
 			}
 

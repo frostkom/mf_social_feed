@@ -561,7 +561,7 @@ class mf_social_feed
 			$description = '';
 		}
 
-		echo show_password_field(array('name' => $setting_key, 'value' => $option, 'description' => $description));
+		echo show_password_field(array('name' => $setting_key, 'value' => $option, 'xtra' => " autocomplete='new-password'", 'description' => $description));
 	}
 
 	function setting_linkedin_redirect_url_callback()
@@ -763,14 +763,6 @@ class mf_social_feed
 
 					if($this->setting_social_api_url != '')
 					{
-						/*if(!session_id())
-						{
-							@session_start();
-						}
-
-						$_SESSION['sesCallbackURL'] = $edit_url;
-
-						session_write_close();*/
 						update_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', $edit_url);
 						//update_option('option_social_callback_url', $edit_url, 'no');
 
@@ -800,14 +792,6 @@ class mf_social_feed
 
 				if($this->setting_social_api_url != '')
 				{
-					/*if(!session_id())
-					{
-						@session_start();
-					}
-
-					$_SESSION['sesCallbackURL'] = $edit_url;
-
-					session_write_close();*/
 					update_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', $edit_url);
 					//update_option('option_social_callback_url', $edit_url, 'no');
 
@@ -935,14 +919,6 @@ class mf_social_feed
 
 				else
 				{
-					/*if(!session_id())
-					{
-						@session_start();
-					}
-
-					$_SESSION['sesCallbackURL'] = $edit_url;
-
-					session_write_close();*/
 					update_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', $edit_url);
 					//update_option('option_social_callback_url', $edit_url, 'no');
 
