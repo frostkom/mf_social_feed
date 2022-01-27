@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description: 
-Version: 5.9.7
+Version: 5.9.10
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://frostkom.se
@@ -14,7 +14,7 @@ Depends: Meta Box, MF Base
 GitHub Plugin URI: frostkom/mf_social_feed
 */
 
-if(function_exists('is_plugin_active') && is_plugin_active("mf_base/index.php"))
+if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') && is_plugin_active("mf_base/index.php"))
 {
 	include_once("include/classes.php");
 

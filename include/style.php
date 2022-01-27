@@ -19,9 +19,12 @@ $setting_social_display_border = get_option('setting_social_display_border', 'ye
 
 $post_container_desktop = $post_container_tablet = $post_container_mobile = $post_item_desktop = $post_item_tablet = $post_item_mobile = "";
 
-function calc_width($columns)
+if(!function_exists('calc_width'))
 {
-	return (100 / $columns) - ($columns > 1 ? 1 : 0);
+	function calc_width($columns)
+	{
+		return (100 / $columns) - ($columns > 1 ? 1 : 0);
+	}
 }
 
 switch($setting_social_design)

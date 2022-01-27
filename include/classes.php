@@ -1882,75 +1882,78 @@ class mf_social_feed
 	{
 		global $obj_base;
 
-		if(!isset($obj_base))
+		if(does_post_exists(array('post_type' => $this->post_type)))
 		{
-			$obj_base = new mf_base();
-		}
+			if(!isset($obj_base))
+			{
+				$obj_base = new mf_base();
+			}
 
-		echo $obj_base->get_templates(array('lost_connection'));
+			echo $obj_base->get_templates(array('lost_connection'));
 
-		if(get_option('setting_social_debug') == 'yes')
-		{
-			echo "<div class='social_debug'></div>";
-		}
+			if(get_option('setting_social_debug') == 'yes')
+			{
+				echo "<div class='social_debug'></div>";
+			}
 
-		echo "<script type='text/template' id='template_feed_message'>
-			<li class='no_result'>".__("There are no posts to display", 'lang_social_feed')."</li>
-		</script>
+			echo "<script type='text/template' id='template_feed_message'>
+				<li class='no_result'>".__("There are no posts to display", 'lang_social_feed')."</li>
+			</script>
 
-		<script type='text/template' id='template_feed_all'>
-			<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>
-		</script>
+			<script type='text/template' id='template_feed_all'>
+				<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>
+			</script>
 
-		<script type='text/template' id='template_feed'>
-			<li><a href='#<%= id %>' id='<%= id %>'><%= name %></a></li>
-		</script>
+			<script type='text/template' id='template_feed'>
+				<li><a href='#<%= id %>' id='<%= id %>'><%= name %></a></li>
+			</script>
 
-		<script type='text/template' id='template_feed_post'>
-			<li class='sf_<%= service %> sf_feed_<%= feed %>'>
-				<% if(image != '')
-				{ %>
-					<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
-				<% } %>
-				<div class='content'>
-					<div class='meta'>
-						<a href='<%= link %>'>
-							<i class='<%= icon %>'></i>
-
-							<% if(service == 'rss')
-							{ %>
-								<span class='name'><%= feed_title %></span>
-							<% }
-
-							else if(name != '')
-							{ %>
-								<span class='name'><%= name %></span>
-							<% } %>
-
-							<span class='date'><%= date %></span>
-						</a>
-					</div>
-
-					<% if(service == 'rss' && title != '')
+			<script type='text/template' id='template_feed_post'>
+				<li class='sf_<%= service %> sf_feed_<%= feed %>'>
+					<% if(image != '')
 					{ %>
-						<p><a href='<%= link %>'><%= title %></a></p>
-					<% }
-
-					if(content != '')
-					{ %>
-						<div class='text'><a href='<%= link %>'><%= content %></a></div>
-					<% }
-
-					if(likes != '' || comments != '')
-					{ %>
-						<div class='likes'>
-							<i class='fa fa-thumbs-up'></i><span><%= likes %></span>
-							<i class='fa fa-comment'></i><span><%= comments %></span>
-						</div>
+						<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
 					<% } %>
-				</a>
-			</li>
-		</script>";
+					<div class='content'>
+						<div class='meta'>
+							<a href='<%= link %>'>
+								<i class='<%= icon %>'></i>
+
+								<% if(service == 'rss')
+								{ %>
+									<span class='name'><%= feed_title %></span>
+								<% }
+
+								else if(name != '')
+								{ %>
+									<span class='name'><%= name %></span>
+								<% } %>
+
+								<span class='date'><%= date %></span>
+							</a>
+						</div>
+
+						<% if(service == 'rss' && title != '')
+						{ %>
+							<p><a href='<%= link %>'><%= title %></a></p>
+						<% }
+
+						if(content != '')
+						{ %>
+							<div class='text'><a href='<%= link %>'><%= content %></a></div>
+						<% }
+
+						if(likes != '' || comments != '')
+						{ %>
+							<div class='likes'>
+								<i class='fa fa-thumbs-up'></i><span><%= likes %></span>
+								<i class='fa fa-comment'></i><span><%= comments %></span>
+							</div>
+						<% } %>
+					</a>
+				</li>
+			</script>";
+		}
 	}
 
 	function shortcode_social_feed($atts)
