@@ -39,7 +39,7 @@ class mf_social_feed
 			#####################
 
 			#####################
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title FROM ".$wpdb->posts." WHERE post_type = %s", $this->post_type));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title FROM ".$wpdb->posts." WHERE post_type = %s AND post_status != %s", $this->post_type, 'trash'));
 
 			foreach($result as $r)
 			{
@@ -2609,7 +2609,7 @@ class mf_social_feed
 					'name' => $this->search,
 					'text' => $post_content,
 					'link' => "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1],
-					'image' => isset($post['full_picture']) && $post['full_picture'] != '' ? $post['full_picture'] : "",
+					'image' => (isset($post['full_picture']) && $post['full_picture'] != '' ? $post['full_picture'] : ""),
 					'created' => date("Y-m-d H:i:s", strtotime($post['created_time'])),
 					'is_owner' => $is_owner, 
 				);
