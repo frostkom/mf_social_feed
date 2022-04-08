@@ -62,8 +62,6 @@ class mf_social_feed
 
 							if(is_array($facebook_report_to) && count($facebook_report_to) > 0 && $facebook_access_token_message_sent <= date("Y-m-d", strtotime("-".round($facebook_report_days / 2)." day")) && $facebook_access_token_expiry_date <= date("Y-m-d", strtotime("+".$facebook_report_days." day")))
 							{
-								//do_log("FB Expires: ".$facebook_access_token_message_sent." <= ".date("Y-m-d", strtotime("-".round($facebook_report_days / 2)." day"))." && ".$facebook_access_token_expiry_date." <= ".date("Y-m-d", strtotime("+".$facebook_report_days." day")));
-
 								$mail_subject = sprintf(__("Expiry Date on %s", 'lang_social_feed'), remove_protocol(array('url' => get_site_url(), 'clean' => true)));
 								$mail_content = "<a href='".admin_url("post.php?post=".$post_id."&action=edit")."'>".sprintf(__("%s expires %s", 'lang_social_feed'), $post_title, $facebook_access_token_expiry_date)."</a>";
 
@@ -74,8 +72,6 @@ class mf_social_feed
 									$mail_to = $user_data->user_email;
 
 									$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
-									//do_log("Send e-mail to ".$mail_to." (".$mail_subject.", ".$mail_content.")");
-									//$sent = true;
 
 									if($sent)
 									{
@@ -1004,6 +1000,65 @@ class mf_social_feed
 		return $arr_data;
 	}
 
+	function update_access_token($data)
+	{
+		global $wpdb;
+
+		$post_type = get_post_meta($data['post_id'], $this->meta_prefix.'type', true);
+
+		switch($post_type)
+		{
+			case 'facebook':
+				update_post_meta($data['post_id'], $this->meta_prefix.'facebook_access_token', $data['access_token']);
+				update_post_meta($data['post_id'], $this->meta_prefix.'facebook_access_token_expiry_date', date("Y-m-d", strtotime("+60 day")));
+			break;
+
+			case 'instagram':
+				update_post_meta($data['post_id'], $this->meta_prefix.'instagram_access_token', $data['access_token']);
+			break;
+		}
+
+		if(is_multisite())
+		{
+			$post_search_for = get_post_meta($data['post_id'], $this->meta_prefix.'search_for', true);
+
+			$result = get_sites(array('site__not_in' => array($wpdb->blogid), 'deleted' => 0));
+
+			foreach($result as $r)
+			{
+				switch_to_blog($r->blog_id);
+
+				$result_posts = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s", $this->post_type, $this->meta_prefix.'type', $post_type));
+
+				foreach($result_posts as $r)
+				{
+					$post_search_for_sibling = get_post_meta($r->ID, $this->meta_prefix.'search_for', true);
+
+					if($post_search_for_sibling == $post_search_for)
+					{
+						switch($post_type)
+						{
+							case 'facebook':
+								update_post_meta($r->ID, $this->meta_prefix.'facebook_access_token', $data['access_token']);
+								update_post_meta($r->ID, $this->meta_prefix.'facebook_access_token_expiry_date', date("Y-m-d", strtotime("+60 day")));
+								wp_publish_post($r->ID);
+							break;
+
+							case 'instagram':
+								do_log("Update ".get_post_title($r->ID)." (".$r->ID.") with access_token for Instagram");
+
+								//update_post_meta($data['post_id'], $this->meta_prefix.'instagram_access_token', $data['access_token']);
+								//wp_publish_post($r->ID);
+							break;
+						}
+					}
+				}
+
+				restore_current_blog();
+			}
+		}
+	}
+
 	function rwmb_meta_boxes($meta_boxes)
 	{
 		global $wpdb;
@@ -1107,8 +1162,7 @@ class mf_social_feed
 
 									if($page_access_token != '')
 									{
-										update_post_meta($post_id, $this->meta_prefix.'facebook_access_token', $page_access_token);
-										update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', date("Y-m-d", strtotime("+60 day")));
+										$this->update_access_token(array('post_id' => $post_id, 'access_token' => $page_access_token));
 									}
 
 									else
@@ -1136,16 +1190,15 @@ class mf_social_feed
 					break;
 				}
 				########################
-
-				//update_post_meta($post_id, $this->meta_prefix.'facebook_access_token', $facebook_access_token);
-				//update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', date("Y-m-d", strtotime("+60 day")));
 			}
 
 			$instagram_access_token = check_var('instagram_access_token');
 
 			if($instagram_access_token != '')
 			{
-				update_post_meta($post_id, $this->meta_prefix.'instagram_access_token', $instagram_access_token);
+				//update_post_meta($post_id, $this->meta_prefix.'instagram_access_token', $instagram_access_token);
+
+				$this->update_access_token(array('post_id' => $post_id, 'access_token' => $instagram_access_token));
 			}
 		}
 
@@ -1464,17 +1517,48 @@ class mf_social_feed
 						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
 
 						echo "<i class='".$this->get_post_icon($post_meta)." fa-2x'></i>";
+
+						switch($post_meta)
+						{
+							case 'facebook':
+								$facebook_access_token_expiry_date = get_post_meta($id, $this->meta_prefix.'facebook_access_token_expiry_date', true);
+
+								if($facebook_access_token_expiry_date > DEFAULT_DATE)
+								{
+									if($facebook_access_token_expiry_date > date("Y-m-d"))
+									{
+										$expiry_title = sprintf(__("Will expire %s", 'lang_social_feed'), $facebook_access_token_expiry_date);
+									}
+
+									else
+									{
+										$expiry_title = sprintf(__("Expired %s", 'lang_social_feed'), $facebook_access_token_expiry_date);
+									}
+
+									echo "<div class='row-actions'>"
+										.$expiry_title
+									."</div>";
+								}
+							break;
+						}
 					break;
 
 					case 'search_for':
-						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+						$post_meta_search_for = get_post_meta($id, $this->meta_prefix.$col, true);
+						$post_meta_type = get_post_meta($id, $this->meta_prefix.'type', true);
 
-						$post_meta_filtered = $this->filter_search_for($post_meta);
+						if($post_meta_type == 'rss')
+						{
+							$post_meta_filtered = $post_meta_search_for;
+						}
+
+						else
+						{
+							$post_meta_filtered = $this->filter_search_for($post_meta_search_for);
+						}
 
 						if($post_meta_filtered != '')
 						{
-							$post_meta_type = get_post_meta($id, $this->meta_prefix.'type', true);
-
 							switch($post_meta_type)
 							{
 								case 'facebook':
@@ -1498,10 +1582,10 @@ class mf_social_feed
 								break;
 
 								case 'rss':
-									$feed_url = $post_meta;
+									$feed_url = $post_meta_search_for;
 
-									$post_meta_parts = parse_url($post_meta);
-									$post_meta = isset($post_meta_parts['host']) ? $post_meta_parts['host'] : "(".__("unknown", 'lang_social_feed').")";
+									$post_meta_parts = parse_url($post_meta_search_for);
+									$post_meta_search_for = (isset($post_meta_parts['host']) && $post_meta_parts['host'] != '' ? $post_meta_parts['host'] : "(".__("unknown", 'lang_social_feed').")");
 								break;
 
 								case 'twitter':
@@ -1543,7 +1627,7 @@ class mf_social_feed
 
 							$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s", $id, $this->post_type));
 
-							echo "<a href='".$feed_url."'>".$post_meta."</a>
+							echo "<a href='".$feed_url."'>".$post_meta_search_for."</a>
 							<div class='row-actions'>"
 								.$fetch_link
 								.__("Fetched", 'lang_social_feed').": ".format_date($post_modified)
@@ -1674,8 +1758,6 @@ class mf_social_feed
 
 						else
 						{
-							//do_log("The parent ".$post_feed." does not exist anymore");
-
 							wp_trash_post($id);
 						}
 					break;
@@ -2850,11 +2932,7 @@ class mf_social_feed
 				{
 					/*array ( 'isCommentable' => true, 'isLikable' => true, 'isLiked' => false, 'numLikes' => 0, 'timestamp' => [timestamp], 'updateComments' => array ( '_total' => 0, ), 'updateContent' => array ( 'company' => array ( 'id' => [id], 'name' => '[text]', ), 'companyStatusUpdate' => array ( 'share' => array ( 'comment' => '[text]', 'id' => 's[id]', 'source' => array ( 'serviceProvider' => array ( 'name' => 'LINKEDIN', ), 'serviceProviderShareId' => 's[id]', ), 'timestamp' => [timestamp], 'visibility' => array ( 'code' => 'anyone', ), ), ), ), 'updateKey' => 'UPDATE-c18432292-[id]', 'updateType' => 'CMPY', )*/
 
-					//do_log("LinkedIn: ".var_export($post, true));
-
 					$post_share = $post['updateContent']['companyStatusUpdate']['share'];
-
-					//do_log("LinkedIn Timestamp: ".$post_share['timestamp']." -> ".date("Y-m-d H:i:s", ($post_share['timestamp'] / 1000)));
 
 					$post_image_url = $post_image_link = '';
 
@@ -3187,8 +3265,6 @@ class mf_social_feed
 
 		if($post['created'] < date("Y-m-d", strtotime("-".$setting_social_keep_posts." month")))
 		{
-			//do_log($post['created']." is older than ".date("Y-m-d", strtotime("-".$setting_social_keep_posts." month"))." (".var_export($post, true).")");
-
 			$out = false;
 		}
 
@@ -3211,16 +3287,12 @@ class mf_social_feed
 							if(!in_array('other', $post_include))
 							{
 								$out = false;
-
-								//do_log("Hide because other (".var_export($post, true).")");
 							}
 						}
 
 						else
 						{
 							$out = false;
-
-							//do_log("Hide because no FB include (".var_export($post, true).")");
 						}
 					}
 				break;
@@ -3229,8 +3301,6 @@ class mf_social_feed
 					if($post['is_owner'] == true && $post['is_reply'] == false && $post['is_retweet'] == false)
 					{
 						// Do nothing
-
-						//do_log("Do nothing. It's from the owner and neither a reply or a retweet (".var_export($post, true).")");
 					}
 
 					else
@@ -3242,30 +3312,22 @@ class mf_social_feed
 							if($post['is_owner'] == false && !in_array('other', $post_include))
 							{
 								$out = false;
-
-								//do_log("Hide because not owner (".var_export($post, true).")");
 							}
 
 							else if($post['is_reply'] == true && !in_array('reply', $post_include))
 							{
 								$out = false;
-
-								//do_log("Hide because reply (".var_export($post, true).")");
 							}
 
 							else if($post['is_retweet'] == true && !in_array('retweet', $post_include))
 							{
 								$out = false;
-
-								//do_log("Hide because retweet (".var_export($post, true).")");
 							}
 						}
 
 						else
 						{
 							$out = false;
-
-							//do_log("Hide because no Twitter include (".var_export($post, true).")");
 						}
 					}
 				break;
@@ -3376,16 +3438,9 @@ class mf_social_feed
 			{
 				$post_id = $r->ID;
 
-				//do_log("Remove ".get_post_title($post_id)." because it is older than ".date("Y-m-d", strtotime("-".$setting_social_keep_posts." month")));
-
 				wp_trash_post($post_id);
 			}
 		}
-
-		/*else
-		{
-			do_log("There were no old posts to remove (".$wpdb->last_query.")");
-		}*/
 		###########
 	}
 	#########################
