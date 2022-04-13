@@ -1906,7 +1906,10 @@ class mf_social_feed
 				$this->fetch_feed();
 			}
 
-			delete_post_meta($this->id, $this->meta_prefix.'error');
+			else
+			{
+				delete_post_meta($this->id, $this->meta_prefix.'error');
+			}
 		}
 	}
 
@@ -2512,11 +2515,6 @@ class mf_social_feed
 
 	function save_error($data)
 	{
-		$post_data = array(
-			'ID' => $this->id,
-			'post_status' => 'draft',
-		);
-
 		$arr_exclude = $arr_include = array();
 
 		// Facebook
@@ -2542,9 +2540,22 @@ class mf_social_feed
 			}
 		}
 
-		wp_update_post($post_data);
+		wp_update_post(array(
+			'ID' => $this->id,
+			'post_status' => 'draft',
+		));
 
 		update_post_meta($this->id, $this->meta_prefix.'error', $data['message']);
+	}
+
+	function delete_error()
+	{
+		wp_update_post(array(
+			'ID' => $this->id,
+			'post_status' => 'publish',
+		));
+
+		delete_post_meta($this->id, $this->meta_prefix.'error');
 	}
 
 	function fetch_feed()
@@ -2697,7 +2708,7 @@ class mf_social_feed
 				);
 			}
 
-			delete_post_meta($this->id, $this->meta_prefix.'error');
+			$this->delete_error();
 		}
 
 		else
@@ -2874,7 +2885,7 @@ class mf_social_feed
 					);
 				}
 
-				delete_post_meta($this->id, $this->meta_prefix.'error');
+				$this->delete_error();
 			}
 
 			else
@@ -2965,7 +2976,7 @@ class mf_social_feed
 					);
 				}
 
-				delete_post_meta($this->id, $this->meta_prefix.'error');
+				$this->delete_error();
 			}
 		}
 
@@ -3024,12 +3035,25 @@ class mf_social_feed
 				);
 			}
 
-			delete_post_meta($this->id, $this->meta_prefix.'error');
+			$this->delete_error();
 		}
 
 		else
 		{
-			$this->save_error(array('message' => __("I could not find a feed", 'lang_social_feed'))); //"RSS: ".
+			if(get_option('setting_social_debug') == 'yes')
+			{
+				do_log("RSS Error: ".htmlspecialchars(var_export($feed, true)));
+			}
+
+			if(isset($feed->error) && $feed->error != '')
+			{
+				$this->save_error(array('message' => $feed->error));
+			}
+
+			else
+			{
+				$this->save_error(array('message' => __("I could not find a feed", 'lang_social_feed')));
+			}
 		}
 	}
 
@@ -3246,7 +3270,7 @@ class mf_social_feed
 				);
 			}
 
-			delete_post_meta($this->id, $this->meta_prefix.'error');
+			$this->delete_error();
 		}
 	}
 
