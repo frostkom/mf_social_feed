@@ -133,7 +133,7 @@ class mf_social_feed
 		return $json_output;
 	}
 
-	function get_message_error_amount($data = array())
+	/*function get_message_error_amount($data = array())
 	{
 		global $wpdb;
 
@@ -150,7 +150,7 @@ class mf_social_feed
 		}
 
 		return $out;
-	}
+	}*/
 
 	function init()
 	{
@@ -626,7 +626,7 @@ class mf_social_feed
 
 	function admin_init()
 	{
-		global $pagenow;
+		global $wpdb, $pagenow;
 
 		switch($pagenow)
 		{
@@ -692,15 +692,25 @@ class mf_social_feed
 
 		if(function_exists('wp_add_privacy_policy_content'))
 		{
-			/*$arr_data = array();
-			get_post_children(array('add_choose_here' => false, 'post_type' => $this->post_type), $arr_data);
-
-			if(count($arr_data) > 0)*/
 			if(does_post_exists(array('post_type' => $this->post_type)))
 			{
 				$content = __("Posts from social feeds are stored in the database to make it possible to present them in the fastest way possible to you as a visitor.", 'lang_social_feed');
 
 				wp_add_privacy_policy_content(__("Social Feed", 'lang_social_feed'), $content);
+			}
+		}
+
+		if(IS_EDITOR)
+		{
+			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value != ''", $this->post_type, $this->meta_prefix.'error'));
+			$rows = $wpdb->num_rows;
+
+			if($rows > 0)
+			{
+				$plugin_include_url = plugin_dir_url(__FILE__);
+				$plugin_version = get_plugin_version(__FILE__);
+
+				mf_enqueue_script('script_social_feed_wp_errors', $plugin_include_url."script_wp_errors.js", array('error_text' => __("Errors", 'lang_social_feed'), 'error_amount' => $rows), $plugin_version);
 			}
 		}
 	}
