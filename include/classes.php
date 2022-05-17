@@ -717,9 +717,9 @@ class mf_social_feed
 
 	function admin_menu()
 	{
-		/*$menu_root = 'mf_social_feed/';
+		//$menu_root = 'mf_social_feed/';
 		$menu_start = "edit.php?post_type=".$this->post_type;
-		$menu_capability = override_capability(array('page' => $menu_start, 'default' => 'edit_pages'));
+		/*$menu_capability = override_capability(array('page' => $menu_start, 'default' => 'edit_pages'));
 
 		$menu_title = __("Posts", 'lang_social_feed');
 		add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_post);*/
@@ -728,6 +728,9 @@ class mf_social_feed
 		$menu_title = __("Posts", 'lang_social_feed');
 		add_submenu_page('cff-top', $menu_title, $menu_title, $menu_capability, 'cff-top', 'cff_settings_page');
 		add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', 'sb_instagram_settings_page');
+
+		$menu_title = __("Settings", 'lang_social_feed');
+		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, admin_url("options-general.php?page=settings_mf_base#settings_social_feed"));
 	}
 
 	function meta_feed_facebook_info()
