@@ -2198,7 +2198,7 @@ class mf_social_feed
 	{
 		$this->check_token_life();
 
-		$state = substr(md5(rand()), 0, 7); //$_SESSION['state'] = 
+		$state = substr(md5(rand()), 0, 7);
 
 		$params = array(
 			'response_type' => 'code',
@@ -2717,7 +2717,7 @@ class mf_social_feed
 					'link' => "//facebook.com/".$arr_post_id[0]."/posts/".$arr_post_id[1],
 					'image' => (isset($post['full_picture']) && $post['full_picture'] != '' ? $post['full_picture'] : ""),
 					'created' => date("Y-m-d H:i:s", strtotime($post['created_time'])),
-					'is_owner' => $is_owner, 
+					'is_owner' => $is_owner,
 				);
 			}
 
@@ -2778,7 +2778,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>")); //Instagram: 
+			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>"));
 		}
 
 		return $url;
@@ -2813,7 +2813,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>")); //Instagram: 
+			$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>"));
 		}
 
 		return $url;
@@ -2903,7 +2903,7 @@ class mf_social_feed
 
 			else
 			{
-				$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>")); //Instagram: 
+				$this->save_error(array('message' => "<a href='".$url."'>".__("The JSON I got back was not correct", 'lang_social_feed')."</a>"));
 			}
 		}
 	}
@@ -2928,7 +2928,7 @@ class mf_social_feed
 
 			else
 			{
-				$this->save_error(array('message' => __("No key found", 'lang_social_feed')." (".var_export($json, true).")")); //LinkedIn: 
+				$this->save_error(array('message' => __("No key found", 'lang_social_feed')." (".var_export($json, true).")"));
 			}
 
 			return false;
@@ -2995,7 +2995,7 @@ class mf_social_feed
 
 		else
 		{
-			$this->save_error(array('message' => "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_linkedin")."'>".__("Token has expired", 'lang_social_feed')."</a>")); //LinkedIn: 
+			$this->save_error(array('message' => "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed_linkedin")."'>".__("Token has expired", 'lang_social_feed')."</a>"));
 		}
 	}
 

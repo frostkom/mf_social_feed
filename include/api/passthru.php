@@ -61,7 +61,7 @@ switch($type)
 
 			else
 			{
-				$arr_vars = array(); //'facebook_message' => 
+				$arr_vars = array();
 
 				if(get_option('setting_social_debug') == 'yes')
 				{
