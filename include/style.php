@@ -206,12 +206,14 @@ echo "@media all
 				echo ".widget.social_feed img
 				{
 					display: block;
-					transition: all .4s ease;
+					transition: all 1s ease;
 				}
 
 					.widget.social_feed li:hover img
 					{
-						filter: brightness(85%);
+						filter: brightness(90%);
+						-webkit-transform: scale(1.02);
+						transform: scale(1.02);
 					}
 
 				.widget.social_feed .content
