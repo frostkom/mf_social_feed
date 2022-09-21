@@ -256,7 +256,7 @@ class mf_social_feed
 
 				$obj_theme_core->get_params();
 
-				$website_max_width = isset($obj_theme_core->options['website_max_width']) ? $obj_theme_core->options['website_max_width'] : 0;
+				$website_max_width = (isset($obj_theme_core->options['website_max_width']) ? $obj_theme_core->options['website_max_width'] : 0);
 			}
 
 			else
@@ -1656,20 +1656,42 @@ class mf_social_feed
 							//echo var_export($option_widgets, true);
 
 							$is_in_use = false;
+							$example_links = "";
 
-							foreach($option_widgets as $arr_widget)
+							foreach($option_widgets as $widget_key => $arr_widget)
 							{
 								if(isset($arr_widget['social_feeds']) && (count($arr_widget['social_feeds']) == 0 || in_array($id, $arr_widget['social_feeds'])))
 								{
 									$is_in_use = true;
 
-									break;
+									if(!isset($arr_sidebars))
+									{
+										$arr_sidebars = wp_get_sidebars_widgets();
+									}
+
+									$widget_key = "social-feed-widget-".$widget_key;
+
+									foreach($arr_sidebars as $sidebar_key_temp => $arr_sidebar)
+									{
+										foreach($arr_sidebar as $widget_key_temp)
+										{
+											if($widget_key_temp == $widget_key)
+											{
+												$example_links .= "<span><a href='".admin_url("widgets.php#".$sidebar_key_temp."&".$widget_key)."'>".__("Widget", 'lang_social_feed')."</a></span>";
+											}
+										}
+									}
 								}
 							}
 
 							if($is_in_use)
 							{
 								echo "<i class='fa fa-check green fa-2x'></i>";
+
+								if($example_links != '')
+								{
+									echo "<div class='row-actions'>".$example_links."</div>";
+								}
 							}
 
 							else
@@ -2231,7 +2253,8 @@ class mf_social_feed
 	{
 		$this->init_linkedin_auth();
 
-		$this->token_life = intval($this->auth_options['expires_in']) - strtotime(date("Y-m-d H:m:s"));
+		$expires_in = (isset($this->auth_options['expires_in']) ? intval($this->auth_options['expires_in']) : 0);
+		$this->token_life = ($expires_in - strtotime(date("Y-m-d H:m:s")));
 
 		if($this->token_life < 0)
 		{
@@ -2685,7 +2708,7 @@ class mf_social_feed
 				$post_id = $post['id'];
 				$arr_post_id = explode("_", $post_id);
 
-				//$post_author = isset($post['from']) ? $post['from']['id'] : 0;
+				//$post_author = (isset($post['from']) ? $post['from']['id'] : 0);
 
 				$post_content = "";
 
