@@ -1677,7 +1677,7 @@ class mf_social_feed
 										{
 											if($widget_key_temp == $widget_key)
 											{
-												$example_links .= "<span><a href='".admin_url("widgets.php#".$sidebar_key_temp."&".$widget_key)."'>".__("Widget", 'lang_social_feed')."</a></span>";
+												$example_links .= ($example_links != '' ? " | " : "")."<span><a href='".admin_url("widgets.php#".$sidebar_key_temp."&".$widget_key)."'><i class='fa fa-link'></i></a></span>";
 											}
 										}
 									}
