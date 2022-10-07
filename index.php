@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description:
-Version: 5.9.23
+Version: 5.9.24
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://frostkom.se
@@ -17,8 +17,6 @@ GitHub Plugin URI: frostkom/mf_social_feed
 if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') && is_plugin_active("mf_base/index.php"))
 {
 	include_once("include/classes.php");
-
-	load_plugin_textdomain('lang_social_feed', false, dirname(plugin_basename(__FILE__))."/lang/");
 
 	$obj_social_feed = new mf_social_feed();
 
@@ -74,6 +72,8 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 	add_action('wp_ajax_social_feed_action_hide', array($obj_social_feed, 'action_hide'));
 	add_action('wp_ajax_social_feed_action_ignore', array($obj_social_feed, 'action_ignore'));
 
+	load_plugin_textdomain('lang_social_feed', false, dirname(plugin_basename(__FILE__))."/lang/");
+
 	function activate_social_feed()
 	{
 		require_plugin("meta-box/meta-box.php", "Meta Box");
@@ -85,7 +85,9 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 
 	function uninstall_social_feed()
 	{
-		global $obj_social_feed;
+		include_once("include/classes.php");
+
+		$obj_social_feed = new mf_social_feed();
 
 		mf_uninstall_plugin(array(
 			'uploads' => 'mf_social_feed',
