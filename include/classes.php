@@ -3697,7 +3697,7 @@ class widget_social_feed extends WP_Widget
 
 		$setting_social_reload = get_option('setting_social_reload');
 
-		echo $before_widget;
+		echo apply_filters('filter_before_widget', $before_widget);
 
 			if($instance['social_heading'] != '')
 			{
