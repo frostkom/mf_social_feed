@@ -206,23 +206,21 @@ class mf_social_feed
 	{
 		$options_area_orig = $options_area = __FUNCTION__;
 
-		$data_temp = array(
+		$has_facebook = does_post_exists(array(
 			'post_type' => $this->post_type,
+			'post_status' => '',
 			'meta' => array(
 				$this->meta_prefix.'type' => 'facebook',
 			),
-		);
+		));
 
-		$has_facebook = does_post_exists($data_temp);
-
-		$data_temp = array(
+		$has_instagram = does_post_exists(array(
 			'post_type' => $this->post_type,
+			'post_status' => '',
 			'meta' => array(
 				$this->meta_prefix.'type' => 'instagram',
 			),
-		);
-
-		$has_instagram = does_post_exists($data_temp);
+		));
 
 		//Generic
 		############################
@@ -311,14 +309,13 @@ class mf_social_feed
 
 		//LinkedIn
 		############################
-		$data_temp = array(
+		if(does_post_exists(array(
 			'post_type' => $this->post_type,
+			'post_status' => '',
 			'meta' => array(
 				$this->meta_prefix.'type' => 'linkedin',
 			),
-		);
-
-		if(does_post_exists($data_temp))
+		)))
 		{
 			$options_area = $options_area_orig."_linkedin";
 
@@ -341,14 +338,13 @@ class mf_social_feed
 
 		//Twitter
 		############################
-		$data_temp = array(
+		if(does_post_exists(array(
 			'post_type' => $this->post_type,
+			'post_status' => '',
 			'meta' => array(
 				$this->meta_prefix.'type' => 'twitter',
 			),
-		);
-
-		if(does_post_exists($data_temp))
+		)))
 		{
 			$options_area = $options_area_orig."_twitter";
 
@@ -727,11 +723,43 @@ class mf_social_feed
 		$menu_capability = 'edit_posts';
 		$menu_title = __("Posts", 'lang_social_feed');
 		add_submenu_page('cff-top', $menu_title, $menu_title, $menu_capability, 'cff-top', 'cff_settings_page');
-		add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', 'sb_instagram_settings_page');
+		add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', array($this, 'sb_instagram_settings_page'));
 
 		$menu_title = __("Settings", 'lang_social_feed');
 		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, admin_url("options-general.php?page=settings_mf_base#settings_social_feed"));
 	}
+
+		function sb_instagram_settings_page()
+		{
+			$sesCallbackURL = get_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', true);
+
+			$access_token = check_var('sbi_access_token');
+
+			if($access_token != '')
+			{
+				if($sesCallbackURL != '')
+				{
+					delete_user_meta(get_current_user_id(), 'meta_social_feed_callback_url');
+
+					mf_redirect(html_entity_decode($sesCallbackURL), array('instagram_access_token' => $access_token));
+				}
+
+				else
+				{
+					do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).")");
+				}
+			}
+
+			else
+			{
+				do_log("API Error (".$type."): Malformed request (".var_export($_REQUEST, true).")");
+
+				if($sesCallbackURL != '')
+				{
+					mf_redirect(html_entity_decode($sesCallbackURL));
+				}
+			}
+		}
 
 	function meta_feed_facebook_info()
 	{
@@ -802,7 +830,6 @@ class mf_social_feed
 				if($this->setting_social_api_url != '')
 				{
 					update_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', $edit_url);
-					//update_option('option_social_callback_url', $edit_url, 'no');
 
 					$out .= "<strong>".sprintf(__("Go to %s and log in", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</strong>";
 				}
@@ -929,7 +956,6 @@ class mf_social_feed
 				else
 				{
 					update_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', $edit_url);
-					//update_option('option_social_callback_url', $edit_url, 'no');
 
 					$out .= "<strong><a href='".$this->instagram_authorize_url."'>".__("Authorize Here", 'lang_social_feed')."</a></strong>";
 				}
