@@ -236,10 +236,27 @@ class mf_social_feed
 		$arr_settings['setting_social_keep_posts'] = __("Keep Posts", 'lang_social_feed');
 
 		$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
+		$arr_settings['setting_social_deactive_on_error'] = __("Deactivate on Error", 'lang_social_feed');
 
 		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
 			$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
+		}
+
+		$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
+
+		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
+		############################
+
+		//Styling
+		############################
+		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
+		{
+			$options_area = $options_area_orig."_styling";
+
+			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
+
+			$arr_settings = array();
 			$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
 			$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 
@@ -270,11 +287,9 @@ class mf_social_feed
 			}
 
 			$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
+
+			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
 		}
-
-		$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
-
-		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
 		############################
 
 		//Facebook
@@ -446,6 +461,14 @@ class mf_social_feed
 		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='1440'", 'suffix' => __("min", 'lang_social_feed')." (".__("Between each API request", 'lang_social_feed').")"));
 	}
 
+	function setting_social_deactive_on_error_callback()
+	{
+		$setting_key = get_setting_key(__FUNCTION__);
+		$option = get_option_or_default($setting_key, 'yes');
+
+		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
+	}
+
 	function setting_social_reload_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
@@ -461,51 +484,6 @@ class mf_social_feed
 		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
 	}
 
-	function setting_social_design_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option($setting_key);
-
-		$arr_data = array(
-			'' => __("Square", 'lang_social_feed')." (".__("Default", 'lang_social_feed').")",
-			'masonry' => __("Masonry", 'lang_social_feed'),
-		);
-
-		echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option));
-	}
-
-	function setting_social_full_width_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option_or_default($setting_key, 'no');
-
-		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
-	}
-
-	function setting_social_desktop_columns_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option_or_default($setting_key, 3);
-
-		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='6'"));
-	}
-
-	function setting_social_tablet_columns_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option_or_default($setting_key, 2);
-
-		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='3'"));
-	}
-
-	function setting_social_display_border_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option_or_default($setting_key, 'yes');
-
-		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
-	}
-
 	function setting_social_debug_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
@@ -515,6 +493,58 @@ class mf_social_feed
 
 		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option, 'description' => $description));
 	}
+
+	function settings_social_feed_styling_callback()
+	{
+		$setting_key = get_setting_key(__FUNCTION__);
+
+		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("Styling", 'lang_social_feed'));
+	}
+
+		function setting_social_design_callback()
+		{
+			$setting_key = get_setting_key(__FUNCTION__);
+			$option = get_option($setting_key);
+
+			$arr_data = array(
+				'' => __("Square", 'lang_social_feed')." (".__("Default", 'lang_social_feed').")",
+				'masonry' => __("Masonry", 'lang_social_feed'),
+			);
+
+			echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option));
+		}
+
+		function setting_social_full_width_callback()
+		{
+			$setting_key = get_setting_key(__FUNCTION__);
+			$option = get_option_or_default($setting_key, 'no');
+
+			echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
+		}
+
+		function setting_social_desktop_columns_callback()
+		{
+			$setting_key = get_setting_key(__FUNCTION__);
+			$option = get_option_or_default($setting_key, 3);
+
+			echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='6'"));
+		}
+
+		function setting_social_tablet_columns_callback()
+		{
+			$setting_key = get_setting_key(__FUNCTION__);
+			$option = get_option_or_default($setting_key, 2);
+
+			echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='3'"));
+		}
+
+		function setting_social_display_border_callback()
+		{
+			$setting_key = get_setting_key(__FUNCTION__);
+			$option = get_option_or_default($setting_key, 'yes');
+
+			echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
+		}
 
 	function setting_instagram_client_id_callback()
 	{
@@ -2602,10 +2632,13 @@ class mf_social_feed
 			}
 		}
 
-		wp_update_post(array(
-			'ID' => $this->id,
-			'post_status' => 'draft',
-		));
+		if(get_option('setting_social_deactive_on_error', 'yes') == 'yes')
+		{
+			wp_update_post(array(
+				'ID' => $this->id,
+				'post_status' => 'draft',
+			));
+		}
 
 		update_post_meta($this->id, $this->meta_prefix.'error', $data['message']);
 	}
