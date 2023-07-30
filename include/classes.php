@@ -2813,7 +2813,7 @@ class mf_social_feed
 				do_log("Facebook: ".$fb_feed_url." -> ".$json['error']['message']);
 			}
 
-			$this->save_error(array('message' => $json['error']['message'])); //"Facebook: ".
+			$this->save_error(array('message' => (isset($json['error']['message']) ? $json['error']['message'] : "Unknown FB error"))); //"Facebook: ".
 		}
 	}
 
