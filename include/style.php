@@ -211,9 +211,8 @@ echo "@media all
 
 					.widget.social_feed li:hover img
 					{
-						filter: brightness(90%);
-						-webkit-transform: scale(1.02);
-						transform: scale(1.02);
+						-webkit-transform: scale(1.1);
+						transform: scale(1.1);
 					}
 
 				.widget.social_feed .content
