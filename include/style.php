@@ -147,6 +147,11 @@ echo "@media all
 					padding-top: 1em;
 				}
 
+				.widget.social_feed .sf_posts .image
+				{
+					overflow: hidden;
+				}
+
 				.widget.social_feed .sf_posts.hide_text .fa, .widget.social_feed .sf_posts.hide_text .fab, .widget.social_feed .sf_posts.hide_text .name, .widget.social_feed .sf_posts.hide_text .date, .widget.social_feed .sf_posts.hide_text .content .text
 				{
 					display: none;

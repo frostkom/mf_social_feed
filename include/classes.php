@@ -2088,7 +2088,9 @@ class mf_social_feed
 				<li class='sf_<%= service %> sf_feed_<%= feed %>'>
 					<% if(image != '')
 					{ %>
-						<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
+						<div class='image'>
+							<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
+						</div>
 					<% } %>
 					<div class='content'>
 						<div class='meta'>
