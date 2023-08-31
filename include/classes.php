@@ -3738,16 +3738,30 @@ class mf_social_feed
 
 class widget_social_feed extends WP_Widget
 {
+	var $widget_ops = array();
+
+	var $arr_default = array(
+		'social_heading' => "",
+		'social_feeds' => array(),
+		'social_filter' => 'no',
+		'social_amount' => 18,
+		'social_load_more_posts' => 'no',
+		'social_limit_source' => 'no',
+		'social_text' => 'yes',
+		'social_likes' => 'no',
+		'social_read_more' => 'yes',
+	);
+
 	function __construct()
 	{
 		$this->obj_social_feed = new mf_social_feed();
 
 		$this->widget_ops = array(
 			'classname' => 'social_feed',
-			'description' => __("Display Social Feeds", 'lang_social_feed')
+			'description' => __("Display Social Feeds", 'lang_social_feed'),
 		);
 
-		$this->arr_default = array(
+		/*$this->arr_default = array(
 			'social_heading' => "",
 			'social_feeds' => array(),
 			'social_filter' => 'no',
@@ -3757,7 +3771,7 @@ class widget_social_feed extends WP_Widget
 			'social_text' => 'yes',
 			'social_likes' => 'no',
 			'social_read_more' => 'yes',
-		);
+		);*/
 
 		parent::__construct(str_replace("_", "-", $this->widget_ops['classname']).'-widget', __("Social Feed", 'lang_social_feed'), $this->widget_ops);
 	}
