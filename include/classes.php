@@ -2,19 +2,30 @@
 
 class mf_social_feed
 {
+	var $id = 0;
+	var $type = "";
+	var $search = "";
+	var $post_type = 'mf_social_feed';
+	var $post_type_post = 'mf_social_feed_post';
+	var $meta_prefix = '';
+	var $sync_settings = array(
+		'setting_social_api_url',
+		'setting_instagram_client_id',
+	);
+
 	function __construct($id = 0)
 	{
-		$this->id = $id > 0 ? $id : 0;
-		$this->type = $this->search = "";
+		$this->id = ($id > 0 ? $id : 0);
+		//$this->type = $this->search = "";
 
-		$this->post_type = 'mf_social_feed';
-		$this->post_type_post = 'mf_social_feed_post';
+		//$this->post_type = 'mf_social_feed';
+		//$this->post_type_post = 'mf_social_feed_post';
 		$this->meta_prefix = $this->post_type.'_';
 
-		$this->sync_settings = array(
+		/*$this->sync_settings = array(
 			'setting_social_api_url',
 			'setting_instagram_client_id',
-		);
+		);*/
 	}
 
 	function cron_base()
