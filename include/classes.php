@@ -12,6 +12,10 @@ class mf_social_feed
 		'setting_social_api_url',
 		'setting_instagram_client_id',
 	);
+	var $client_id = "";
+	var $auth_options = "";
+	var $settings_url = "";
+	var $token_life = "";
 
 	function __construct($id = 0)
 	{
