@@ -16,20 +16,16 @@ class mf_social_feed
 	var $auth_options = "";
 	var $settings_url = "";
 	var $token_life = "";
+	var $setting_social_api_url = "";
+	var $arr_posts = array();
+	var $facebook_authorize_url = "";
+	var $facebook_redirect_url = "";
+	var $facebook_access_token = "";
 
 	function __construct($id = 0)
 	{
 		$this->id = ($id > 0 ? $id : 0);
-		//$this->type = $this->search = "";
-
-		//$this->post_type = 'mf_social_feed';
-		//$this->post_type_post = 'mf_social_feed_post';
 		$this->meta_prefix = $this->post_type.'_';
-
-		/*$this->sync_settings = array(
-			'setting_social_api_url',
-			'setting_instagram_client_id',
-		);*/
 	}
 
 	function cron_base()
