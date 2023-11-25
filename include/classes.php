@@ -1155,6 +1155,7 @@ class mf_social_feed
 		if($post_id > 0)
 		{
 			$facebook_user_access_token = check_var('facebook_user_access_token');
+			$instagram_access_token = check_var('instagram_access_token');
 
 			if($facebook_user_access_token != '')
 			{
@@ -1170,15 +1171,15 @@ class mf_social_feed
 					'catch_head' => true,
 				));
 
+				$log_message = "Social Feed Error getting Access Token for FB - ".$feed_name.": ";
+
 				switch($headers['http_code'])
 				{
 					case 200:
 					case 201:
 						$json = json_decode($content, true);
 
-						/*{
-						   "id": "[number]"
-						}*/
+						//{"id": "[number]"}
 
 						if(isset($json['id']) && $json['id'] > 0)
 						{
@@ -1243,16 +1244,18 @@ class mf_social_feed
 									if($page_access_token != '')
 									{
 										$this->update_access_token(array('post_id' => $post_id, 'access_token' => $page_access_token));
+
+										do_log($log_message, 'trash');
 									}
 
 									else
 									{
-										do_log("I could not find a corresponding page ID to the FB Page (".$feed_name." - ".$page_id.") you have chosen in ".$url_available_access_tokens);
+										do_log($log_message."No corresponding page ID (#".$page_id.") from ".$url_available_access_tokens);
 									}
 								break;
 
 								default:
-									do_log("I could not get a proper response from ".$url_available_access_tokens);
+									do_log($log_message."Wrong response from ".$url_available_access_tokens);
 
 									return false;
 								break;
@@ -1261,20 +1264,18 @@ class mf_social_feed
 
 						else
 						{
-							do_log("I could not get a page ID from ".$url_page_id);
+							do_log($log_message."No page ID from ".$url_page_id);
 						}
 					break;
 
 					default:
-						do_log("I could not get a proper response from ".$url_page_id);
+						do_log($log_message."Wrong response from ".$url_page_id);
 					break;
 				}
 				########################
 			}
 
-			$instagram_access_token = check_var('instagram_access_token');
-
-			if($instagram_access_token != '')
+			else if($instagram_access_token != '')
 			{
 				//update_post_meta($post_id, $this->meta_prefix.'instagram_access_token', $instagram_access_token);
 
