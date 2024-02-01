@@ -37,6 +37,7 @@ class mf_social_feed
 
 		if($obj_cron->is_running == false)
 		{
+			// Fetch new posts
 			#####################
 			$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
 
@@ -49,6 +50,7 @@ class mf_social_feed
 			}
 			#####################
 
+			// Send message if token is about to expire
 			#####################
 			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title FROM ".$wpdb->posts." WHERE post_type = %s AND post_status != %s", $this->post_type, 'trash'));
 
@@ -79,7 +81,6 @@ class mf_social_feed
 								foreach($facebook_report_to as $user_id)
 								{
 									$user_data = get_userdata($user_id);
-
 									$mail_to = $user_data->user_email;
 
 									$sent = send_email(array('to' => $mail_to, 'subject' => $mail_subject, 'content' => $mail_content));
@@ -144,33 +145,12 @@ class mf_social_feed
 		return $json_output;
 	}
 
-	/*function get_message_error_amount($data = array())
-	{
-		global $wpdb;
-
-		$out = "";
-
-		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value != ''", $this->post_type, $this->meta_prefix.'error'));
-		$rows = $wpdb->num_rows;
-
-		if($rows > 0)
-		{
-			$out = "&nbsp;<span class='update-plugins' title='".__("Errors", 'lang_social_feed')."'>
-				<span>".$rows."</span>
-			</span>";
-		}
-
-		return $out;
-	}*/
-
 	function init()
 	{
-		//$count_message = $this->get_message_error_amount();
-
 		$labels = array(
 			'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
 			'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
-			'menu_name' => __("Social Feeds", 'lang_social_feed'), //.$count_message // This will display HTML code in the menu. It has to be added with JS instead
+			'menu_name' => __("Social Feeds", 'lang_social_feed'),
 		);
 
 		$args = array(
@@ -710,21 +690,6 @@ class mf_social_feed
 					break;
 				}
 			break;
-
-			/*case 'post.php':
-			case 'post-new.php':
-				$post_id = check_var('post');
-
-				switch(get_post_type($post_id))
-				{
-					case $this->post_type:
-						$plugin_include_url = plugin_dir_url(__FILE__);
-						$plugin_version = get_plugin_version(__FILE__);
-
-						mf_enqueue_style('style_social_feed_wp', $plugin_include_url."style_wp.css", $plugin_version);
-					break;
-				}
-			break;*/
 		}
 
 		if(function_exists('wp_add_privacy_policy_content'))
@@ -754,12 +719,7 @@ class mf_social_feed
 
 	function admin_menu()
 	{
-		//$menu_root = 'mf_social_feed/';
 		$menu_start = "edit.php?post_type=".$this->post_type;
-		/*$menu_capability = override_capability(array('page' => $menu_start, 'default' => 'edit_pages'));
-
-		$menu_title = __("Posts", 'lang_social_feed');
-		add_submenu_page($menu_root, $menu_title, $menu_title, $menu_capability, "edit.php?post_type=".$this->post_type_post);*/
 
 		$menu_capability = 'edit_posts';
 		$menu_title = __("Posts", 'lang_social_feed');
@@ -842,7 +802,6 @@ class mf_social_feed
 					if($this->setting_social_api_url != '')
 					{
 						update_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', $edit_url);
-						//update_option('option_social_callback_url', $edit_url, 'no');
 
 						$out .= "<p>".sprintf(__("Go to %s and log in to renew", 'lang_social_feed'), "<a href='".$this->facebook_authorize_url."'>Facebook</a>")."</p>";
 					}
@@ -1045,7 +1004,8 @@ class mf_social_feed
 		$post_id = $post->ID;
 		$post_date = $post->post_date;
 
-		$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+		$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
+		//$post_feed = $post->post_parent;
 
 		$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 		$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
@@ -1148,9 +1108,6 @@ class mf_social_feed
 		$default_type = "";
 
 		$post_id = check_var('post');
-		/*$post_id = get_rwmb_post_id(array(
-			'meta_key' => 'meta_social_feed_',
-		));*/
 
 		if($post_id > 0)
 		{
@@ -1277,8 +1234,6 @@ class mf_social_feed
 
 			else if($instagram_access_token != '')
 			{
-				//update_post_meta($post_id, $this->meta_prefix.'instagram_access_token', $instagram_access_token);
-
 				$this->update_access_token(array('post_id' => $post_id, 'access_token' => $instagram_access_token));
 			}
 		}
@@ -1368,16 +1323,6 @@ class mf_social_feed
 					'type' => 'custom_html',
 					'callback' => array($this, 'meta_feed_instagram_info'),
 				),
-				/*array(
-					'name' => __("Client ID", 'lang_social_feed'),
-					'id' => $this->meta_prefix.'instagram_client_id',
-					'type' => 'text',
-					'attributes' => array(
-						'condition_type' => 'show_this_if',
-						'condition_selector' => $this->meta_prefix.'type',
-						'condition_value' => 'instagram',
-					),
-				),*/
 				array(
 					'name' => __("Access Token", 'lang_social_feed'),
 					'id' => $this->meta_prefix.'instagram_access_token',
@@ -1491,7 +1436,6 @@ class mf_social_feed
 
 		if($post_type == $this->post_type_post)
 		{
-			//$strFilterSocialFeed = get_or_set_table_filter(array('key' => 'strFilterSocialFeed', 'save' => true));
 			$strFilterSocialFeed = check_var('strFilterSocialFeed');
 
 			$arr_data = array();
@@ -1510,7 +1454,6 @@ class mf_social_feed
 
 		if($pagenow == 'edit.php' && $post_type == $this->post_type_post)
 		{
-			//$strFilterSocialFeed = get_or_set_table_filter(array('key' => 'strFilterSocialFeed'));
 			$strFilterSocialFeed = check_var('strFilterSocialFeed');
 
 			if($strFilterSocialFeed != '')
@@ -1530,10 +1473,7 @@ class mf_social_feed
 	{
 		if($count == 0)
 		{
-			/*if(has_feeds())
-			{*/
-				$count++;
-			//}
+			$count++;
 		}
 
 		return $count;
@@ -1721,8 +1661,6 @@ class mf_social_feed
 
 						if(is_array($option_widgets))
 						{
-							//echo var_export($option_widgets, true);
-
 							$is_in_use = false;
 							$example_links = "";
 
@@ -1849,8 +1787,8 @@ class mf_social_feed
 				switch($col)
 				{
 					case 'type':
-						$post_feed = get_post_meta($id, $this->meta_prefix.'feed_id', true);
-						//$post_feed = $post->post_parent;
+						$post_feed = get_post_meta($id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
+						//$post_feed = $r->post_parent;
 
 						$post_meta = get_post_meta($post_feed, $this->meta_prefix.$col, true);
 
@@ -1909,7 +1847,8 @@ class mf_social_feed
 					break;
 
 					case 'info':
-						$post_feed = get_post_meta($id, $this->meta_prefix.'feed_id', true);
+						$post_feed = get_post_meta($id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
+						//$post_feed = $r->post_parent;
 
 						$post_meta = get_post_meta($post_feed, $this->meta_prefix.'type', true);
 
@@ -1974,8 +1913,8 @@ class mf_social_feed
 
 			$post_id = $post->ID;
 
-			$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
-			//$post_feed = $post->post_parent;
+			$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
+			//$post_feed = $r->post_parent;
 
 			$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
 
@@ -2508,9 +2447,6 @@ class mf_social_feed
 				}
 
 				$_SESSION['access_token'] = $token->access_token;
-				//update_user_meta(get_current_user_id(), 'meta_social_feed_access_token', $token->access_token);
-				//$_SESSION['expires_in'] = $token->expires_in;
-				//$_SESSION['expires_at'] = $end_date;
 
 				session_write_close();
 
@@ -2527,10 +2463,7 @@ class mf_social_feed
 
 			return get_notification()
 			."<script>location.hash = 'settings_social_feed_linkedin';</script>";
-
 		}
-
-		/*else if(isset($_GET['new_token'])){}*/
 	}
 	#########################
 
@@ -3490,7 +3423,6 @@ class mf_social_feed
 					'post_name' => $post_name,
 					'post_title' => $post_title,
 					'post_content' => $post['text'],
-					//'post_excerpt' => $this->id, //This can be removed when post_parent is used everywhere
 					'post_parent' => $this->id,
 					'meta_input' => array(
 						$this->meta_prefix.'service' => $post['type'],
@@ -3626,7 +3558,7 @@ class mf_social_feed
 				$query_group = " GROUP BY post_group";
 			}
 
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".($data['amount'] + 1), $this->post_type_post, 'publish'));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, post_parent, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".($data['amount'] + 1), $this->post_type_post, 'publish'));
 			$rows = $wpdb->num_rows;
 
 			if($rows > 0)
@@ -3640,7 +3572,8 @@ class mf_social_feed
 						$post_content = $r->post_content;
 						$post_date = $r->post_date;
 
-						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
+						//$post_feed = $r->post_parent;
 
 						$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 						$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
@@ -3717,8 +3650,6 @@ class mf_social_feed
 						break;
 					}
 				}
-
-				//$limit_start += $data['amount'];
 			}
 
 			if($data['filter'] != 'no' && count($arr_post_feeds) > 1)
@@ -3740,7 +3671,6 @@ class mf_social_feed
 class widget_social_feed extends WP_Widget
 {
 	var $widget_ops = array();
-
 	var $arr_default = array(
 		'social_heading' => "",
 		'social_feeds' => array(),
@@ -3761,18 +3691,6 @@ class widget_social_feed extends WP_Widget
 			'classname' => 'social_feed',
 			'description' => __("Display Social Feeds", 'lang_social_feed'),
 		);
-
-		/*$this->arr_default = array(
-			'social_heading' => "",
-			'social_feeds' => array(),
-			'social_filter' => 'no',
-			'social_amount' => 18,
-			'social_load_more_posts' => 'no',
-			'social_limit_source' => 'no',
-			'social_text' => 'yes',
-			'social_likes' => 'no',
-			'social_read_more' => 'yes',
-		);*/
 
 		parent::__construct(str_replace("_", "-", $this->widget_ops['classname']).'-widget', __("Social Feed", 'lang_social_feed'), $this->widget_ops);
 	}
