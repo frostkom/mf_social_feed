@@ -2,12 +2,12 @@
 
 class mf_social_feed
 {
-	var $id = 0;
+	var $id;
 	var $type = "";
 	var $search = "";
 	var $post_type = 'mf_social_feed';
 	var $post_type_post = 'mf_social_feed_post';
-	var $meta_prefix = '';
+	var $meta_prefix;
 	var $sync_settings = array(
 		'setting_social_api_url',
 		'setting_instagram_client_id',
@@ -153,8 +153,87 @@ class mf_social_feed
 		return $json_output;
 	}
 
+	function block_render_callback($attributes)
+	{
+		if(!isset($attributes['social_heading'])){			$attributes['social_heading'] = "";}
+		if(!isset($attributes['social_feeds'])){			$attributes['social_feeds'] = array();}
+		if(!isset($attributes['social_filter'])){			$attributes['social_filter'] = 'no';}
+		if(!isset($attributes['social_amount'])){			$attributes['social_amount'] = 18;}
+		if(!isset($attributes['social_load_more_posts'])){	$attributes['social_load_more_posts'] = 'no';}
+		if(!isset($attributes['social_limit_source'])){		$attributes['social_limit_source'] = 'no';}
+		if(!isset($attributes['social_text'])){				$attributes['social_text'] = 'yes';}
+		if(!isset($attributes['social_likes'])){			$attributes['social_likes'] = 'no';}
+		if(!isset($attributes['social_read_more'])){		$attributes['social_read_more'] = 'yes';}
+
+		$out = "";
+
+		if(count($attributes['social_feeds']) > 0)
+		{
+			$setting_social_reload = get_option('setting_social_reload');
+
+			$this->wp_head_feed();
+
+			$out .= "<div class='widget social_feed'>";
+
+				if($attributes['social_heading'] != '')
+				{
+					$out .= "<h3>".$attributes['social_heading']."</h3>";
+				}
+
+				$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
+
+				$out .= "<div id='feed_".$feed_id."' class='section'"
+					.(is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $attributes['social_feeds'])."'" : "")
+					.($attributes['social_filter'] == 'yes' ? " data-social_filter='".$attributes['social_filter']."'" : "")
+					.($attributes['social_amount'] > 0 ? " data-social_amount='".$attributes['social_amount']."'" : "")
+					.($attributes['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$attributes['social_load_more_posts']."'" : "")
+					.($attributes['social_limit_source'] == 'yes' ? " data-social_limit_source='".$attributes['social_limit_source']."'" : "")
+					.($attributes['social_likes'] == 'yes' ? " data-social_likes='".$attributes['social_likes']."'" : "")
+					.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
+				.">
+					<i class='fa fa-spinner fa-spin fa-3x'></i>
+					<ul class='sf_feeds hide'></ul>
+					<ul class='sf_posts";
+
+						if($attributes['social_text'] == 'yes')
+						{
+							$out .= ($attributes['social_read_more'] == 'yes' ? " show_read_more" : '');
+						}
+
+						else
+						{
+							$out .= " hide_text";
+						}
+
+					$out .= " hide'></ul>";
+
+					if($attributes['social_load_more_posts'] == 'yes')
+					{
+						$out .= "<div class='form_button'>
+							<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
+						</div>";
+					}
+
+				$out .= "</div>"
+			."</div>";
+		}
+
+		return $out;
+	}
+
+	function get_display_filter_for_select()
+	{
+		return array(
+			'no' => __("No", 'lang_social_feed'),
+			'yes' => __("Yes", 'lang_social_feed')." (".__("Individually", 'lang_social_feed').")",
+			'group' => __("Yes", 'lang_social_feed')." (".__("Grouped", 'lang_social_feed').")",
+		);
+	}
+
 	function init()
 	{
+		// Post Types
+		#######################
 		$labels = array(
 			'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
 			'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
@@ -199,6 +278,31 @@ class mf_social_feed
 		);
 
 		register_post_type($this->post_type_post, $args);
+		#######################
+
+		// Blocks
+		#######################
+		$plugin_include_url = plugin_dir_url(__FILE__);
+		$plugin_version = get_plugin_version(__FILE__);
+
+		wp_register_script('script_social_feed_block_wp', $plugin_include_url."block/script_wp.js", array('wp-blocks', 'wp-i18n', 'wp-element', 'wp-components', 'wp-editor'), $plugin_version);
+
+		$arr_data_feeds = array();
+		get_post_children(array('post_type' => $this->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
+
+		wp_localize_script('script_social_feed_block_wp', 'script_social_feed_block_wp', array(
+			'social_feeds' => $arr_data_feeds,
+			'social_filter' => $this->get_display_filter_for_select(),
+			'yes_no_for_select' => get_yes_no_for_select(),
+		));
+
+		register_block_type('mf/socialfeed', array(
+			'editor_script' => 'script_social_feed_block_wp',
+			'editor_style' => 'style_base_block_wp',
+			'render_callback' => array($this, 'block_render_callback'),
+			//'style' => 'style_base_block_wp',
+		));
+		#######################
 	}
 
 	function admin_enqueue_scripts()
@@ -731,6 +835,38 @@ class mf_social_feed
 		}
 	}
 
+	function sb_instagram_settings_page()
+	{
+		$sesCallbackURL = get_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', true);
+
+		$access_token = check_var('sbi_access_token');
+
+		if($access_token != '')
+		{
+			if($sesCallbackURL != '')
+			{
+				delete_user_meta(get_current_user_id(), 'meta_social_feed_callback_url');
+
+				mf_redirect(html_entity_decode($sesCallbackURL), array('instagram_access_token' => $access_token));
+			}
+
+			else
+			{
+				do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).")");
+			}
+		}
+
+		else
+		{
+			do_log("API Error (".$type."): Malformed request (".var_export($_REQUEST, true).")");
+
+			if($sesCallbackURL != '')
+			{
+				mf_redirect(html_entity_decode($sesCallbackURL));
+			}
+		}
+	}
+
 	function admin_menu()
 	{
 		$menu_start = "edit.php?post_type=".$this->post_type;
@@ -744,37 +880,15 @@ class mf_social_feed
 		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, admin_url("options-general.php?page=settings_mf_base#settings_social_feed"));
 	}
 
-		function sb_instagram_settings_page()
-		{
-			$sesCallbackURL = get_user_meta(get_current_user_id(), 'meta_social_feed_callback_url', true);
+	function filter_sites_table_pages($arr_pages)
+	{
+		$arr_pages[$this->post_type] = array(
+			'icon' => "fas fa-bullhorn",
+			'title' => __("Social Feeds", 'lang_social_feed'),
+		);
 
-			$access_token = check_var('sbi_access_token');
-
-			if($access_token != '')
-			{
-				if($sesCallbackURL != '')
-				{
-					delete_user_meta(get_current_user_id(), 'meta_social_feed_callback_url');
-
-					mf_redirect(html_entity_decode($sesCallbackURL), array('instagram_access_token' => $access_token));
-				}
-
-				else
-				{
-					do_log("API Error (".$type."): No session data to use (".var_export($_REQUEST, true).")");
-				}
-			}
-
-			else
-			{
-				do_log("API Error (".$type."): Malformed request (".var_export($_REQUEST, true).")");
-
-				if($sesCallbackURL != '')
-				{
-					mf_redirect(html_entity_decode($sesCallbackURL));
-				}
-			}
-		}
+		return $arr_pages;
+	}
 
 	function meta_feed_facebook_info()
 	{
@@ -2000,28 +2114,33 @@ class mf_social_feed
 		// Disable SB FB style
 		wp_deregister_style('sb-font-awesome');
 	}
+	
+	function wp_head_feed()
+	{
+		$plugin_base_include_url = plugins_url()."/mf_base/include/";
+		$plugin_include_url = plugin_dir_url(__FILE__);
+		$plugin_version = get_plugin_version(__FILE__);
+
+		$setting_social_debug = get_option('setting_social_debug');
+
+		mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
+		mf_enqueue_style('style_base_bb', $plugin_base_include_url."backbone/style.css", $plugin_version);
+
+		mf_enqueue_script('underscore');
+		mf_enqueue_script('backbone');
+		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
+
+		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
+		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
+
+		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
+	}
 
 	function wp_head()
 	{
 		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
-			$plugin_base_include_url = plugins_url()."/mf_base/include/";
-			$plugin_include_url = plugin_dir_url(__FILE__);
-			$plugin_version = get_plugin_version(__FILE__);
-
-			$setting_social_debug = get_option('setting_social_debug');
-
-			mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
-			mf_enqueue_style('style_base_bb', $plugin_base_include_url."backbone/style.css", $plugin_version);
-
-			mf_enqueue_script('underscore');
-			mf_enqueue_script('backbone');
-			mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
-
-			mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
-			mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
-
-			mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
+			$this->wp_head_feed();
 		}
 	}
 
@@ -3690,7 +3809,7 @@ class mf_social_feed
 
 class widget_social_feed extends WP_Widget
 {
-	var $widget_ops = array();
+	var $widget_ops;
 	var $arr_default = array(
 		'social_heading' => "",
 		'social_feeds' => array(),
@@ -3806,22 +3925,12 @@ class widget_social_feed extends WP_Widget
 		get_post_children(array('post_type' => $this->obj_social_feed->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
 
 		echo "<div class='mf_form'>"
-			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='".$this->widget_ops['classname']."-title'"));
-
-			if(count($arr_data_feeds) > 1)
-			{
-				echo "<div class='flex_flow'>"
-					.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']));
-
-					if(count($instance['social_feeds']) != 1)
-					{
-						echo show_select(array('data' => $this->get_display_filter_for_select(), 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']));
-					}
-
-				echo "</div>";
-			}
-
-			echo "<div class='flex_flow'>"
+			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='".$this->widget_ops['classname']."-title'"))
+			."<div class='flex_flow'>"
+				.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']))
+				.show_select(array('data' => $this->get_display_filter_for_select(), 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']))
+			."</div>
+			<div class='flex_flow'>"
 				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']));
 
 				if($instance['social_limit_source'] != 'yes')
