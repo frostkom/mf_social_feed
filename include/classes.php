@@ -771,6 +771,7 @@ class mf_social_feed
 					switch($_GET['page'])
 					{
 						case 'cff-top':
+						case 'cff-feed-builder':
 							$this->get_api_credentials('facebook');
 
 							if(get_option('setting_social_debug') == 'yes')
@@ -874,6 +875,7 @@ class mf_social_feed
 		$menu_capability = 'edit_posts';
 		$menu_title = __("Posts", 'lang_social_feed');
 		add_submenu_page('cff-top', $menu_title, $menu_title, $menu_capability, 'cff-top', 'cff_settings_page');
+		add_submenu_page('cff-feed-builder', $menu_title, $menu_title, $menu_capability, 'cff-feed-builder', 'cff_settings_page');
 		add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', array($this, 'sb_instagram_settings_page'));
 
 		$menu_title = __("Settings", 'lang_social_feed');
@@ -2114,7 +2116,7 @@ class mf_social_feed
 		// Disable SB FB style
 		wp_deregister_style('sb-font-awesome');
 	}
-	
+
 	function wp_head_feed()
 	{
 		$plugin_base_include_url = plugins_url()."/mf_base/include/";
@@ -2650,7 +2652,8 @@ class mf_social_feed
 			case 'facebook':
 				$this->setting_social_api_url = get_site_option('setting_social_api_url', get_option('setting_social_api_url'));
 
-				$this->facebook_authorize_url = $this->setting_social_api_url."/facebook-login.php?state=".admin_url("admin.php?page=cff-top");
+				//$this->facebook_authorize_url = $this->setting_social_api_url."/facebook-login.php?state=".admin_url("admin.php?page=cff-top");
+				$this->facebook_authorize_url = $this->setting_social_api_url."/facebook-login.php?state={%27{url=".admin_url("admin.php?page=cff-top").",user=".get_bloginfo('admin_email').",opt=in,cff_con=2b7c59d51d}%27}";
 				$this->facebook_redirect_url = get_site_url()."/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=fb_login";
 			break;
 
