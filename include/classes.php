@@ -870,16 +870,18 @@ class mf_social_feed
 
 	function admin_menu()
 	{
-		$menu_start = "edit.php?post_type=".$this->post_type;
+		if(IS_EDITOR)
+		{
+			$menu_start = "edit.php?post_type=".$this->post_type;
+			$menu_capability = 'edit_posts';
+			$menu_title = __("Posts", 'lang_social_feed');
+			add_submenu_page('cff-top', $menu_title, $menu_title, $menu_capability, 'cff-top', 'cff_settings_page');
+			add_submenu_page('cff-feed-builder', $menu_title, $menu_title, $menu_capability, 'cff-feed-builder', 'cff_settings_page');
+			add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', array($this, 'sb_instagram_settings_page'));
 
-		$menu_capability = 'edit_posts';
-		$menu_title = __("Posts", 'lang_social_feed');
-		add_submenu_page('cff-top', $menu_title, $menu_title, $menu_capability, 'cff-top', 'cff_settings_page');
-		add_submenu_page('cff-feed-builder', $menu_title, $menu_title, $menu_capability, 'cff-feed-builder', 'cff_settings_page');
-		add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', array($this, 'sb_instagram_settings_page'));
-
-		$menu_title = __("Settings", 'lang_social_feed');
-		add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, admin_url("options-general.php?page=settings_mf_base#settings_social_feed"));
+			$menu_title = __("Settings", 'lang_social_feed');
+			add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, admin_url("options-general.php?page=settings_mf_base#settings_social_feed"));
+		}
 	}
 
 	function filter_sites_table_pages($arr_pages)
