@@ -1248,118 +1248,126 @@ class mf_social_feed
 
 			if($facebook_user_access_token != '')
 			{
-				$feed_name = get_post_meta($post_id, $this->meta_prefix.'search_for', true);
+				$feed_name_orig = $feed_name = get_post_meta($post_id, $this->meta_prefix.'search_for', true);
 				$feed_name = $this->filter_search_for($feed_name);
 
 				// Get page ID
 				########################
-				$url_page_id = "https://graph.facebook.com/".$feed_name."?limit=1&fields=id&access_token=".$facebook_user_access_token;
-
-				list($content, $headers) = get_url_content(array(
-					'url' => $url_page_id,
-					'catch_head' => true,
-				));
-
 				$log_message = "Social Feed Error getting Access Token for FB - ".$feed_name.": ";
 
-				switch($headers['http_code'])
+				if($feed_name != '')
 				{
-					case 200:
-					case 201:
-						$json = json_decode($content, true);
+					$url_page_id = "https://graph.facebook.com/".$feed_name."?limit=1&fields=id&access_token=".$facebook_user_access_token;
 
-						//{"id": "[number]"}
+					list($content, $headers) = get_url_content(array(
+						'url' => $url_page_id,
+						'catch_head' => true,
+					));
 
-						if(isset($json['id']) && $json['id'] > 0)
-						{
-							$page_id = $json['id'];
+					switch($headers['http_code'])
+					{
+						case 200:
+						case 201:
+							$json = json_decode($content, true);
 
-							// Get available tokens
-							########################
-							$url_available_access_tokens = "https://graph.facebook.com/me/accounts?limit=500&access_token=".$facebook_user_access_token;
+							//{"id": "[number]"}
 
-							list($content, $headers) = get_url_content(array(
-								'url' => $url_available_access_tokens,
-								'catch_head' => true,
-							));
-
-							switch($headers['http_code'])
+							if(isset($json['id']) && $json['id'] > 0)
 							{
-								case 200:
-								case 201:
-									$json = json_decode($content, true);
+								$page_id = $json['id'];
 
-									$page_access_token = "";
+								// Get available tokens
+								########################
+								$url_available_access_tokens = "https://graph.facebook.com/me/accounts?limit=500&access_token=".$facebook_user_access_token;
 
-									/*{
-									   "data": [
-										  {
-											 "access_token": "[token]",
-											 "category": "Public figure",
-											 "category_list": [
-												{
-												   "id": "[number]",
-												   "name": "Public figure"
-												}
-											 ],
-											 "name": "[page_name]",
-											 "id": "page_id",
-											 "tasks": [
-												"ADVERTISE",
-												"ANALYZE",
-												"CREATE_CONTENT",
-												"MANAGE",
-												"MESSAGING",
-												"MODERATE"
-											 ]
-										  },
-									   ],
-									   "paging": {
-										  "cursors": {
-											 "before": "MjE2NTI3ODcxNjk3NzA0",
-											 "after": "MTQ1NDQxNTI1MTUxMTY5OQZDZD"
-										  }
-									   }
-									}*/
+								list($content, $headers) = get_url_content(array(
+									'url' => $url_available_access_tokens,
+									'catch_head' => true,
+								));
 
-									foreach($json['data'] as $arr_page)
-									{
-										if($arr_page['id'] == $page_id)
+								switch($headers['http_code'])
+								{
+									case 200:
+									case 201:
+										$json = json_decode($content, true);
+
+										$page_access_token = "";
+
+										/*{
+										   "data": [
+											  {
+												 "access_token": "[token]",
+												 "category": "Public figure",
+												 "category_list": [
+													{
+													   "id": "[number]",
+													   "name": "Public figure"
+													}
+												 ],
+												 "name": "[page_name]",
+												 "id": "page_id",
+												 "tasks": [
+													"ADVERTISE",
+													"ANALYZE",
+													"CREATE_CONTENT",
+													"MANAGE",
+													"MESSAGING",
+													"MODERATE"
+												 ]
+											  },
+										   ],
+										   "paging": {
+											  "cursors": {
+												 "before": "MjE2NTI3ODcxNjk3NzA0",
+												 "after": "MTQ1NDQxNTI1MTUxMTY5OQZDZD"
+											  }
+										   }
+										}*/
+
+										foreach($json['data'] as $arr_page)
 										{
-											$page_access_token = $arr_page['access_token'];
+											if($arr_page['id'] == $page_id)
+											{
+												$page_access_token = $arr_page['access_token'];
+											}
 										}
-									}
 
-									if($page_access_token != '')
-									{
-										$this->update_access_token(array('post_id' => $post_id, 'access_token' => $page_access_token));
+										if($page_access_token != '')
+										{
+											$this->update_access_token(array('post_id' => $post_id, 'access_token' => $page_access_token));
 
-										do_log($log_message, 'trash');
-									}
+											do_log($log_message, 'trash');
+										}
 
-									else
-									{
-										do_log($log_message."No corresponding page ID (#".$page_id.") from ".$url_available_access_tokens);
-									}
-								break;
+										else
+										{
+											do_log($log_message."No corresponding page ID (#".$page_id.") from ".$url_available_access_tokens);
+										}
+									break;
 
-								default:
-									do_log($log_message."Wrong response from ".$url_available_access_tokens);
+									default:
+										do_log($log_message."Wrong response from ".$url_available_access_tokens);
 
-									return false;
-								break;
+										return false;
+									break;
+								}
 							}
-						}
 
-						else
-						{
-							do_log($log_message."No page ID from ".$url_page_id);
-						}
-					break;
+							else
+							{
+								do_log($log_message."No page ID from ".$url_page_id);
+							}
+						break;
 
-					default:
-						do_log($log_message."Wrong response from ".$url_page_id);
-					break;
+						default:
+							do_log($log_message."Wrong response from ".$url_page_id);
+						break;
+					}
+				}
+
+				else
+				{
+					do_log($log_message."Name was empty (".$feed_name_orig." -> ".$feed_name.")");
 				}
 				########################
 			}
@@ -2823,7 +2831,7 @@ class mf_social_feed
 		$this->search = $this->filter_search_for($this->search);
 
 		$facebook_access_token = $this->facebook_access_token;
-		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$facebook_access_token; //&limit=10
+		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$facebook_access_token; //."&limit=10"
 
 		list($content, $headers) = get_url_content(array('url' => $fb_feed_url, 'catch_head' => true));
 		$json = json_decode($content, true);
@@ -2832,7 +2840,20 @@ class mf_social_feed
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log("Facebook: ".$fb_feed_url." -> ".htmlspecialchars(var_export($json['data'], true)));
+				$data_temp = $json['data'];
+				$count_temp = count($data_temp);
+
+				for($i = 0; $i < $count_temp; $i++)
+				{
+					unset($data_temp[$i]['id']);
+					unset($data_temp[$i]['from']['id']);
+
+					$data_temp[$i]['message'] = substr($data_temp[$i]['message'], 0, 10)."...";
+					$data_temp[$i]['full_picture'] = substr($data_temp[$i]['full_picture'], 0, 10)."...";
+					$data_temp[$i]['created_time'] = date("Y-m-d H:i:s", strtotime($data_temp[$i]['created_time']));
+				}
+
+				do_log(__FUNCTION__.": ".$fb_feed_url." -> ".htmlspecialchars(var_export($data_temp, true)));
 			}
 
 			foreach($json['data'] as $post)
@@ -2843,13 +2864,6 @@ class mf_social_feed
 						'name' => '[name]',
 						'id' => '[id]'
 					),
-					'message' => '[text]',
-					'full_picture' => '[url]',
-					'created_time' => '[datetime]'
-				)*/
-
-				/*array(
-					'id' => '[id]_[id]',
 					'message' => '[text]',
 					'full_picture' => '[url]',
 					'created_time' => '[datetime]'
@@ -2894,14 +2908,14 @@ class mf_social_feed
 				);
 			}
 
-			$this->delete_error();
+			//$this->delete_error();
 		}
 
 		else
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log("Facebook: ".$fb_feed_url." -> ".$json['error']['message']);
+				do_log(__FUNCTION__.": ".$fb_feed_url." -> ".$json['error']['message']);
 			}
 
 			$this->save_error(array('message' => (isset($json['error']['message']) ? $json['error']['message'] : "Unknown FB error"))); //"Facebook: ".
@@ -2932,7 +2946,7 @@ class mf_social_feed
 
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log("Instagram: ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
+				do_log(__FUNCTION__.": ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
 			}
 
 			foreach($json->data as $data_account)
@@ -2974,7 +2988,7 @@ class mf_social_feed
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log("Instagram: ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
+				do_log(__FUNCTION__.": ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
 			}
 
 			return array(
@@ -3010,7 +3024,7 @@ class mf_social_feed
 			{
 				if(get_option('setting_social_debug') == 'yes')
 				{
-					do_log("Instagram: ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
+					do_log(__FUNCTION__.": ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
 				}
 
 				foreach($json->data as $post)
@@ -3122,7 +3136,7 @@ class mf_social_feed
 			{
 				if(get_option('setting_social_debug') == 'yes')
 				{
-					do_log("LinkedIn: ".htmlspecialchars(var_export($results, true)));
+					do_log(__FUNCTION__.": ".htmlspecialchars(var_export($results, true)));
 				}
 
 				foreach($results as $post)
@@ -3191,7 +3205,7 @@ class mf_social_feed
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log("RSS: ".$this->search." -> ".htmlspecialchars(var_export($feed->get_items(), true)));
+				do_log(__FUNCTION__.": ".$this->search." -> ".htmlspecialchars(var_export($feed->get_items(), true)));
 			}
 
 			foreach($feed->get_items() as $item)
@@ -3228,7 +3242,7 @@ class mf_social_feed
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log("RSS Error: ".htmlspecialchars(var_export($feed, true)));
+				do_log(__FUNCTION__." Error: ".htmlspecialchars(var_export($feed, true)));
 			}
 
 			if(isset($feed->error) && $feed->error != '')
@@ -3553,7 +3567,7 @@ class mf_social_feed
 
 		if(get_option('setting_social_debug') == 'yes')
 		{
-			do_log("Social Posts: ".htmlspecialchars(var_export($this->arr_posts, true)));
+			do_log(__FUNCTION__.": ".htmlspecialchars(var_export($this->arr_posts, true)));
 		}
 
 		if(count($this->arr_posts) > 0)
