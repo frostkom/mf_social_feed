@@ -173,7 +173,7 @@ class mf_social_feed
 
 			$this->wp_head_feed();
 
-			$out .= "<div class='widget social_feed'>";
+			$out .= "<div class='widget social_feed".(isset($attributes['className']) && $attributes['className'] != '' ? " ".$attributes['className'] : "")."'>";
 
 				if($attributes['social_heading'] != '')
 				{
