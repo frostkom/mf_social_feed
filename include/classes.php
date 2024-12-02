@@ -173,7 +173,7 @@ class mf_social_feed
 
 			$this->wp_head_feed();
 
-			$out .= "<div class='widget social_feed".(isset($attributes['className']) && $attributes['className'] != '' ? " ".$attributes['className'] : "")."'>";
+			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed", 'attributes' => $attributes)).">";
 
 				if($attributes['social_heading'] != '')
 				{
@@ -209,7 +209,7 @@ class mf_social_feed
 
 					if($attributes['social_load_more_posts'] == 'yes')
 					{
-						$out .= "<div class='form_button'>
+						$out .= "<div".get_form_button_classes().">
 							<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
 						</div>";
 					}
@@ -2277,7 +2277,9 @@ class mf_social_feed
 
 				if($load_more_posts == 'yes')
 				{
-					$out .= "<div class='form_button'><a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a></div>";
+					$out .= "<div".get_form_button_classes().">
+						<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
+					</div>";
 				}
 
 			$out .= "</div>
@@ -3900,7 +3902,7 @@ class widget_social_feed extends WP_Widget
 
 				if($instance['social_load_more_posts'] == 'yes')
 				{
-					echo "<div class='form_button'>
+					echo "<div".get_form_button_classes().">
 						<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
 					</div>";
 				}

@@ -13,8 +13,8 @@
 	{
 		title: __("Social Feed", 'lang_social_feed'),
 		description: __("Display a Social Feed", 'lang_social_feed'),
-		icon: 'megaphone', /* https://developer.wordpress.org/resource/dashicons/ */
-		category: 'widgets', /* common, formatting, layout, widgets, embed */
+		icon: 'megaphone',
+		category: 'widgets',
 		'attributes':
 		{
 			'align':
@@ -89,6 +89,10 @@
 			{
 				'fontSize': true,
 				'lineHeight': true
+			},
+			"__experimentalBorder":
+			{
+				"radius": true
 			}
 		},
 		edit: function(props)
