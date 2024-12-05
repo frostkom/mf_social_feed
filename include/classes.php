@@ -232,6 +232,8 @@ class mf_social_feed
 
 	function init()
 	{
+		load_plugin_textdomain('lang_social_feed', false, str_replace("/include", "", dirname(plugin_basename(__FILE__)))."/lang/");
+
 		// Post Types
 		#######################
 		$labels = array(
