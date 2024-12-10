@@ -1667,7 +1667,7 @@ class mf_social_feed
 		return $cols;
 	}
 
-	function column_cell($col, $id)
+	function column_cell($col, $post_id)
 	{
 		global $wpdb, $post;
 
@@ -1677,14 +1677,14 @@ class mf_social_feed
 				switch($col)
 				{
 					case 'type':
-						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$col, true);
 
 						echo "<i class='".$this->get_post_icon($post_meta)." fa-2x'></i>";
 
 						switch($post_meta)
 						{
 							case 'facebook':
-								$facebook_access_token_expiry_date = get_post_meta($id, $this->meta_prefix.'facebook_access_token_expiry_date', true);
+								$facebook_access_token_expiry_date = get_post_meta($post_id, $this->meta_prefix.'facebook_access_token_expiry_date', true);
 
 								if($facebook_access_token_expiry_date > DEFAULT_DATE)
 								{
@@ -1707,8 +1707,8 @@ class mf_social_feed
 					break;
 
 					case 'search_for':
-						$post_meta_search_for = get_post_meta($id, $this->meta_prefix.$col, true);
-						$post_meta_type = get_post_meta($id, $this->meta_prefix.'type', true);
+						$post_meta_search_for = get_post_meta($post_id, $this->meta_prefix.$col, true);
+						$post_meta_type = get_post_meta($post_id, $this->meta_prefix.'type', true);
 
 						if($post_meta_type == 'rss')
 						{
@@ -1770,25 +1770,25 @@ class mf_social_feed
 
 							$fetch_link = "";
 
-							$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $id, $this->post_type));
+							$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $post_id, $this->post_type));
 
 							if($wpdb->num_rows > 0)
 							{
 								$intFeedID = check_var('intFeedID');
 
-								if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $id && wp_verify_nonce($_REQUEST['_wpnonce_feed_fetch'], 'feed_fetch_'.$id))
+								if(isset($_REQUEST['btnFeedFetch']) && $intFeedID > 0 && $intFeedID == $post_id && wp_verify_nonce($_REQUEST['_wpnonce_feed_fetch'], 'feed_fetch_'.$post_id))
 								{
-									$this->set_id($id);
+									$this->set_id($post_id);
 									$this->fetch_feed();
 								}
 
 								else
 								{
-									$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=".$this->post_type."&btnFeedFetch&intFeedID=".$id), 'feed_fetch_'.$id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
+									$fetch_link = "<a href='".wp_nonce_url(admin_url("edit.php?post_type=".$this->post_type."&btnFeedFetch&intFeedID=".$post_id), 'feed_fetch_'.$post_id, '_wpnonce_feed_fetch')."'>".__("Fetch", 'lang_social_feed')."</a> | ";
 								}
 							}
 
-							$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s", $id, $this->post_type));
+							$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s", $post_id, $this->post_type));
 
 							echo "<a href='".$feed_url."'>".$post_meta_search_for."</a>
 							<div class='row-actions'>"
@@ -1808,7 +1808,7 @@ class mf_social_feed
 
 							foreach($option_widgets as $widget_key => $arr_widget)
 							{
-								if(isset($arr_widget['social_feeds']) && (count($arr_widget['social_feeds']) == 0 || in_array($id, $arr_widget['social_feeds'])))
+								if(isset($arr_widget['social_feeds']) && (count($arr_widget['social_feeds']) == 0 || in_array($post_id, $arr_widget['social_feeds'])))
 								{
 									$is_in_use = true;
 
@@ -1850,11 +1850,11 @@ class mf_social_feed
 					break;
 
 					case 'amount_of_posts':
-						$amount_publish = $this->get_amount(array('id' => $id));
-						$amount_draft = $this->get_amount(array('id' => $id, 'post_status' => 'draft'));
-						$amount_pending = $this->get_amount(array('id' => $id, 'post_status' => 'pending'));
+						$amount_publish = $this->get_amount(array('id' => $post_id));
+						$amount_draft = $this->get_amount(array('id' => $post_id, 'post_status' => 'draft'));
+						$amount_pending = $this->get_amount(array('id' => $post_id, 'post_status' => 'pending'));
 
-						$post_error = get_post_meta($id, $this->meta_prefix.'error', true);
+						$post_error = get_post_meta($post_id, $this->meta_prefix.'error', true);
 
 						if($post_error != '')
 						{
@@ -1866,7 +1866,7 @@ class mf_social_feed
 						{
 							$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
 
-							$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = %s AND ID = '%d' LIMIT 0, 1", $this->post_type, $id));
+							$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = %s AND ID = '%d' LIMIT 0, 1", $this->post_type, $post_id));
 
 							foreach($result as $r)
 							{
@@ -1888,7 +1888,7 @@ class mf_social_feed
 
 						else if($amount_publish > 0)
 						{
-							echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$id)."'>";
+							echo "<a href='".admin_url("edit.php?post_type=".$this->post_type_post."&strFilterSocialFeed=".$post_id)."'>";
 
 								if($amount_draft > 0 || $amount_pending > 0)
 								{
@@ -1912,7 +1912,7 @@ class mf_social_feed
 
 							echo "</a>";
 
-							$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $id));
+							$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $post_id));
 
 							if($post_latest > DEFAULT_DATE)
 							{
@@ -1929,7 +1929,7 @@ class mf_social_feed
 				switch($col)
 				{
 					case 'type':
-						$post_feed = get_post_meta($id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
+						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
 						//$post_feed = $r->post_parent;
 
 						$post_meta = get_post_meta($post_feed, $this->meta_prefix.$col, true);
@@ -1941,12 +1941,12 @@ class mf_social_feed
 
 						else
 						{
-							wp_trash_post($id);
+							wp_trash_post($post_id);
 						}
 					break;
 
 					case 'name':
-						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$col, true);
 
 						if(substr($post_meta, 0, 1) != "@")
 						{
@@ -1955,7 +1955,7 @@ class mf_social_feed
 
 						echo $post_meta;
 
-						$post_status = get_post_status($id);
+						$post_status = get_post_status($post_id);
 
 						switch($post_status)
 						{
@@ -1970,13 +1970,13 @@ class mf_social_feed
 					break;
 
 					case 'text':
-						$post_content = mf_get_post_content($id);
+						$post_content = mf_get_post_content($post_id);
 
 						echo shorten_text(array('string' => $post_content, 'limit' => 50));
 					break;
 
 					case 'image':
-						$post_meta = get_post_meta($id, $this->meta_prefix.$col, true);
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$col, true);
 
 						if($post_meta != '')
 						{
@@ -1985,11 +1985,11 @@ class mf_social_feed
 					break;
 
 					case 'post_id':
-						echo get_post_title($id);
+						echo get_post_title($post_id);
 					break;
 
 					case 'info':
-						$post_feed = get_post_meta($id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
+						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
 						//$post_feed = $r->post_parent;
 
 						$post_meta = get_post_meta($post_feed, $this->meta_prefix.'type', true);
@@ -1997,7 +1997,7 @@ class mf_social_feed
 						switch($post_meta)
 						{
 							case 'facebook':
-								$post_owner = get_post_meta($id, $this->meta_prefix.'is_owner', true);
+								$post_owner = get_post_meta($post_id, $this->meta_prefix.'is_owner', true);
 
 								if($post_owner == 1)
 								{
@@ -2014,7 +2014,7 @@ class mf_social_feed
 							break;
 
 							case 'twitter':
-								$post_owner = get_post_meta($id, $this->meta_prefix.'is_owner', true);
+								$post_owner = get_post_meta($post_id, $this->meta_prefix.'is_owner', true);
 
 								if($post_owner == 1)
 								{
@@ -2029,12 +2029,12 @@ class mf_social_feed
 									</span>";
 								}
 
-								if(get_post_meta($id, $this->meta_prefix.'is_reply', true) == 1)
+								if(get_post_meta($post_id, $this->meta_prefix.'is_reply', true) == 1)
 								{
 									echo "<i class='fa fa-reply fa-2x' title='".__("Answer", 'lang_social_feed')."'></i>";
 								}
 
-								if(get_post_meta($id, $this->meta_prefix.'is_retweet', true) == 1)
+								if(get_post_meta($post_id, $this->meta_prefix.'is_retweet', true) == 1)
 								{
 									echo "<i class='fa fa-share fa-2x' title='"."Retweet"."'></i>";
 								}
