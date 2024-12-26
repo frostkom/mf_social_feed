@@ -121,18 +121,6 @@
 
 			/* Select */
 			/* ################### */
-			var arr_options = [];
-
-			jQuery.each(script_social_feed_block_wp.social_feeds, function(index, value)
-			{
-				if(index == "")
-				{
-					index = 0;
-				}
-
-				arr_options.push({label: value, value: index});
-			});
-
 			arr_out.push(el(
 				'div',
 				{className: "wp_mf_block " + props.className},
@@ -141,7 +129,7 @@
 					{
 						label: __("Feeds", 'lang_social_feed'),
 						value: props.attributes.social_feeds,
-						options: arr_options,
+						options: convert_php_array_to_block_js(script_social_feed_block_wp.social_feeds),
 						multiple: true,
 						onChange: function(value)
 						{
@@ -154,18 +142,6 @@
 
 			/* Select */
 			/* ################### */
-			var arr_options = [];
-
-			jQuery.each(script_social_feed_block_wp.social_filter, function(index, value)
-			{
-				if(index == "")
-				{
-					index = 0;
-				}
-
-				arr_options.push({label: value, value: index});
-			});
-
 			arr_out.push(el(
 				'div',
 				{className: "wp_mf_block " + props.className},
@@ -174,7 +150,7 @@
 					{
 						label: __("Display Filter", 'lang_social_feed'),
 						value: props.attributes.social_filter,
-						options: arr_options,
+						options: convert_php_array_to_block_js(script_social_feed_block_wp.social_filter),
 						onChange: function(value)
 						{
 							props.setAttributes({social_filter: value});
@@ -206,18 +182,6 @@
 
 			/* Select */
 			/* ################### */
-			var arr_options = [];
-
-			jQuery.each(script_social_feed_block_wp.yes_no_for_select, function(index, value)
-			{
-				if(index == "")
-				{
-					index = 0;
-				}
-
-				arr_options.push({label: value, value: index});
-			});
-
 			arr_out.push(el(
 				'div',
 				{className: "wp_mf_block " + props.className},
@@ -226,7 +190,7 @@
 					{
 						label: __("Load More Posts", 'lang_social_feed'),
 						value: props.attributes.social_load_more_posts,
-						options: arr_options,
+						options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
 						onChange: function(value)
 						{
 							props.setAttributes({social_load_more_posts: value});
@@ -238,18 +202,6 @@
 
 			/* Select */
 			/* ################### */
-			var arr_options = [];
-
-			jQuery.each(script_social_feed_block_wp.yes_no_for_select, function(index, value)
-			{
-				if(index == "")
-				{
-					index = 0;
-				}
-
-				arr_options.push({label: value, value: index});
-			});
-
 			arr_out.push(el(
 				'div',
 				{className: "wp_mf_block " + props.className},
@@ -258,7 +210,7 @@
 					{
 						label: __("Limit Source", 'lang_social_feed'), /* + " <i class='fa fa-info-circle blue' title='" + __("This will prevent one source from taking over the whole feed if it is posted to much more often than the other sources", 'lang_social_feed') + "'></i>"*/
 						value: props.attributes.social_limit_source,
-						options: arr_options,
+						options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
 						onChange: function(value)
 						{
 							props.setAttributes({social_limit_source: value});
@@ -270,18 +222,6 @@
 
 			/* Select */
 			/* ################### */
-			var arr_options = [];
-
-			jQuery.each(script_social_feed_block_wp.yes_no_for_select, function(index, value)
-			{
-				if(index == "")
-				{
-					index = 0;
-				}
-
-				arr_options.push({label: value, value: index});
-			});
-
 			arr_out.push(el(
 				'div',
 				{className: "wp_mf_block " + props.className},
@@ -290,7 +230,7 @@
 					{
 						label: __("Display Text", 'lang_social_feed'),
 						value: props.attributes.social_text,
-						options: arr_options,
+						options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
 						onChange: function(value)
 						{
 							props.setAttributes({social_text: value});
@@ -302,18 +242,6 @@
 
 			/* Select */
 			/* ################### */
-			var arr_options = [];
-
-			jQuery.each(script_social_feed_block_wp.yes_no_for_select, function(index, value)
-			{
-				if(index == "")
-				{
-					index = 0;
-				}
-
-				arr_options.push({label: value, value: index});
-			});
-
 			arr_out.push(el(
 				'div',
 				{className: "wp_mf_block " + props.className},
@@ -322,7 +250,7 @@
 					{
 						label: __("Display Read More", 'lang_social_feed'),
 						value: props.attributes.social_read_more,
-						options: arr_options,
+						options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
 						onChange: function(value)
 						{
 							props.setAttributes({social_read_more: value});
@@ -334,18 +262,6 @@
 
 			/* Select */
 			/* ################### */
-			var arr_options = [];
-
-			jQuery.each(script_social_feed_block_wp.yes_no_for_select, function(index, value)
-			{
-				if(index == "")
-				{
-					index = 0;
-				}
-
-				arr_options.push({label: value, value: index});
-			});
-
 			arr_out.push(el(
 				'div',
 				{className: "wp_mf_block " + props.className},
@@ -354,7 +270,7 @@
 					{
 						label: __("Display Likes", 'lang_social_feed'),
 						value: props.attributes.social_likes,
-						options: arr_options,
+						options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
 						onChange: function(value)
 						{
 							props.setAttributes({social_likes: value});
