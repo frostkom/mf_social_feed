@@ -287,15 +287,26 @@ class mf_social_feed
 		$plugin_include_url = plugin_dir_url(__FILE__);
 		$plugin_version = get_plugin_version(__FILE__);
 
-		wp_register_script('script_social_feed_block_wp', $plugin_include_url."block/script_wp.js", array('wp-blocks', 'wp-i18n', 'wp-element', 'wp-components', 'wp-editor'), $plugin_version);
+		wp_register_script('script_social_feed_block_wp', $plugin_include_url."block/script_wp.js", array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor', 'wp-block-editor'), $plugin_version);
 
 		$arr_data_feeds = array();
 		get_post_children(array('post_type' => $this->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
 
 		wp_localize_script('script_social_feed_block_wp', 'script_social_feed_block_wp', array(
+			'block_title' => __("Social Feed", 'lang_social_feed'),
+			'block_description' => __("Display a Social Feed", 'lang_social_feed'),
+			'social_heading_label' => __("Heading", 'lang_social_feed'),
+			'social_feeds_label' => __("Feeds", 'lang_social_feed'),
 			'social_feeds' => $arr_data_feeds,
+			'social_filter_label' => __("Display Filter", 'lang_social_feed'),
 			'social_filter' => $this->get_display_filter_for_select(),
+			'social_amount_label' => __("Amount", 'lang_social_feed'),
+			'social_load_more_posts_label' => __("Load More Posts", 'lang_social_feed'),
 			'yes_no_for_select' => get_yes_no_for_select(),
+			'social_limit_source_label' => __("Limit Source", 'lang_social_feed'),
+			'social_text_label' => __("Display Text", 'lang_social_feed'),
+			'social_read_more_label' => __("Display Read More", 'lang_social_feed'),
+			'social_likes_label' => __("Display Likes", 'lang_social_feed'),
 		));
 
 		register_block_type('mf/socialfeed', array(
