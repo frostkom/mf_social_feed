@@ -6,7 +6,8 @@
 		TextControl = wp.components.TextControl,
 		MediaUpload = wp.blockEditor.MediaUpload,
 	    Button = wp.components.Button,
-		MediaUploadCheck = wp.blockEditor.MediaUploadCheck;
+		MediaUploadCheck = wp.blockEditor.MediaUploadCheck,
+		InspectorControls = wp.blockEditor.InspectorControls;
 
 	registerBlockType('mf/socialfeed',
 	{
