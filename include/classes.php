@@ -806,19 +806,18 @@ class mf_social_feed
 
 			case 'edit.php':
 				$plugin_include_url = plugin_dir_url(__FILE__);
-				$plugin_version = get_plugin_version(__FILE__);
 
 				switch(check_var('post_type'))
 				{
 					case $this->post_type:
-						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
-						mf_enqueue_style('style_social_feed_wp', $plugin_include_url."style_wp.css", $plugin_version);
+						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php"); // Just for icon colors
+						mf_enqueue_style('style_social_feed_wp', $plugin_include_url."style_wp.css");
 					break;
 
 					case $this->post_type_post:
-						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version); // Just for icon colors
+						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php"); // Just for icon colors
 
-						mf_enqueue_script('script_social_feed_wp', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')), $plugin_version);
+						mf_enqueue_script('script_social_feed_wp', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')));
 					break;
 				}
 			break;
@@ -842,9 +841,8 @@ class mf_social_feed
 			if($rows > 0)
 			{
 				$plugin_include_url = plugin_dir_url(__FILE__);
-				$plugin_version = get_plugin_version(__FILE__);
 
-				mf_enqueue_script('script_social_feed_wp_errors', $plugin_include_url."script_wp_errors.js", array('error_text' => __("Errors", 'lang_social_feed'), 'error_amount' => $rows), $plugin_version);
+				mf_enqueue_script('script_social_feed_wp_errors', $plugin_include_url."script_wp_errors.js", array('error_text' => __("Errors", 'lang_social_feed'), 'error_amount' => $rows));
 			}
 		}
 	}
@@ -2144,21 +2142,20 @@ class mf_social_feed
 	{
 		$plugin_base_include_url = plugins_url()."/mf_base/include/";
 		$plugin_include_url = plugin_dir_url(__FILE__);
-		$plugin_version = get_plugin_version(__FILE__);
 
 		$setting_social_debug = get_option('setting_social_debug');
 
-		mf_enqueue_style('style_social_feed', $plugin_include_url."style.php", $plugin_version);
-		mf_enqueue_style('style_base_bb', $plugin_base_include_url."backbone/style.css", $plugin_version);
+		mf_enqueue_style('style_social_feed', $plugin_include_url."style.php");
+		mf_enqueue_style('style_base_bb', $plugin_base_include_url."backbone/style.css");
 
 		mf_enqueue_script('underscore');
 		mf_enqueue_script('backbone');
-		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js", $plugin_version);
+		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js");
 
-		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url), $plugin_version);
-		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug), $plugin_version);
+		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url));
+		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug));
 
-		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js", $plugin_version);
+		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js");
 	}
 
 	function wp_head()

@@ -211,7 +211,9 @@ echo "@media all
 				echo ".widget.social_feed img
 				{
 					display: block;
+					object-fit: cover;
 					transition: all 1s ease;
+					width: 100%;
 				}
 
 					.widget.social_feed li:hover img
