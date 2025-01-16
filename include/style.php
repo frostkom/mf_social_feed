@@ -30,17 +30,11 @@ if(!function_exists('calc_width'))
 switch($setting_social_design)
 {
 	case 'masonry':
-		$post_container_desktop = "-webkit-column-count: ".$setting_social_desktop_columns.";
-		column-count: ".$setting_social_desktop_columns.";";
+		$post_container_desktop = "column-count: ".$setting_social_desktop_columns.";";
+		$post_container_tablet = "column-count: ".$setting_social_tablet_columns.";";
+		$post_container_mobile = "column-count: ".$setting_social_mobile_columns.";";
 
-		$post_container_tablet = "-webkit-column-count: ".$setting_social_tablet_columns.";
-		column-count: ".$setting_social_tablet_columns.";";
-
-		$post_container_mobile = "-webkit-column-count: ".$setting_social_mobile_columns.";
-		column-count: ".$setting_social_mobile_columns.";";
-
-		$post_item_desktop = "-webkit-column-break-inside: avoid;
-		page-break-inside: avoid;
+		$post_item_desktop = "page-break-inside: avoid;
 		break-inside: avoid;";
 	break;
 
@@ -49,19 +43,10 @@ switch($setting_social_design)
 		$column_width_tablet = calc_width($setting_social_tablet_columns);
 		$column_width_mobile = calc_width($setting_social_mobile_columns);
 
-		$post_container_desktop = "display: -webkit-box;
-		display: -ms-flexbox;
-		display: -webkit-flex;
-		display: flex;
-		-webkit-box-flex-wrap: wrap;
-		-webkit-flex-wrap: wrap;
-		-ms-flex-wrap: wrap;
+		$post_container_desktop = "display: flex;
 		flex-wrap: wrap;";
 
-		$post_item_desktop = "-webkit-box-flex: 0 1 auto;
-		-webkit-flex: 0 1 auto;
-		-ms-flex: 0 1 auto;
-		flex: 0 1 auto;
+		$post_item_desktop = "flex: 0 1 auto;
 		width: ".$column_width_desktop."%;";
 
 		$post_item_tablet = "width: ".$column_width_tablet."%;";
@@ -218,7 +203,6 @@ echo "@media all
 
 					.widget.social_feed li:hover img
 					{
-						-webkit-transform: scale(1.1);
 						transform: scale(1.1);
 					}
 
@@ -240,17 +224,16 @@ echo "@media all
 
 					echo ".widget.social_feed .meta
 					{
-						display: -webkit-box;
-						display: -ms-flexbox;
-						display: -webkit-flex;
 						display: flex;
 					}
 
+						.widget.social_feed .meta > a
+						{
+							text-decoration: none;
+						}
+
 						.widget.social_feed .sf_posts li .meta .fa, .widget.social_feed .sf_posts li .meta .fab
 						{
-							-webkit-box-flex: 0 0 auto;
-							-webkit-flex: 0 0 auto;
-							-ms-flex: 0 0 auto;
 							flex: 0 0 auto;
 							margin-right: .5em;
 						}
@@ -282,9 +265,6 @@ echo "@media all
 
 						.widget.social_feed .title, .widget.social_feed .name
 						{
-							-webkit-box-flex: 0 auto auto;
-							-webkit-flex: 0 auto auto;
-							-ms-flex: 0 auto auto;
 							flex: 0 auto auto;
 							font-size: .7em;
 							line-height: 1.5;
@@ -297,9 +277,6 @@ echo "@media all
 						.widget.social_feed .date
 						{
 							color: #ccc;
-							-webkit-box-flex: 1 0 0;
-							-webkit-flex: 1 0 0;
-							-ms-flex: 1 0 0;
 							flex: 1 0 0;
 							font-size: .6em;
 							line-height: 1.8;
@@ -340,9 +317,9 @@ echo "@media all
 								{
 									display: inline-block;
 									margin: .5em 0 0 !important;
-									position: relative;
-									text-decoration: underline;
-									z-index: 1;
+									/*position: relative;
+									text-decoration: none;
+									z-index: 1;*/
 								}
 
 				.widget.social_feed .likes

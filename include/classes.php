@@ -285,9 +285,8 @@ class mf_social_feed
 		// Blocks
 		#######################
 		$plugin_include_url = plugin_dir_url(__FILE__);
-		$plugin_version = get_plugin_version(__FILE__);
 
-		wp_register_script('script_social_feed_block_wp', $plugin_include_url."block/script_wp.js", array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor', 'wp-block-editor'), $plugin_version);
+		wp_register_script('script_social_feed_block_wp', $plugin_include_url."block/script_wp.js", array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor', 'wp-block-editor'));
 
 		$arr_data_feeds = array();
 		get_post_children(array('post_type' => $this->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
