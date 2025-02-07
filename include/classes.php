@@ -360,7 +360,7 @@ class mf_social_feed
 		$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
 		$arr_settings['setting_social_deactive_on_error'] = __("Deactivate on Error", 'lang_social_feed');
 
-		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
+		if(apply_filters('get_block_search', 'mf/socialfeed') > 0 || !is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
 			$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
 		}
@@ -372,7 +372,7 @@ class mf_social_feed
 
 		//Styling
 		############################
-		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
+		if(apply_filters('get_block_search', 'mf/socialfeed') > 0 || !is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
 			$options_area = $options_area_orig."_styling";
 
@@ -1156,7 +1156,7 @@ class mf_social_feed
 		$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
 
 		$out = "<ul id='".$this->meta_prefix."info'>"
-			."<li><i class='".$this->get_post_icon($post_service)."'></i> ".get_post_title($post_feed)."</li>"
+			."<li><i class='".$this->get_post_icon($post_service)."'></i> ".get_the_title($post_feed)."</li>"
 			."<li><a href='".$post_link."'>@".$post_username."</a></li>"
 			.($post_image != '' ? "<li><img src='".$post_image."'></li>" : "")
 			."<li>".format_date($post_date)."</li>"
@@ -1228,7 +1228,7 @@ class mf_social_feed
 							break;
 
 							case 'instagram':
-								do_log("Update ".get_post_title($r->ID)." (".$r->ID.") with access_token for Instagram");
+								do_log("Update ".get_the_title($r->ID)." (".$r->ID.") with access_token for Instagram");
 
 								//update_post_meta($data['post_id'], $this->meta_prefix.'instagram_access_token', $data['access_token']);
 								//wp_publish_post($r->ID);
@@ -1994,7 +1994,7 @@ class mf_social_feed
 					break;
 
 					case 'post_id':
-						echo get_post_title($post_id);
+						echo get_the_title($post_id);
 					break;
 
 					case 'info':
@@ -2160,7 +2160,7 @@ class mf_social_feed
 
 	function wp_head()
 	{
-		if(!is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
+		if(apply_filters('get_block_search', 'mf/socialfeed') > 0 || !is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
 			$this->wp_head_feed();
 		}
@@ -3778,7 +3778,7 @@ class mf_social_feed
 								case 'yes':
 									$arr_post_feeds[$post_feed] = array(
 										'id' => "sf_feed_".$post_feed,
-										'name' => get_post_title($post_feed),
+										'name' => get_the_title($post_feed),
 									);
 								break;
 
@@ -3796,7 +3796,7 @@ class mf_social_feed
 									'service' => $post_service,
 									'icon' => $this->get_post_icon($post_service),
 									'feed' => $post_feed,
-									'feed_title' => get_post_title($post_feed),
+									'feed_title' => get_the_title($post_feed),
 									'link' => $post_link,
 									'name' => $post_username,
 									'title' => $post_title,
