@@ -11,6 +11,10 @@ if(!defined('ABSPATH'))
 
 $setting_social_design = get_option('setting_social_design');
 $setting_social_full_width = get_option('setting_social_full_width');
+
+$setting_navigation_breakpoint_tablet = get_option_or_default('setting_navigation_breakpoint_tablet', 1200);
+$setting_navigation_breakpoint_mobile = get_option_or_default('setting_navigation_breakpoint_mobile', 930);
+
 $setting_social_desktop_columns = get_option_or_default('setting_social_desktop_columns', 3);
 $setting_social_tablet_columns = get_option_or_default('setting_social_tablet_columns', 2);
 $setting_social_mobile_columns = 1;
@@ -50,7 +54,6 @@ switch($setting_social_design)
 		width: ".$column_width_desktop."%;";
 
 		$post_item_tablet = "width: ".$column_width_tablet."%;";
-
 		$post_item_mobile = "width: ".$column_width_mobile."%;";
 	break;
 }
@@ -101,7 +104,7 @@ echo "@media all
 			."list-style: none;
 		}";
 
-			if($post_container_tablet != '')
+			/*if($post_container_tablet != '')
 			{
 				echo ".is_tablet .widget.social_feed .sf_posts
 				{"
@@ -115,7 +118,7 @@ echo "@media all
 				{"
 					.$post_container_mobile
 				."}";
-			}
+			}*/
 
 			echo ".widget.social_feed .sf_posts li
 			{"
@@ -126,7 +129,7 @@ echo "@media all
 				text-align: left;
 			}
 
-				.is_mobile .widget.social_feed .sf_posts li + li, .widget.social_feed .sf_posts.one_column li + li
+				/*.is_mobile .widget.social_feed .sf_posts li + li, */.widget.social_feed .sf_posts.one_column li + li
 				{
 					border-top: 1px solid #ccc;
 					padding-top: 1em;
@@ -177,7 +180,7 @@ echo "@media all
 						}";
 				}
 
-			if($post_item_tablet != '')
+			/*if($post_item_tablet != '')
 			{
 				echo ".is_tablet .widget.social_feed .sf_posts li
 				{"
@@ -191,7 +194,7 @@ echo "@media all
 				{"
 					.$post_item_mobile
 				."}";
-			}
+			}*/
 
 				echo ".widget.social_feed img
 				{
@@ -317,9 +320,6 @@ echo "@media all
 								{
 									display: inline-block;
 									margin: .5em 0 0 !important;
-									/*position: relative;
-									text-decoration: none;
-									z-index: 1;*/
 								}
 
 				.widget.social_feed .likes
@@ -353,3 +353,65 @@ echo "@media all
 		position: fixed;
 	}
 }";
+
+if($setting_navigation_breakpoint_tablet > 0)
+{
+	echo "@media screen and (min-width: ".$setting_navigation_breakpoint_tablet."px)
+	{
+
+	}";
+}
+
+if($setting_navigation_breakpoint_mobile > 0 && $setting_navigation_breakpoint_tablet > $setting_navigation_breakpoint_mobile)
+{
+	echo "@media screen and (min-width: ".$setting_navigation_breakpoint_mobile."px) and (max-width: ".($setting_navigation_breakpoint_tablet - 1)."px)
+	{";
+
+		if($post_container_tablet != '')
+		{
+			echo ".widget.social_feed .sf_posts
+			{"
+				.$post_container_tablet
+			."}";
+		}
+
+		if($post_item_tablet != '')
+		{
+			echo ".widget.social_feed .sf_posts li
+			{"
+				.$post_item_tablet
+			."}";
+		}
+
+	echo "}";
+}
+
+if($setting_navigation_breakpoint_mobile > 0)
+{
+	echo "@media screen and (max-width: ".($setting_navigation_breakpoint_mobile - 1)."px)
+	{";
+
+		if($post_container_mobile != '')
+		{
+			echo ".widget.social_feed .sf_posts
+			{"
+				.$post_container_mobile
+			."}";
+		}
+
+		if($post_item_mobile != '')
+		{
+			echo ".widget.social_feed .sf_posts li
+			{"
+				.$post_item_mobile
+			."}";
+		}
+
+			echo ".widget.social_feed .sf_posts li + li
+			{
+				border-top: 1px solid #ccc;
+				padding-top: 1em;
+			}";
+
+	echo "}";
+}

@@ -19,11 +19,6 @@
 				'type': 'string',
 				'default': ''
 			},
-			'social_heading':
-			{
-                'type': 'string',
-                'default': ''
-            },
 			'social_feeds':
 			{
                 'type': 'array',
@@ -101,18 +96,6 @@
 					el(
 						InspectorControls,
 						'div',
-						el(
-							TextControl,
-							{
-								label: script_social_feed_block_wp.social_heading_label,
-								type: 'text',
-								value: props.attributes.social_heading,
-								onChange: function(value)
-								{
-									props.setAttributes({social_heading: value});
-								}
-							}
-						),
 						el(
 							SelectControl,
 							{

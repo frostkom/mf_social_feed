@@ -155,7 +155,6 @@ class mf_social_feed
 
 	function block_render_callback($attributes)
 	{
-		if(!isset($attributes['social_heading'])){			$attributes['social_heading'] = "";}
 		if(!isset($attributes['social_feeds'])){			$attributes['social_feeds'] = array();}
 		if(!isset($attributes['social_filter'])){			$attributes['social_filter'] = 'no';}
 		if(!isset($attributes['social_amount'])){			$attributes['social_amount'] = 18;}
@@ -172,17 +171,11 @@ class mf_social_feed
 			$setting_social_reload = get_option('setting_social_reload');
 
 			$this->wp_head_feed();
+			
+			$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
 
-			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed", 'attributes' => $attributes)).">";
-
-				if($attributes['social_heading'] != '')
-				{
-					$out .= "<h3>".$attributes['social_heading']."</h3>";
-				}
-
-				$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
-
-				$out .= "<div id='feed_".$feed_id."' class='section'"
+			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed", 'attributes' => $attributes)).">
+				<div id='feed_".$feed_id."' class='section'"
 					.(is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $attributes['social_feeds'])."'" : "")
 					.($attributes['social_filter'] == 'yes' ? " data-social_filter='".$attributes['social_filter']."'" : "")
 					.($attributes['social_amount'] > 0 ? " data-social_amount='".$attributes['social_amount']."'" : "")
@@ -295,7 +288,6 @@ class mf_social_feed
 		wp_localize_script('script_social_feed_block_wp', 'script_social_feed_block_wp', array(
 			'block_title' => __("Social Feed", 'lang_social_feed'),
 			'block_description' => __("Display a Social Feed", 'lang_social_feed'),
-			'social_heading_label' => __("Heading", 'lang_social_feed'),
 			'social_feeds_label' => __("Feeds", 'lang_social_feed'),
 			'social_feeds' => $arr_data_feeds,
 			'social_filter_label' => __("Display Filter", 'lang_social_feed'),
@@ -382,7 +374,7 @@ class mf_social_feed
 			$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
 			$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 
-			if(class_exists('mf_theme_core'))
+			/*if(class_exists('mf_theme_core'))
 			{
 				global $obj_theme_core;
 
@@ -399,15 +391,10 @@ class mf_social_feed
 			else
 			{
 				$website_max_width = 0;
-			}
+			}*/
 
-			$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed').($website_max_width > 0 ? " (> ".$website_max_width.")" : "");
-
-			if($website_max_width > 0)
-			{
-				$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed').($website_max_width > 0 ? " (< ".$website_max_width.")" : "");
-			}
-
+			$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed'); //.($website_max_width > 0 ? " (> ".$website_max_width.")" : "")
+			$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed'); //.($website_max_width > 0 ? " (< ".$website_max_width.")" : "")
 			$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
 
 			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
