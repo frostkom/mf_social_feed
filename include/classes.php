@@ -126,7 +126,7 @@ class mf_social_feed
 				{
 					if(get_option($setting_key) == '')
 					{
-						update_option($setting_key, $json['settings'][$setting_key]);
+						update_option($setting_key, $json['settings'][$setting_key], false);
 					}
 				}
 			}
@@ -2423,7 +2423,7 @@ class mf_social_feed
 			{
 				$this->email_when_expired();
 
-				update_option('option_linkedin_emailed', 1, 'no');
+				update_option('option_linkedin_emailed', 1, false);
 			}
 
 			else
@@ -2605,7 +2605,7 @@ class mf_social_feed
 					'expires_in' => $end_date
 				);
 
-				update_option('option_linkedin_authkey', $auth_options, 'no');
+				update_option('option_linkedin_authkey', $auth_options, false);
 				delete_option('option_linkedin_emailed');
 
 				$done_text = __("I updated the Access Token for you", 'lang_social_feed');
