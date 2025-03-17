@@ -171,7 +171,7 @@ class mf_social_feed
 			$setting_social_reload = get_option('setting_social_reload');
 
 			$this->wp_head_feed();
-			
+
 			$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
 
 			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed", 'attributes' => $attributes)).">
@@ -227,16 +227,14 @@ class mf_social_feed
 	{
 		load_plugin_textdomain('lang_social_feed', false, str_replace("/include", "", dirname(plugin_basename(__FILE__)))."/lang/");
 
-		// Post Types
+		// Post types
 		#######################
-		$labels = array(
-			'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
-			'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
-			'menu_name' => __("Social Feeds", 'lang_social_feed'),
-		);
-
-		$args = array(
-			'labels' => $labels,
+		register_post_type($this->post_type, array(
+			'labels' => array(
+				'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
+				'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
+				'menu_name' => __("Social Feeds", 'lang_social_feed'),
+			),
 			'public' => false, // Previously true but changed to hide in sitemap.xml
 			'show_ui' => true,
 			'show_in_nav_menus' => false,
@@ -247,18 +245,14 @@ class mf_social_feed
 			'supports' => array('title'),
 			'hierarchical' => true,
 			'has_archive' => false,
-		);
+		));
 
-		register_post_type($this->post_type, $args);
-
-		$labels = array(
-			'name' => _x(__("Posts", 'lang_social_feed'), 'post type general name'),
-			'singular_name' => _x(__("Post", 'lang_social_feed'), 'post type singular name'),
-			'menu_name' => __("Posts", 'lang_social_feed')
-		);
-
-		$args = array(
-			'labels' => $labels,
+		register_post_type($this->post_type_post, array(
+			'labels' => array(
+				'name' => _x(__("Posts", 'lang_social_feed'), 'post type general name'),
+				'singular_name' => _x(__("Post", 'lang_social_feed'), 'post type singular name'),
+				'menu_name' => __("Posts", 'lang_social_feed')
+			),
 			'public' => false, // Previously true but changed to hide in sitemap.xml
 			'show_ui' => true,
 			'show_in_menu' => false,
@@ -270,9 +264,7 @@ class mf_social_feed
 			/*'capabilities' => array(
 				'create_posts' => (is_multisite() ? 'do_not_allow' : false),
 			),*/
-		);
-
-		register_post_type($this->post_type_post, $args);
+		));
 		#######################
 
 		// Blocks
