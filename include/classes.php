@@ -344,7 +344,7 @@ class mf_social_feed
 		$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
 		$arr_settings['setting_social_deactive_on_error'] = __("Deactivate on Error", 'lang_social_feed');
 
-		if(apply_filters('get_block_search', 'mf/socialfeed') > 0 || !is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
+		if((int)apply_filters('get_block_search', 'mf/socialfeed') > 0 || (int)apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
 			$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
 		}
@@ -356,7 +356,7 @@ class mf_social_feed
 
 		//Styling
 		############################
-		if(apply_filters('get_block_search', 'mf/socialfeed') > 0 || !is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
+		if((int)apply_filters('get_block_search', 'mf/socialfeed') > 0 || (int)apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
 			$options_area = $options_area_orig."_styling";
 
@@ -2139,7 +2139,7 @@ class mf_social_feed
 
 	function wp_head()
 	{
-		if(apply_filters('get_block_search', 'mf/socialfeed') > 0 || !is_plugin_active("mf_widget_logic_select/index.php") || apply_filters('get_widget_search', 'social-feed-widget') > 0)
+		if((int)apply_filters('get_block_search', 'mf/socialfeed') > 0 || (int)apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
 			$this->wp_head_feed();
 		}
