@@ -2055,11 +2055,11 @@ class mf_social_feed
 			{
 				unset($actions['trash']);
 
-				$actions['social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; //draft
+				$actions['api_social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; //draft
 
 				if($post_username != $feed_name)
 				{
-					$actions['social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!", 'lang_social_feed'), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
+					$actions['api_social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!", 'lang_social_feed'), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
 				}
 			}
 		}
@@ -2282,19 +2282,23 @@ class mf_social_feed
 		register_widget('widget_social_feed');
 	}
 
-	function action_hide()
+	function api_social_feed_action_hide()
 	{
 		global $wpdb, $done_text, $error_text;
 
-		$action_id = check_var('action_id', 'int');
+		$json_output = array(
+			'success' => false,
+		);
 
-		$result = array();
+		$action_id = check_var('action_id', 'int');
 
 		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = %s WHERE ID = '%d' AND post_type = %s", 'draft', $action_id, $this->post_type_post));
 
 		if($wpdb->rows_affected > 0)
 		{
 			$done_text = __("I have hidden the post for you now", 'lang_social_feed');
+
+			$json_output['success'] = true;
 		}
 
 		else
@@ -2302,37 +2306,30 @@ class mf_social_feed
 			$error_text = __("I could not hide the post for you. If the problem persists, please contact an admin", 'lang_social_feed');
 		}
 
-		$out = get_notification();
-
-		if($done_text != '')
-		{
-			$result['success'] = true;
-			$result['message'] = $out;
-		}
-
-		else
-		{
-			$result['error'] = $out;
-		}
+		$json_output['html'] = get_notification();
 
 		header("Content-Type: application/json");
-		echo json_encode($result);
+		echo json_encode($json_output);
 		die();
 	}
 
-	function action_ignore()
+	function api_social_feed_action_ignore()
 	{
 		global $wpdb, $done_text, $error_text;
 
-		$action_id = check_var('action_id', 'int');
+		$json_output = array(
+			'success' => false,
+		);
 
-		$result = array();
+		$action_id = check_var('action_id', 'int');
 
 		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = %s WHERE ID = '%d' AND post_type = %s", 'pending', $action_id, $this->post_type_post));
 
 		if($wpdb->rows_affected > 0)
 		{
 			$done_text = __("I have ignored the post for you now. This means that all future posts by this user will be ignored aswell", 'lang_social_feed');
+
+			$json_output['success'] = true;
 		}
 
 		else
@@ -2340,21 +2337,10 @@ class mf_social_feed
 			$error_text = __("I could not ignore the post for you. If the problem persists, please contact an admin", 'lang_social_feed');
 		}
 
-		$out = get_notification();
-
-		if($done_text != '')
-		{
-			$result['success'] = true;
-			$result['message'] = $out;
-		}
-
-		else
-		{
-			$result['error'] = $out;
-		}
+		$json_output['html'] = get_notification();
 
 		header("Content-Type: application/json");
-		echo json_encode($result);
+		echo json_encode($json_output);
 		die();
 	}
 
