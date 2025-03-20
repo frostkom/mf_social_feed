@@ -55,23 +55,22 @@ var SocialView = Backbone.View.extend(
 		jQuery(".widget.social_feed").find(".section").each(function()
 		{
 			var dom_obj = jQuery(this),
-				action_type = "type=posts",
-				data_reload = parseInt(dom_obj.attr('data-social_reload')) || 0;
+				data_reload = (parseInt(dom_obj.attr('data-social_reload')) || 0),
+				arr_data = {action: 'api_social_feed_posts'};
 
 			if(data_reload > 0 || data_reload < reload)
 			{
-				reload = data_reload * 60 * 1000;
+				reload = (data_reload * 60 * 1000);
 			}
 
-			if(typeof dom_obj.attr('id') != 'undefined'){							action_type += "&feed_id=" + dom_obj.attr('id');}
-			if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){			action_type += "&feeds=" + dom_obj.attr('data-social_feeds');}
-			if(typeof dom_obj.attr('data-social_filter') != 'undefined'){			action_type += "&filter=" + dom_obj.attr('data-social_filter');}
-			if(typeof dom_obj.data('social_amount') != 'undefined'){				action_type += "&amount=" + dom_obj.data('social_amount');}
-			if(typeof dom_obj.data('social_load_more_posts') != 'undefined'){		action_type += "&load_more_posts=" + dom_obj.data('social_load_more_posts');}
-			/*if(typeof dom_obj.attr('data-social_limit_source') != 'undefined'){	action_type += "&limit_source=" + dom_obj.attr('data-social_limit_source');}*/
-			if(typeof dom_obj.attr('data-social_likes') != 'undefined'){			action_type += "&likes=" + dom_obj.attr('data-social_likes');}
+			if(typeof dom_obj.attr('id') != 'undefined'){						arr_data.feed_id = dom_obj.attr('id');}
+			if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){		arr_data.feeds = dom_obj.data('social_feeds');}
+			if(typeof dom_obj.attr('data-social_filter') != 'undefined'){		arr_data.filter = dom_obj.data('social_filter');}
+			if(typeof dom_obj.data('social_amount') != 'undefined'){			arr_data.amount = dom_obj.data('social_amount');}
+			if(typeof dom_obj.data('social_load_more_posts') != 'undefined'){	arr_data.load_more_posts = dom_obj.data('social_load_more_posts');}
+			if(typeof dom_obj.attr('data-social_likes') != 'undefined'){		arr_data.likes = dom_obj.data('social_likes');}
 
-			self.loadPage(action_type);
+			self.loadPage(arr_data);
 		});
 
 		if(reload > 0)
@@ -92,9 +91,9 @@ var SocialView = Backbone.View.extend(
 		}
 	},
 
-	loadPage: function(tab_active)
+	loadPage: function(arr_data)
 	{
-		this.model.getPage(tab_active);
+		this.model.getPage(arr_data);
 	},
 
 	change_tab: function(e)

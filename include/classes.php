@@ -2131,7 +2131,7 @@ class mf_social_feed
 		mf_enqueue_script('backbone');
 		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js");
 
-		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('plugin_url' => $plugin_include_url));
+		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('ajax_url' => admin_url('admin-ajax.php'))); //'plugin_url' => $plugin_include_url
 		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug));
 
 		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js");
@@ -2338,6 +2338,38 @@ class mf_social_feed
 		}
 
 		$json_output['html'] = get_notification();
+
+		header("Content-Type: application/json");
+		echo json_encode($json_output);
+		die();
+	}
+
+	function api_social_feed_posts()
+	{
+		$json_output = array(
+			'success' => false,
+		);
+
+		$feed_id = check_var('feed_id', 'char');
+		$feeds = check_var('feeds', 'char');
+		$filter = check_var('filter', 'char');
+		$amount = check_var('amount', 'int');
+		$load_more_posts = check_var('load_more_posts', 'char');
+		$limit_source = check_var('limit_source', 'char');
+		$likes = check_var('likes', 'char');
+
+		if($feeds != '')
+		{
+			$feeds = explode(",", $feeds);
+		}
+
+		list($arr_post_feeds, $arr_post_posts, $has_more_posts) = $this->get_feeds_and_posts(array('feeds' => $feeds, 'filter' => $filter, 'amount' => $amount, 'limit_source' => $limit_source, 'likes' => $likes));
+
+		$json_output['success'] = true;
+		$json_output['feed_id'] = $feed_id;
+		$json_output['response_feeds'] = $arr_post_feeds;
+		$json_output['response_posts'] = $arr_post_posts;
+		$json_output['has_more_posts'] = ($load_more_posts == 'yes' && $has_more_posts == true);
 
 		header("Content-Type: application/json");
 		echo json_encode($json_output);
