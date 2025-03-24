@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description:
-Version: 5.11.1
+Version: 5.11.2
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
@@ -68,7 +68,6 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 	{
 		add_action('wp_enqueue_scripts', array($obj_social_feed, 'wp_enqueue_scripts'), 11);
 
-		add_action('wp_head', array($obj_social_feed, 'wp_head'), 0);
 		add_action('wp_footer', array($obj_social_feed, 'wp_footer'), 0);
 	}
 

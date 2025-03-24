@@ -2131,18 +2131,10 @@ class mf_social_feed
 		mf_enqueue_script('backbone');
 		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js");
 
-		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('ajax_url' => admin_url('admin-ajax.php'))); //'plugin_url' => $plugin_include_url
+		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('ajax_url' => admin_url('admin-ajax.php')));
 		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug));
 
 		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js");
-	}
-
-	function wp_head()
-	{
-		if((int)apply_filters('get_block_search', 'mf/socialfeed') > 0 || (int)apply_filters('get_widget_search', 'social-feed-widget') > 0)
-		{
-			$this->wp_head_feed();
-		}
 	}
 
 	function wp_footer()
@@ -2227,7 +2219,9 @@ class mf_social_feed
 
 	function shortcode_social_feed($atts)
 	{
-		extract(shortcode_atts(array(
+		$out = "";
+
+		/*extract(shortcode_atts(array(
 			'id' => 0,
 			'filter' => 'group',
 			'amount' => 3,
@@ -2239,7 +2233,7 @@ class mf_social_feed
 
 		$setting_social_reload = get_option('setting_social_reload');
 
-		$out = "<div class='widget social_feed'>
+		$out .= "<div class='widget social_feed'>
 			<div id='feed_".$id."' class='section'"
 				.($id > 0 ? " data-social_feeds='".$id."'" : "")
 				.($filter == 'yes' ? " data-social_filter='".$filter."'" : "")
@@ -2272,7 +2266,9 @@ class mf_social_feed
 				}
 
 			$out .= "</div>
-		</div>";
+		</div>";*/
+
+		do_log(__FUNCTION__.": Add a block instead (".var_export($atts, true).")");
 
 		return $out;
 	}
@@ -3864,58 +3860,65 @@ class widget_social_feed extends WP_Widget
 
 	function widget($args, $instance)
 	{
+		global $obj_social_feed;
+
 		extract($args);
 		$instance = wp_parse_args((array)$instance, $this->arr_default);
 
-		$setting_social_reload = get_option('setting_social_reload');
+		if(count($instance['social_feeds']) > 0)
+		{
+			$setting_social_reload = get_option('setting_social_reload');
 
-		echo apply_filters('filter_before_widget', $before_widget);
+			$obj_social_feed->wp_head_feed();
 
-			if($instance['social_heading'] != '')
-			{
-				$instance['social_heading'] = apply_filters('widget_title', $instance['social_heading'], $instance, $this->id_base);
+			echo apply_filters('filter_before_widget', $before_widget);
 
-				echo $before_title
-					.$instance['social_heading']
-				.$after_title;
-			}
-
-			$feed_id = is_array($instance['social_feeds']) && count($instance['social_feeds']) > 0 ? implode("_", $instance['social_feeds']) : 0;
-
-			echo "<div id='feed_".$feed_id."' class='section'"
-				.(is_array($instance['social_feeds']) && count($instance['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $instance['social_feeds'])."'" : "")
-				.($instance['social_filter'] == 'yes' ? " data-social_filter='".$instance['social_filter']."'" : "")
-				.($instance['social_amount'] > 0 ? " data-social_amount='".$instance['social_amount']."'" : "")
-				.($instance['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$instance['social_load_more_posts']."'" : "")
-				.($instance['social_limit_source'] == 'yes' ? " data-social_limit_source='".$instance['social_limit_source']."'" : "")
-				.($instance['social_likes'] == 'yes' ? " data-social_likes='".$instance['social_likes']."'" : "")
-				.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
-			.">
-				<i class='fa fa-spinner fa-spin fa-3x'></i>
-				<ul class='sf_feeds hide'></ul>
-				<ul class='sf_posts";
-
-					if($instance['social_text'] == 'yes')
-					{
-						echo ($instance['social_read_more'] == 'yes' ? " show_read_more" : '');
-					}
-
-					else
-					{
-						echo " hide_text";
-					}
-
-				echo " hide'></ul>";
-
-				if($instance['social_load_more_posts'] == 'yes')
+				if($instance['social_heading'] != '')
 				{
-					echo "<div".get_form_button_classes().">
-						<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
-					</div>";
+					$instance['social_heading'] = apply_filters('widget_title', $instance['social_heading'], $instance, $this->id_base);
+
+					echo $before_title
+						.$instance['social_heading']
+					.$after_title;
 				}
 
-			echo "</div>"
-		.$after_widget;
+				$feed_id = is_array($instance['social_feeds']) && count($instance['social_feeds']) > 0 ? implode("_", $instance['social_feeds']) : 0;
+
+				echo "<div id='feed_".$feed_id."' class='section'"
+					.(is_array($instance['social_feeds']) && count($instance['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $instance['social_feeds'])."'" : "")
+					.($instance['social_filter'] == 'yes' ? " data-social_filter='".$instance['social_filter']."'" : "")
+					.($instance['social_amount'] > 0 ? " data-social_amount='".$instance['social_amount']."'" : "")
+					.($instance['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$instance['social_load_more_posts']."'" : "")
+					.($instance['social_limit_source'] == 'yes' ? " data-social_limit_source='".$instance['social_limit_source']."'" : "")
+					.($instance['social_likes'] == 'yes' ? " data-social_likes='".$instance['social_likes']."'" : "")
+					.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
+				.">
+					<i class='fa fa-spinner fa-spin fa-3x'></i>
+					<ul class='sf_feeds hide'></ul>
+					<ul class='sf_posts";
+
+						if($instance['social_text'] == 'yes')
+						{
+							echo ($instance['social_read_more'] == 'yes' ? " show_read_more" : '');
+						}
+
+						else
+						{
+							echo " hide_text";
+						}
+
+					echo " hide'></ul>";
+
+					if($instance['social_load_more_posts'] == 'yes')
+					{
+						echo "<div".get_form_button_classes().">
+							<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
+						</div>";
+					}
+
+				echo "</div>"
+			.$after_widget;
+		}
 	}
 
 	function update($new_instance, $old_instance)
