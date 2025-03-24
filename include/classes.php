@@ -2219,6 +2219,8 @@ class mf_social_feed
 
 	function shortcode_social_feed($atts)
 	{
+		global $post;
+
 		$out = "";
 
 		/*extract(shortcode_atts(array(
@@ -2268,7 +2270,7 @@ class mf_social_feed
 			$out .= "</div>
 		</div>";*/
 
-		do_log(__FUNCTION__.": Add a block instead (".var_export($atts, true).")");
+		do_log(__FUNCTION__.": Add a block instead (#".$post->ID.", ".var_export($atts, true).")");
 
 		return $out;
 	}
