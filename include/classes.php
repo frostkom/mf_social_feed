@@ -231,8 +231,8 @@ class mf_social_feed
 		#######################
 		register_post_type($this->post_type, array(
 			'labels' => array(
-				'name' => _x(__("Social Feeds", 'lang_social_feed'), 'post type general name'),
-				'singular_name' => _x(__("Social Feed", 'lang_social_feed'), 'post type singular name'),
+				'name' => __("Social Feeds", 'lang_social_feed'),
+				'singular_name' => __("Social Feed", 'lang_social_feed'),
 				'menu_name' => __("Social Feeds", 'lang_social_feed'),
 			),
 			'public' => false, // Previously true but changed to hide in sitemap.xml
@@ -249,8 +249,8 @@ class mf_social_feed
 
 		register_post_type($this->post_type_post, array(
 			'labels' => array(
-				'name' => _x(__("Posts", 'lang_social_feed'), 'post type general name'),
-				'singular_name' => _x(__("Post", 'lang_social_feed'), 'post type singular name'),
+				'name' => __("Posts", 'lang_social_feed'),
+				'singular_name' => __("Post", 'lang_social_feed'),
 				'menu_name' => __("Posts", 'lang_social_feed')
 			),
 			'public' => false, // Previously true but changed to hide in sitemap.xml
@@ -1599,7 +1599,7 @@ class mf_social_feed
 		}
 	}
 
-	function count_shortcode_button($count)
+	/*function count_shortcode_button($count)
 	{
 		if($count == 0)
 		{
@@ -1607,9 +1607,9 @@ class mf_social_feed
 		}
 
 		return $count;
-	}
+	}*/
 
-	function get_shortcode_output($out)
+	/*function get_shortcode_output($out)
 	{
 		$arr_data = array();
 		get_post_children(array('add_choose_here' => true, 'post_type' => $this->post_type), $arr_data);
@@ -1621,7 +1621,7 @@ class mf_social_feed
 		}
 
 		return $out;
-	}
+	}*/
 
 	function column_header($cols)
 	{
@@ -2069,7 +2069,7 @@ class mf_social_feed
 
 	function save_post($post_id, $post, $update)
 	{
-		if($post->post_type == $this->post_type && $post->post_status == 'publish') // && $update == false
+		if($post->post_type == $this->post_type && $post->post_status == 'publish')
 		{
 			$this->set_id($post_id);
 
@@ -2855,8 +2855,8 @@ class mf_social_feed
 					unset($data_temp[$i]['id']);
 					unset($data_temp[$i]['from']['id']);
 
-					$data_temp[$i]['message'] = substr($data_temp[$i]['message'], 0, 10)."...";
-					$data_temp[$i]['full_picture'] = substr($data_temp[$i]['full_picture'], 0, 10)."...";
+					$data_temp[$i]['message'] = (isset($data_temp[$i]['message']) ? substr($data_temp[$i]['message'], 0, 10)."..." : "");
+					$data_temp[$i]['full_picture'] = (isset($data_temp[$i]['full_picture']) ? substr($data_temp[$i]['full_picture'], 0, 10)."..." : "");
 					$data_temp[$i]['created_time'] = date("Y-m-d H:i:s", strtotime($data_temp[$i]['created_time']));
 				}
 
@@ -3589,13 +3589,13 @@ class mf_social_feed
 					'post_title' => $post_title,
 					'post_content' => $post['text'],
 					'post_parent' => $this->id,
-					'meta_input' => array(
+					'meta_input' => apply_filters('filter_meta_input', array(
 						$this->meta_prefix.'service' => $post['type'],
 						$this->meta_prefix.'feed_id' => $this->id, //This can be removed when post_parent is used everywhere
 						$this->meta_prefix.'name' => $post['name'],
 						$this->meta_prefix.'image' => $post['image'],
 						$this->meta_prefix.'link' => $post['link'],
-					),
+					)),
 				);
 
 				$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id', 'likes', 'comments');
