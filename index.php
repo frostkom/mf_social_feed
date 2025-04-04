@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description:
-Version: 5.11.6
+Version: 5.11.7
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
@@ -87,10 +87,6 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 	function activate_social_feed()
 	{
 		require_plugin("meta-box/meta-box.php", "Meta Box");
-
-		mf_uninstall_plugin(array(
-			'options' => array('setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url'),
-		));
 	}
 
 	function uninstall_social_feed()
