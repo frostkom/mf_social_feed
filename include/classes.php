@@ -38,7 +38,7 @@ class mf_social_feed
 		if($obj_cron->is_running == false)
 		{
 			mf_uninstall_plugin(array(
-				'options' => array('setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url'),
+				'options' => array('setting_social_time_limit', 'setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url', 'setting_social_reload'),
 			));
 
 			// Fetch new posts
@@ -172,7 +172,7 @@ class mf_social_feed
 
 		if(count($attributes['social_feeds']) > 0)
 		{
-			$setting_social_reload = get_option('setting_social_reload');
+			//$setting_social_reload = get_option('setting_social_reload');
 
 			$this->wp_head_feed();
 
@@ -186,7 +186,7 @@ class mf_social_feed
 					.($attributes['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$attributes['social_load_more_posts']."'" : "")
 					.($attributes['social_limit_source'] == 'yes' ? " data-social_limit_source='".$attributes['social_limit_source']."'" : "")
 					.($attributes['social_likes'] == 'yes' ? " data-social_likes='".$attributes['social_likes']."'" : "")
-					.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
+					//.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
 				.">
 					<i class='fa fa-spinner fa-spin fa-3x'></i>
 					<ul class='sf_feeds hide'></ul>
@@ -345,13 +345,13 @@ class mf_social_feed
 
 		$arr_settings['setting_social_keep_posts'] = __("Keep Posts", 'lang_social_feed');
 
-		$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
+		//$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
 		$arr_settings['setting_social_deactive_on_error'] = __("Deactivate on Error", 'lang_social_feed');
 
-		if(apply_filters('get_block_search', 0, 'mf/socialfeed') > 0 || (int)apply_filters('get_widget_search', 'social-feed-widget') > 0)
+		/*if(apply_filters('get_block_search', 0, 'mf/socialfeed') > 0 || (int)apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
 			$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
-		}
+		}*/
 
 		$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
 
@@ -368,29 +368,19 @@ class mf_social_feed
 
 			$arr_settings = array();
 			$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
-			$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 
-			/*if(class_exists('mf_theme_core'))
+			if(wp_is_block_theme() == false)
 			{
-				global $obj_theme_core;
-
-				if(!isset($obj_theme_core))
-				{
-					$obj_theme_core = new mf_theme_core();
-				}
-
-				$obj_theme_core->get_params();
-
-				$website_max_width = (isset($obj_theme_core->options['website_max_width']) ? $obj_theme_core->options['website_max_width'] : 0);
+				$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 			}
 
 			else
 			{
-				$website_max_width = 0;
-			}*/
+				delete_option('setting_social_full_width');
+			}
 
-			$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed'); //.($website_max_width > 0 ? " (> ".$website_max_width.")" : "")
-			$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed'); //.($website_max_width > 0 ? " (< ".$website_max_width.")" : "")
+			$arr_settings['setting_social_desktop_columns'] = __("Columns on Desktop", 'lang_social_feed');
+			$arr_settings['setting_social_tablet_columns'] = __("Columns on Tablets", 'lang_social_feed');
 			$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
 
 			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
@@ -554,7 +544,7 @@ class mf_social_feed
 		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='120'", 'suffix' => __("months", 'lang_social_feed')));
 	}
 
-	function setting_social_time_limit_callback()
+	/*function setting_social_time_limit_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option_or_default($setting_key, 30);
@@ -564,7 +554,7 @@ class mf_social_feed
 		$option = max($option, $setting_min);
 
 		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='1440'", 'suffix' => __("min", 'lang_social_feed')." (".__("Between each API request", 'lang_social_feed').")"));
-	}
+	}*/
 
 	function setting_social_deactive_on_error_callback()
 	{
@@ -574,7 +564,7 @@ class mf_social_feed
 		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
 	}
 
-	function setting_social_reload_callback()
+	/*function setting_social_reload_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option($setting_key);
@@ -587,7 +577,7 @@ class mf_social_feed
 		}
 
 		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
-	}
+	}*/
 
 	function setting_social_debug_callback()
 	{
@@ -2237,7 +2227,7 @@ class mf_social_feed
 			'read_more' => 'yes',
 		), $atts));
 
-		$setting_social_reload = get_option('setting_social_reload');
+		//$setting_social_reload = get_option('setting_social_reload');
 
 		$out .= "<div class='widget social_feed'>
 			<div id='feed_".$id."' class='section'"
@@ -2246,7 +2236,7 @@ class mf_social_feed
 				.($amount > 0 ? " data-social_amount='".$amount."'" : "")
 				.($load_more_posts == 'yes' ? " data-social_load_more_posts='".$load_more_posts."'" : "")
 				.($likes == 'yes' ? " data-social_likes='".$likes."'" : "")
-				.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
+				//.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
 			.">
 				<i class='fa fa-spinner fa-spin fa-3x'></i>
 				<ul class='sf_feeds hide'></ul>
@@ -3875,7 +3865,7 @@ class widget_social_feed extends WP_Widget
 
 		if(count($instance['social_feeds']) > 0)
 		{
-			$setting_social_reload = get_option('setting_social_reload');
+			//$setting_social_reload = get_option('setting_social_reload');
 
 			$obj_social_feed->wp_head_feed();
 
@@ -3899,7 +3889,7 @@ class widget_social_feed extends WP_Widget
 					.($instance['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$instance['social_load_more_posts']."'" : "")
 					.($instance['social_limit_source'] == 'yes' ? " data-social_limit_source='".$instance['social_limit_source']."'" : "")
 					.($instance['social_likes'] == 'yes' ? " data-social_likes='".$instance['social_likes']."'" : "")
-					.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
+					//.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
 				.">
 					<i class='fa fa-spinner fa-spin fa-3x'></i>
 					<ul class='sf_feeds hide'></ul>
