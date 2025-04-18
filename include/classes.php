@@ -2274,7 +2274,10 @@ class mf_social_feed
 
 	function widgets_init()
 	{
-		register_widget('widget_social_feed');
+		if(wp_is_block_theme() == false)
+		{
+			register_widget('widget_social_feed');
+		}
 	}
 
 	function api_social_feed_action_hide()
