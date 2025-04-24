@@ -38,7 +38,7 @@ class mf_social_feed
 		if($obj_cron->is_running == false)
 		{
 			mf_uninstall_plugin(array(
-				'options' => array('setting_social_time_limit', 'setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url', 'setting_social_reload'),
+				'options' => array('setting_social_time_limit', 'setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url', 'setting_social_reload', 'setting_social_deactive_on_error'),
 			));
 
 			// Fetch new posts
@@ -349,7 +349,7 @@ class mf_social_feed
 		$arr_settings['setting_social_keep_posts'] = __("Keep Posts", 'lang_social_feed');
 
 		//$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
-		$arr_settings['setting_social_deactive_on_error'] = __("Deactivate on Error", 'lang_social_feed');
+		//$arr_settings['setting_social_deactive_on_error'] = __("Deactivate on Error", 'lang_social_feed');
 
 		/*if(apply_filters('get_block_search', 0, 'mf/socialfeed') > 0 || (int)apply_filters('get_widget_search', 'social-feed-widget') > 0)
 		{
@@ -559,13 +559,13 @@ class mf_social_feed
 		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='1440'", 'suffix' => __("min", 'lang_social_feed')." (".__("Between each API request", 'lang_social_feed').")"));
 	}*/
 
-	function setting_social_deactive_on_error_callback()
+	/*function setting_social_deactive_on_error_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 		$option = get_option_or_default($setting_key, 'yes');
 
 		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
-	}
+	}*/
 
 	/*function setting_social_reload_callback()
 	{
@@ -1631,7 +1631,7 @@ class mf_social_feed
 
 				$cols['type'] = __("Service", 'lang_social_feed');
 				$cols['search_for'] = __("Search for", 'lang_social_feed');
-				$cols['in_use'] = __("In Use", 'lang_social_feed');
+				//$cols['in_use'] = __("In Use", 'lang_social_feed');
 				$cols['amount_of_posts'] = __("Amount", 'lang_social_feed');
 			break;
 
@@ -1783,7 +1783,7 @@ class mf_social_feed
 						}
 					break;
 
-					case 'in_use':
+					/*case 'in_use':
 						$option_widgets = get_option('widget_social-feed-widget');
 
 						if(is_array($option_widgets))
@@ -1832,7 +1832,7 @@ class mf_social_feed
 								echo "<i class='fa fa-times red fa-2x'></i>";
 							}
 						}
-					break;
+					break;*/
 
 					case 'amount_of_posts':
 						$amount_publish = $this->get_amount(array('id' => $post_id));
@@ -2738,13 +2738,13 @@ class mf_social_feed
 			}
 		}
 
-		if(get_option('setting_social_deactive_on_error', 'yes') == 'yes')
+		/*if(get_option('setting_social_deactive_on_error', 'yes') == 'yes')
 		{
 			wp_update_post(array(
 				'ID' => $this->id,
 				'post_status' => 'draft',
 			));
-		}
+		}*/
 
 		update_post_meta($this->id, $this->meta_prefix.'error', $data['message']);
 	}
