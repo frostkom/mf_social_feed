@@ -1596,30 +1596,6 @@ class mf_social_feed
 		}
 	}
 
-	/*function count_shortcode_button($count)
-	{
-		if($count == 0)
-		{
-			$count++;
-		}
-
-		return $count;
-	}*/
-
-	/*function get_shortcode_output($out)
-	{
-		$arr_data = array();
-		get_post_children(array('add_choose_here' => true, 'post_type' => $this->post_type), $arr_data);
-
-		if(count($arr_data) > 1)
-		{
-			$out .= "<h3>".__("Choose a Social Feed", 'lang_social_feed')."</h3>"
-			.show_select(array('data' => $arr_data, 'xtra' => "rel='".$this->post_type." amount=3 filter=group border=no text=yes likes=no'"));
-		}
-
-		return $out;
-	}*/
-
 	function column_header($cols)
 	{
 		global $post_type;
