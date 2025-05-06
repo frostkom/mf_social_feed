@@ -102,6 +102,7 @@ echo "@media all
 		{"
 			.$post_container_desktop
 			."list-style: none;
+			padding-left: 0;
 		}
 
 			.widget.social_feed .sf_posts li
