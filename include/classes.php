@@ -475,6 +475,19 @@ class mf_social_feed
 		############################
 	}
 
+	function pre_update_option($new_value, $old_value)
+	{
+		$out = "";
+
+		if($new_value != '')
+		{
+			$obj_encryption = new mf_encryption(__CLASS__);
+			$out = $obj_encryption->encrypt($new_value, md5(AUTH_KEY));
+		}
+
+		return $out;
+	}
+
 	function settings_social_feed_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
@@ -678,6 +691,9 @@ class mf_social_feed
 
 		else
 		{
+			$obj_encryption = new mf_encryption(__CLASS__);
+			$option = $obj_encryption->decrypt($option, md5(AUTH_KEY));
+
 			$description = '';
 		}
 
@@ -2474,6 +2490,9 @@ class mf_social_feed
 			'redirect_uri' => $this->settings_url,
 		);
 
+		$obj_encryption = new mf_encryption(__CLASS__);
+		$arr_post_data['client_secret'] = $obj_encryption->decrypt($arr_post_data['client_secret'], md5(AUTH_KEY));
+
 		$url = "https://linkedin.com/uas/oauth2/accessToken?".http_build_query($arr_post_data);
 		$result = wp_remote_retrieve_body(wp_remote_get($url));
 		$json = json_decode($result);
@@ -2661,6 +2680,9 @@ class mf_social_feed
 			case 'linkedin':
 				$this->linkedin_api_id = get_option('setting_linkedin_api_id');
 				$this->linkedin_api_secret = get_option('setting_linkedin_api_secret');
+
+				$obj_encryption = new mf_encryption(__CLASS__);
+				$this->linkedin_api_secret = $obj_encryption->decrypt($this->linkedin_api_secret, md5(AUTH_KEY));
 			break;
 
 			case 'twitter':
