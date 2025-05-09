@@ -121,7 +121,7 @@ class mf_social_feed
 		$obj_cron->end();
 	}
 
-	function cron_sync($json)
+	/*function cron_sync($json)
 	{
 		global $wpdb;
 
@@ -158,7 +158,7 @@ class mf_social_feed
 		}
 
 		return $json_output;
-	}
+	}*/
 
 	function block_render_callback($attributes)
 	{
