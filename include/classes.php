@@ -168,15 +168,13 @@ class mf_social_feed
 		if(!isset($attributes['social_load_more_posts'])){	$attributes['social_load_more_posts'] = 'no';}
 		if(!isset($attributes['social_limit_source'])){		$attributes['social_limit_source'] = 'no';}
 		if(!isset($attributes['social_text'])){				$attributes['social_text'] = 'yes';}
-		if(!isset($attributes['social_likes'])){			$attributes['social_likes'] = 'no';}
+		//if(!isset($attributes['social_likes'])){			$attributes['social_likes'] = 'no';}
 		if(!isset($attributes['social_read_more'])){		$attributes['social_read_more'] = 'yes';}
 
 		$out = "";
 
 		if(count($attributes['social_feeds']) > 0)
 		{
-			//$setting_social_reload = get_option('setting_social_reload');
-
 			$this->wp_head_feed();
 
 			$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
@@ -188,8 +186,7 @@ class mf_social_feed
 					.($attributes['social_amount'] > 0 ? " data-social_amount='".$attributes['social_amount']."'" : "")
 					.($attributes['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$attributes['social_load_more_posts']."'" : "")
 					.($attributes['social_limit_source'] == 'yes' ? " data-social_limit_source='".$attributes['social_limit_source']."'" : "")
-					.($attributes['social_likes'] == 'yes' ? " data-social_likes='".$attributes['social_likes']."'" : "")
-					//.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
+					//.($attributes['social_likes'] == 'yes' ? " data-social_likes='".$attributes['social_likes']."'" : "")
 				.">
 					<i class='fa fa-spinner fa-spin fa-3x'></i>
 					<ul class='sf_feeds hide'></ul>
@@ -297,7 +294,7 @@ class mf_social_feed
 			'social_limit_source_label' => __("Limit Source", 'lang_social_feed'),
 			'social_text_label' => __("Display Text", 'lang_social_feed'),
 			'social_read_more_label' => __("Display Read More", 'lang_social_feed'),
-			'social_likes_label' => __("Display Likes", 'lang_social_feed'),
+			//'social_likes_label' => __("Display Likes", 'lang_social_feed'),
 		));
 
 		register_block_type('mf/socialfeed', array(
@@ -350,11 +347,6 @@ class mf_social_feed
 
 		//$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
 		//$arr_settings['setting_social_deactive_on_error'] = __("Deactivate on Error", 'lang_social_feed');
-
-		/*if(apply_filters('get_block_search', 0, 'mf/socialfeed') > 0 || (int)apply_filters('get_widget_search', 'social-feed-widget') > 0)
-		{
-			$arr_settings['setting_social_reload'] = __("Interval to Reload Site", 'lang_social_feed');
-		}*/
 
 		$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
 
@@ -578,21 +570,6 @@ class mf_social_feed
 		$option = get_option_or_default($setting_key, 'yes');
 
 		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
-	}*/
-
-	/*function setting_social_reload_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option($setting_key);
-
-		if($option > 0)
-		{
-			$setting_min = $this->get_setting_min() / 2;
-
-			$option = max($option, $setting_min, (get_option('setting_social_time_limit') / 2));
-		}
-
-		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='0' max='60'", 'suffix' => __("min", 'lang_social_feed')." (0 = ".__("no reload", 'lang_social_feed').")"));
 	}*/
 
 	function setting_social_debug_callback()
@@ -2191,16 +2168,17 @@ class mf_social_feed
 						if(content != '')
 						{ %>
 							<div class='text'><a href='<%= link %>'><%= content %></a></div>
-						<% }
+						<% } %>";
 
-						if(likes != '' || comments != '')
+						/*echo "<% if(likes != '' || comments != '')
 						{ %>
 							<div class='likes'>
 								<i class='fa fa-thumbs-up'></i><span><%= likes %></span>
 								<i class='fa fa-comment'></i><span><%= comments %></span>
 							</div>
-						<% } %>
-					</a>
+						<% } %>";*/
+
+					echo "</a>
 				</li>
 			</script>";
 		}
@@ -2210,58 +2188,9 @@ class mf_social_feed
 	{
 		global $post;
 
-		$out = "";
-
-		/*extract(shortcode_atts(array(
-			'id' => 0,
-			'filter' => 'group',
-			'amount' => 3,
-			'load_more_posts' => 'no',
-			'text' => 'yes',
-			'likes' => 'no',
-			'read_more' => 'yes',
-		), $atts));
-
-		//$setting_social_reload = get_option('setting_social_reload');
-
-		$out .= "<div class='widget social_feed'>
-			<div id='feed_".$id."' class='section'"
-				.($id > 0 ? " data-social_feeds='".$id."'" : "")
-				.($filter == 'yes' ? " data-social_filter='".$filter."'" : "")
-				.($amount > 0 ? " data-social_amount='".$amount."'" : "")
-				.($load_more_posts == 'yes' ? " data-social_load_more_posts='".$load_more_posts."'" : "")
-				.($likes == 'yes' ? " data-social_likes='".$likes."'" : "")
-				//.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
-			.">
-				<i class='fa fa-spinner fa-spin fa-3x'></i>
-				<ul class='sf_feeds hide'></ul>
-				<ul class='sf_posts";
-
-					if($text == 'yes')
-					{
-						$out .= ($read_more == 'yes' ? " show_read_more" : '');
-					}
-
-					else
-					{
-						$out .= " hide_text";
-					}
-
-				$out .= " hide'></ul>";
-
-				if($load_more_posts == 'yes')
-				{
-					$out .= "<div".get_form_button_classes().">
-						<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
-					</div>";
-				}
-
-			$out .= "</div>
-		</div>";*/
-
 		do_log(__FUNCTION__.": Add a block instead (#".$post->ID.", ".var_export($atts, true).")", 'publish', false);
 
-		return $out;
+		return "";
 	}
 
 	function widgets_init()
@@ -2346,14 +2275,14 @@ class mf_social_feed
 		$amount = check_var('amount', 'int');
 		$load_more_posts = check_var('load_more_posts', 'char');
 		$limit_source = check_var('limit_source', 'char');
-		$likes = check_var('likes', 'char');
+		//$likes = check_var('likes', 'char');
 
 		if($feeds != '')
 		{
 			$feeds = explode(",", $feeds);
 		}
 
-		list($arr_post_feeds, $arr_post_posts, $has_more_posts) = $this->get_feeds_and_posts(array('feeds' => $feeds, 'filter' => $filter, 'amount' => $amount, 'limit_source' => $limit_source, 'likes' => $likes));
+		list($arr_post_feeds, $arr_post_posts, $has_more_posts) = $this->get_feeds_and_posts(array('feeds' => $feeds, 'filter' => $filter, 'amount' => $amount, 'limit_source' => $limit_source)); //, 'likes' => $likes
 
 		$json_output['success'] = true;
 		$json_output['feed_id'] = $feed_id;
@@ -3085,8 +3014,8 @@ class mf_social_feed
 						'link' => $post->permalink,
 						'image' => $post_image,
 						'created' => date("Y-m-d H:i:s", strtotime($post->timestamp)),
-						'likes' => $post->like_count,
-						'comments' => $post->comments_count,
+						//'likes' => $post->like_count,
+						//'comments' => $post->comments_count,
 					);
 				}
 
@@ -3596,7 +3525,7 @@ class mf_social_feed
 					)),
 				);
 
-				$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id', 'likes', 'comments');
+				$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id'); //, 'likes', 'comments'
 
 				foreach($arr_meta_input_types as $meta_input_type)
 				{
@@ -3681,7 +3610,7 @@ class mf_social_feed
 
 		if(!isset($data['filter']) || $data['filter'] == ''){				$data['filter'] = 'no';}
 		if(!isset($data['limit_source']) || $data['limit_source'] == ''){	$data['limit_source'] = 'no';}
-		if(!isset($data['likes']) || $data['likes'] == ''){					$data['likes'] = 'no';}
+		//if(!isset($data['likes']) || $data['likes'] == ''){					$data['likes'] = 'no';}
 
 		$arr_public_feeds = $arr_post_feeds_count = $arr_post_feeds = $arr_post_posts = array();
 		$has_more_posts = false;
@@ -3743,7 +3672,7 @@ class mf_social_feed
 						$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
 						$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
 
-						if($data['likes'] == 'yes')
+						/*if($data['likes'] == 'yes')
 						{
 							$post_likes = get_post_meta($post_id, $this->meta_prefix.'likes', true);
 							$post_comments = get_post_meta($post_id, $this->meta_prefix.'comments', true);
@@ -3752,7 +3681,7 @@ class mf_social_feed
 						else
 						{
 							$post_likes = $post_comments = '';
-						}
+						}*/
 
 						if($post_service == '')
 						{
@@ -3796,8 +3725,8 @@ class mf_social_feed
 									'content' => apply_filters('the_content', $post_content),
 									'image' => $post_image,
 									'date' => format_date($post_date),
-									'likes' => $post_likes,
-									'comments' => $post_comments,
+									//'likes' => $post_likes,
+									//'comments' => $post_comments,
 								);
 
 								if(isset($arr_post_feeds_count[$post_feed])){	$arr_post_feeds_count[$post_feed]++;}
@@ -3842,7 +3771,7 @@ class widget_social_feed extends WP_Widget
 		'social_load_more_posts' => 'no',
 		'social_limit_source' => 'no',
 		'social_text' => 'yes',
-		'social_likes' => 'no',
+		//'social_likes' => 'no',
 		'social_read_more' => 'yes',
 	);
 
@@ -3869,8 +3798,6 @@ class widget_social_feed extends WP_Widget
 
 		if(count($instance['social_feeds']) > 0)
 		{
-			//$setting_social_reload = get_option('setting_social_reload');
-
 			$obj_social_feed->wp_head_feed();
 
 			echo apply_filters('filter_before_widget', $before_widget);
@@ -3892,8 +3819,7 @@ class widget_social_feed extends WP_Widget
 					.($instance['social_amount'] > 0 ? " data-social_amount='".$instance['social_amount']."'" : "")
 					.($instance['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$instance['social_load_more_posts']."'" : "")
 					.($instance['social_limit_source'] == 'yes' ? " data-social_limit_source='".$instance['social_limit_source']."'" : "")
-					.($instance['social_likes'] == 'yes' ? " data-social_likes='".$instance['social_likes']."'" : "")
-					//.($setting_social_reload > 0 ? " data-social_reload='".$setting_social_reload."'" : "")
+					//.($instance['social_likes'] == 'yes' ? " data-social_likes='".$instance['social_likes']."'" : "")
 				.">
 					<i class='fa fa-spinner fa-spin fa-3x'></i>
 					<ul class='sf_feeds hide'></ul>
@@ -3935,7 +3861,7 @@ class widget_social_feed extends WP_Widget
 		$instance['social_load_more_posts'] = sanitize_text_field($new_instance['social_load_more_posts']);
 		$instance['social_limit_source'] = sanitize_text_field($new_instance['social_limit_source']);
 		$instance['social_text'] = sanitize_text_field($new_instance['social_text']);
-		$instance['social_likes'] = sanitize_text_field($new_instance['social_likes']);
+		//$instance['social_likes'] = sanitize_text_field($new_instance['social_likes']);
 		$instance['social_read_more'] = sanitize_text_field($new_instance['social_read_more']);
 
 		return $instance;
@@ -3982,8 +3908,8 @@ class widget_social_feed extends WP_Widget
 
 				if($instance['social_text'] == 'yes')
 				{
-					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_read_more'), 'text' => __("Display Read More", 'lang_social_feed'), 'value' => $instance['social_read_more']))
-					.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Display Likes", 'lang_social_feed'), 'value' => $instance['social_likes']));
+					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_read_more'), 'text' => __("Display Read More", 'lang_social_feed'), 'value' => $instance['social_read_more']));
+					//.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_likes'), 'text' => __("Display Likes", 'lang_social_feed'), 'value' => $instance['social_likes']));
 				}
 
 			echo "</div>

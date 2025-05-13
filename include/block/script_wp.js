@@ -49,11 +49,11 @@
                 'type': 'string',
                 'default': 'yes'
             },
-			'social_likes':
+			/*'social_likes':
 			{
                 'type': 'string',
                 'default': 'no'
-            },
+            },*/
 			'social_read_more':
 			{
                 'type': 'string',
@@ -180,7 +180,7 @@
 									props.setAttributes({social_read_more: value});
 								}
 							}
-						),
+						)/*,
 						el(
 							SelectControl,
 							{
@@ -192,7 +192,7 @@
 									props.setAttributes({social_likes: value});
 								}
 							}
-						)
+						)*/
 					),
 					el(
 						'strong',

@@ -49,46 +49,22 @@ var SocialView = Backbone.View.extend(
 	{
 		this.displayDebug("Loading Feeds");
 
-		/*var reload = 0;*/
 		var self = this;
 
 		jQuery(".widget.social_feed").find(".section").each(function()
 		{
 			var dom_obj = jQuery(this),
-				/*data_reload = (parseInt(dom_obj.attr('data-social_reload')) || 0),*/
 				arr_data = {action: 'api_social_feed_posts'};
-
-			/*if(data_reload > 0 || data_reload < reload)
-			{
-				reload = (data_reload * 60 * 1000);
-			}*/
 
 			if(typeof dom_obj.attr('id') != 'undefined'){						arr_data.feed_id = dom_obj.attr('id');}
 			if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){		arr_data.feeds = dom_obj.data('social_feeds');}
 			if(typeof dom_obj.attr('data-social_filter') != 'undefined'){		arr_data.filter = dom_obj.data('social_filter');}
 			if(typeof dom_obj.data('social_amount') != 'undefined'){			arr_data.amount = dom_obj.data('social_amount');}
 			if(typeof dom_obj.data('social_load_more_posts') != 'undefined'){	arr_data.load_more_posts = dom_obj.data('social_load_more_posts');}
-			if(typeof dom_obj.attr('data-social_likes') != 'undefined'){		arr_data.likes = dom_obj.data('social_likes');}
+			/*if(typeof dom_obj.attr('data-social_likes') != 'undefined'){		arr_data.likes = dom_obj.data('social_likes');}*/
 
 			self.loadPage(arr_data);
 		});
-
-		/*if(reload > 0)
-		{
-			clearInterval(feed_interval);
-
-			feed_interval = setInterval(function()
-			{
-				self.loadFeeds();
-			}, reload);
-
-			this.displayDebug("Set New Interval (" + reload + ")");
-		}
-
-		else
-		{
-			this.displayDebug("No Interval Set");
-		}*/
 	},
 
 	loadPage: function(arr_data)

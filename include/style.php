@@ -289,9 +289,9 @@ echo "@media all
 								{
 									display: inline-block;
 									margin: .5em 0 0 !important;
-								}
+								}";
 
-				.widget.social_feed .likes
+				/*.widget.social_feed .likes
 				{
 					background: #edeeef;
 					margin-top: .5em;
@@ -303,9 +303,9 @@ echo "@media all
 						color: #333;
 						display: inline-block;
 						margin-right: .5em;
-					}
+					}*/
 
-		.widget.social_feed .load_more_posts
+		echo ".widget.social_feed .load_more_posts
 		{
 			margin-top: 1em;
 		}
