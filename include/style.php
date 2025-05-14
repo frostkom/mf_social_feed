@@ -9,11 +9,28 @@ if(!defined('ABSPATH'))
 	require_once($folder."wp-load.php");
 }
 
+$setting_breakpoint_tablet = apply_filters('get_styles_content', '', 'max_width');
+
+if($setting_breakpoint_tablet != '')
+{
+	preg_match('/^([0-9]*\.?[0-9]+)([a-zA-Z%]+)$/', $setting_breakpoint_tablet, $matches);
+
+	$setting_breakpoint_tablet = $matches[1];
+	$setting_breakpoint_suffix = $matches[2];
+
+	$setting_breakpoint_mobile = ($setting_breakpoint_tablet * .775);
+}
+
+else
+{
+	$setting_breakpoint_tablet = get_option_or_default('setting_navigation_breakpoint_tablet', 1200);
+	$setting_breakpoint_mobile = get_option_or_default('setting_navigation_breakpoint_mobile', 930);
+
+	$setting_breakpoint_suffix = "px";
+}
+
 $setting_social_design = get_option('setting_social_design');
 $setting_social_full_width = get_option('setting_social_full_width');
-
-$setting_navigation_breakpoint_tablet = get_option_or_default('setting_navigation_breakpoint_tablet', 1200);
-$setting_navigation_breakpoint_mobile = get_option_or_default('setting_navigation_breakpoint_mobile', 930);
 
 $setting_social_desktop_columns = get_option_or_default('setting_social_desktop_columns', 3);
 $setting_social_tablet_columns = get_option_or_default('setting_social_tablet_columns', 2);
@@ -323,17 +340,17 @@ echo "@media all
 	}
 }";
 
-if($setting_navigation_breakpoint_tablet > 0)
+if($setting_breakpoint_tablet > 0)
 {
-	echo "@media screen and (min-width: ".$setting_navigation_breakpoint_tablet."px)
+	echo "@media screen and (min-width: ".$setting_breakpoint_tablet.$setting_breakpoint_suffix.")
 	{
 
 	}";
 }
 
-if($setting_navigation_breakpoint_mobile > 0 && $setting_navigation_breakpoint_tablet > $setting_navigation_breakpoint_mobile)
+if($setting_breakpoint_mobile > 0 && $setting_breakpoint_tablet > $setting_breakpoint_mobile)
 {
-	echo "@media screen and (min-width: ".$setting_navigation_breakpoint_mobile."px) and (max-width: ".($setting_navigation_breakpoint_tablet - 1)."px)
+	echo "@media screen and (min-width: ".$setting_breakpoint_mobile.$setting_breakpoint_suffix.") and (max-width: ".($setting_breakpoint_tablet - 1).$setting_breakpoint_suffix.")
 	{";
 
 		if($post_container_tablet != '')
@@ -355,9 +372,9 @@ if($setting_navigation_breakpoint_mobile > 0 && $setting_navigation_breakpoint_t
 	echo "}";
 }
 
-if($setting_navigation_breakpoint_mobile > 0)
+if($setting_breakpoint_mobile > 0)
 {
-	echo "@media screen and (max-width: ".($setting_navigation_breakpoint_mobile - 1)."px)
+	echo "@media screen and (max-width: ".($setting_breakpoint_mobile - 1).$setting_breakpoint_suffix.")
 	{";
 
 		if($post_container_mobile != '')
