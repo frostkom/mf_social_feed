@@ -206,9 +206,10 @@ class mf_social_feed
 
 					if($attributes['social_load_more_posts'] == 'yes')
 					{
-						$out .= "<div".get_form_button_classes().">
-							<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
-						</div>";
+						$out .= "<div".get_form_button_classes().">"
+							.show_button(array('type' => 'button', 'text' => __("View More", 'lang_social_feed'), 'class' => 'load_more_posts hide'))
+							//."<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>"
+						."</div>";
 					}
 
 				$out .= "</div>"
@@ -2182,15 +2183,6 @@ class mf_social_feed
 				</li>
 			</script>";
 		}
-	}
-
-	function shortcode_social_feed($atts)
-	{
-		global $post;
-
-		do_log(__FUNCTION__.": Add a block instead (#".$post->ID.", ".var_export($atts, true).")", 'publish', false);
-
-		return "";
 	}
 
 	function widgets_init()

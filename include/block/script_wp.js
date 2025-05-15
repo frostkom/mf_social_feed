@@ -32,7 +32,7 @@
 			'social_amount':
 			{
                 'type': 'string',
-                'default': 18
+                'default': 6
             },
 			'social_load_more_posts':
 			{

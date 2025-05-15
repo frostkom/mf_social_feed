@@ -325,6 +325,7 @@ echo "@media all
 		echo ".widget.social_feed .load_more_posts
 		{
 			margin-top: 1em;
+			width: auto;
 		}
 
 	.social_debug
