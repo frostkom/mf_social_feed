@@ -356,7 +356,7 @@ class mf_social_feed
 
 		//Styling
 		############################
-		if(apply_filters('get_block_search', 0, 'mf/socialfeed') > 0 || (int)apply_filters('get_widget_search', 'social-feed-widget') > 0)
+		if(apply_filters('get_block_search', 0, 'mf/socialfeed') > 0)
 		{
 			$options_area = $options_area_orig."_styling";
 
