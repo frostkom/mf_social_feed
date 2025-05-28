@@ -39,21 +39,16 @@
                 'type': 'string',
                 'default': 'no'
             },
-			'social_limit_source':
+			/*'social_limit_source':
 			{
                 'type': 'string',
                 'default': 'no'
-            },
+            },*/
 			'social_text':
 			{
                 'type': 'string',
                 'default': 'yes'
             },
-			/*'social_likes':
-			{
-                'type': 'string',
-                'default': 'no'
-            },*/
 			'social_read_more':
 			{
                 'type': 'string',
@@ -145,10 +140,10 @@
 								}
 							}
 						),
-						el(
+						/*el(
 							SelectControl,
 							{
-								label: script_social_feed_block_wp.social_limit_source_label, /* + " <i class='fa fa-info-circle blue' title='" + __("This will prevent one source from taking over the whole feed if it is posted to much more often than the other sources", 'lang_social_feed') + "'></i>"*/
+								label: script_social_feed_block_wp.social_limit_source_label,
 								value: props.attributes.social_limit_source,
 								options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
 								onChange: function(value)
@@ -156,7 +151,7 @@
 									props.setAttributes({social_limit_source: value});
 								}
 							}
-						),
+						),*/
 						el(
 							SelectControl,
 							{
@@ -180,19 +175,7 @@
 									props.setAttributes({social_read_more: value});
 								}
 							}
-						)/*,
-						el(
-							SelectControl,
-							{
-								label: script_social_feed_block_wp.social_likes_label,
-								value: props.attributes.social_likes,
-								options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
-								onChange: function(value)
-								{
-									props.setAttributes({social_likes: value});
-								}
-							}
-						)*/
+						)
 					),
 					el(
 						'strong',

@@ -34,7 +34,7 @@ $setting_social_full_width = get_option('setting_social_full_width');
 
 $setting_social_desktop_columns = get_option_or_default('setting_social_desktop_columns', 3);
 $setting_social_tablet_columns = get_option_or_default('setting_social_tablet_columns', 2);
-$setting_social_mobile_columns = 1;
+$setting_social_mobile_columns = get_option_or_default('setting_social_mobile_columns', 1);
 
 $setting_social_display_border = get_option('setting_social_display_border', 'yes');
 
@@ -306,23 +306,9 @@ echo "@media all
 								{
 									display: inline-block;
 									margin: .5em 0 0 !important;
-								}";
+								}
 
-				/*.widget.social_feed .likes
-				{
-					background: #edeeef;
-					margin-top: .5em;
-					padding: .5em;
-				}
-
-					.widget.social_feed .likes .fa, .widget.social_feed .likes .fab, .widget.social_feed .likes span
-					{
-						color: #333;
-						display: inline-block;
-						margin-right: .5em;
-					}*/
-
-		echo ".widget.social_feed .load_more_posts
+		.widget.social_feed .load_more_posts
 		{
 			margin-top: 1em;
 			width: auto;
