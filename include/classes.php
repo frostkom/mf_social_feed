@@ -1596,49 +1596,49 @@ class mf_social_feed
 		}
 	}
 
-	function column_header($cols)
+	function column_header($columns)
 	{
 		global $post_type;
 
 		switch($post_type)
 		{
 			case $this->post_type:
-				unset($cols['date']);
+				unset($columns['date']);
 
-				$cols['type'] = __("Service", 'lang_social_feed');
-				$cols['search_for'] = __("Search for", 'lang_social_feed');
-				//$cols['in_use'] = __("In Use", 'lang_social_feed');
-				$cols['amount_of_posts'] = __("Amount", 'lang_social_feed');
+				$columns['type'] = __("Service", 'lang_social_feed');
+				$columns['search_for'] = __("Search for", 'lang_social_feed');
+				//$columns['in_use'] = __("In Use", 'lang_social_feed');
+				$columns['amount_of_posts'] = __("Amount", 'lang_social_feed');
 			break;
 
 			case $this->post_type_post:
-				unset($cols['title']);
-				unset($cols['date']);
+				unset($columns['title']);
+				unset($columns['date']);
 
-				$cols['type'] = __("Type", 'lang_social_feed');
-				$cols['name'] = __("Username", 'lang_social_feed');
-				$cols['text'] = __("Text", 'lang_social_feed');
-				$cols['image'] = __("Image", 'lang_social_feed');
-				//$cols['post_id'] = __("ID", 'lang_social_feed');
-				$cols['info'] = __("Information", 'lang_social_feed');
-				$cols['date'] = __("Date", 'lang_social_feed');
+				$columns['type'] = __("Type", 'lang_social_feed');
+				$columns['name'] = __("Username", 'lang_social_feed');
+				$columns['text'] = __("Text", 'lang_social_feed');
+				$columns['image'] = __("Image", 'lang_social_feed');
+				//$columns['post_id'] = __("ID", 'lang_social_feed');
+				$columns['info'] = __("Information", 'lang_social_feed');
+				$columns['date'] = __("Date", 'lang_social_feed');
 			break;
 		}
 
-		return $cols;
+		return $columns;
 	}
 
-	function column_cell($col, $post_id)
+	function column_cell($column, $post_id)
 	{
 		global $wpdb, $post;
 
 		switch($post->post_type)
 		{
 			case $this->post_type:
-				switch($col)
+				switch($column)
 				{
 					case 'type':
-						$post_meta = get_post_meta($post_id, $this->meta_prefix.$col, true);
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						echo "<i class='".$this->get_post_icon($post_meta)." fa-2x'></i>";
 
@@ -1668,7 +1668,7 @@ class mf_social_feed
 					break;
 
 					case 'search_for':
-						$post_meta_search_for = get_post_meta($post_id, $this->meta_prefix.$col, true);
+						$post_meta_search_for = get_post_meta($post_id, $this->meta_prefix.$column, true);
 						$post_meta_type = get_post_meta($post_id, $this->meta_prefix.'type', true);
 
 						if($post_meta_type == 'rss')
@@ -1887,13 +1887,13 @@ class mf_social_feed
 			break;
 
 			case $this->post_type_post:
-				switch($col)
+				switch($column)
 				{
 					case 'type':
 						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
 						//$post_feed = $r->post_parent;
 
-						$post_meta = get_post_meta($post_feed, $this->meta_prefix.$col, true);
+						$post_meta = get_post_meta($post_feed, $this->meta_prefix.$column, true);
 
 						if($post_meta != '')
 						{
@@ -1907,7 +1907,7 @@ class mf_social_feed
 					break;
 
 					case 'name':
-						$post_meta = get_post_meta($post_id, $this->meta_prefix.$col, true);
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						if(substr($post_meta, 0, 1) != "@")
 						{
@@ -1937,7 +1937,7 @@ class mf_social_feed
 					break;
 
 					case 'image':
-						$post_meta = get_post_meta($post_id, $this->meta_prefix.$col, true);
+						$post_meta = get_post_meta($post_id, $this->meta_prefix.$column, true);
 
 						if($post_meta != '')
 						{
