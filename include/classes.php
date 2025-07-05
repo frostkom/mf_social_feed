@@ -17,7 +17,7 @@ class mf_social_feed
 	var $settings_url = "";
 	var $token_life = "";
 	var $setting_social_api_url = "";
-	var $arr_posts = array();
+	var $arr_posts = [];
 	var $facebook_authorize_url = "";
 	var $facebook_redirect_url = "";
 	var $facebook_access_token = "";
@@ -140,11 +140,11 @@ class mf_social_feed
 		}
 	}
 
-	function api_sync($json_output, $data = array())
+	function api_sync($json_output, $data = [])
 	{
 		if(!isset($json_output['settings']))
 		{
-			$json_output['settings'] = array();
+			$json_output['settings'] = [];
 		}
 
 		foreach($this->sync_settings as $setting_key)
@@ -162,7 +162,7 @@ class mf_social_feed
 
 	function block_render_callback($attributes)
 	{
-		if(!isset($attributes['social_feeds'])){										$attributes['social_feeds'] = array();}
+		if(!isset($attributes['social_feeds'])){										$attributes['social_feeds'] = [];}
 		if(!isset($attributes['social_filter'])){										$attributes['social_filter'] = 'no';}
 		if(!isset($attributes['social_amount']) || $attributes['social_amount'] < 1){	$attributes['social_amount'] = 6;}
 		if(!isset($attributes['social_load_more_posts'])){								$attributes['social_load_more_posts'] = 'no';}
@@ -277,7 +277,7 @@ class mf_social_feed
 
 		wp_register_script('script_social_feed_block_wp', $plugin_include_url."block/script_wp.js", array('wp-blocks', 'wp-element', 'wp-components', 'wp-editor', 'wp-block-editor'), $plugin_version, true);
 
-		$arr_data_feeds = array();
+		$arr_data_feeds = [];
 		get_post_children(array('post_type' => $this->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
 
 		wp_localize_script('script_social_feed_block_wp', 'script_social_feed_block_wp', array(
@@ -334,7 +334,7 @@ class mf_social_feed
 		############################
 		add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
-		$arr_settings = array();
+		$arr_settings = [];
 
 		if($has_facebook || $has_instagram)
 		{
@@ -359,7 +359,7 @@ class mf_social_feed
 
 			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
-			$arr_settings = array();
+			$arr_settings = [];
 			$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
 
 			if(wp_is_block_theme() == false)
@@ -389,7 +389,7 @@ class mf_social_feed
 
 			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
-			$arr_settings = array();
+			$arr_settings = [];
 
 			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
 		}*/
@@ -425,7 +425,7 @@ class mf_social_feed
 
 			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
 
-			$arr_settings = array();
+			$arr_settings = [];
 			$arr_settings['setting_linkedin_api_id'] = __("Client ID", 'lang_social_feed');
 			$arr_settings['setting_linkedin_api_secret'] = __("Client Secret", 'lang_social_feed');
 
@@ -1143,7 +1143,7 @@ class mf_social_feed
 
 	function get_social_types_for_select()
 	{
-		$arr_data = array();
+		$arr_data = [];
 
 		$arr_data['facebook'] = "Facebook";
 		$arr_data['instagram'] = "Instagram";
@@ -1565,7 +1565,7 @@ class mf_social_feed
 		{
 			$strFilterSocialFeed = check_var('strFilterSocialFeed');
 
-			$arr_data = array();
+			$arr_data = [];
 			get_post_children(array('post_type' => $this->post_type, 'post_status' => '', 'add_choose_here' => true), $arr_data);
 
 			if(count($arr_data) > 2)
@@ -2007,12 +2007,12 @@ class mf_social_feed
 		}
 	}
 
-	function row_actions($actions, $post)
+	function row_actions($arr_actions, $post)
 	{
 		if($post->post_type == $this->post_type_post)
 		{
-			unset($actions['inline hide-if-no-js']);
-			unset($actions['view']);
+			unset($arr_actions['inline hide-if-no-js']);
+			unset($arr_actions['view']);
 
 			$post_id = $post->ID;
 
@@ -2026,18 +2026,18 @@ class mf_social_feed
 
 			if($post->post_status == 'publish')
 			{
-				unset($actions['trash']);
+				unset($arr_actions['trash']);
 
-				$actions['api_social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; //draft
+				$arr_actions['api_social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; //draft
 
 				if($post_username != $feed_name)
 				{
-					$actions['api_social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!", 'lang_social_feed'), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
+					$arr_actions['api_social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!", 'lang_social_feed'), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
 				}
 			}
 		}
 
-		return $actions;
+		return $arr_actions;
 	}
 
 	function save_post($post_id, $post, $update)
@@ -2611,7 +2611,7 @@ class mf_social_feed
 		}
 	}
 
-	function get_amount($data = array())
+	function get_amount($data = [])
 	{
 		global $wpdb;
 
@@ -2628,7 +2628,7 @@ class mf_social_feed
 
 	function save_error($data)
 	{
-		$arr_exclude = $arr_include = array();
+		$arr_exclude = $arr_include = [];
 
 		// Facebook
 		$arr_exclude[] = "An unknown error occurred";
@@ -2680,7 +2680,7 @@ class mf_social_feed
 
 		if($this->search != '')
 		{
-			$this->arr_posts = array();
+			$this->arr_posts = [];
 
 			switch($this->type)
 			{
@@ -2864,7 +2864,7 @@ class mf_social_feed
 
 		if(isset($json->data))
 		{
-			$arr_ids = array();
+			$arr_ids = [];
 
 			if(get_option('setting_social_debug') == 'yes')
 			{
@@ -3015,7 +3015,7 @@ class mf_social_feed
 		}
 	}
 
-	function linkedin_api_call($path, $key, $params = array())
+	function linkedin_api_call($path, $key, $params = [])
 	{
 		$default_params = array(
 			'format' => 'json',
@@ -3303,9 +3303,9 @@ class mf_social_feed
 					'truncated' => false,
 					'entities' => stdClass::__set_state(array(
 						'hashtags' => array(0 => stdClass::__set_state(array('text' => 'svpol', 'indices' => array(0 => 43)))),
-						'symbols' => array(),
-						'user_mentions' => array(),
-						'urls' => array(),
+						'symbols' => [],
+						'user_mentions' => [],
+						'urls' => [],
 						'media' => array(0 => stdClass::__set_state(array(
 							'id' => '[id]', 'id_str' => '[id]',
 							'indices' => array(0 => 50),
@@ -3357,7 +3357,7 @@ class mf_social_feed
 									'url' => '[url]', 'expanded_url' => '[url]', 'display_url' => 'domain.com', 'indices' => array(0 => 2)
 								)))
 							)),
-							'description' => stdClass::__set_state(array('urls' => array()))
+							'description' => stdClass::__set_state(array('urls' => []))
 						)),
 						'protected' => false, 'followers_count' => 78040, 'friends_count' => 4127, 'listed_count' => 594, 'created_at' => 'Tue Jan 20 10:19:51 +0000 2009', 'favourites_count' => 420, 'utc_offset' => 3600, 'time_zone' => '[TZ]', 'geo_enabled' => true, 'verified' => true, 'statuses_count' => 12821, 'lang' => 'sv', 'contributors_enabled' => false, 'is_translator' => false, 'is_translation_enabled' => false, 'profile_background_color' => 'ffffff', 'profile_background_image_url' => 'http://pbs.twimg.com/profile_background_images/[id]/x.jpg', 'profile_background_image_url_https' => 'https://pbs.twimg.com/profile_background_images/[id]/x.jpeg', 'profile_background_tile' => false, 'profile_image_url' => 'http://pbs.twimg.com/profile_images/[id]/x.png', 'profile_image_url_https' => 'https://pbs.twimg.com/profile_images/[id]/x.png', 'profile_banner_url' => 'https://pbs.twimg.com/profile_banners/[id]/[id]', 'profile_link_color' => 'ffffff', 'profile_sidebar_border_color' => 'ffffff', 'profile_sidebar_fill_color' => 'ffffff', 'profile_text_color' => '333333', 'profile_use_background_image' => true, 'has_extended_profile' => false, 'default_profile' => false, 'default_profile_image' => false, 'following' => false, 'follow_request_sent' => false, 'notifications' => false, 'translator_type' => 'none'
 					)),
@@ -3597,7 +3597,7 @@ class mf_social_feed
 		if(!isset($data['filter']) || $data['filter'] == ''){				$data['filter'] = 'no';}
 		if(!isset($data['limit_source']) || $data['limit_source'] == ''){	$data['limit_source'] = 'no';}
 
-		$arr_public_feeds = $arr_post_feeds_count = $arr_post_feeds = $arr_post_posts = array();
+		$arr_public_feeds = $arr_post_feeds_count = $arr_post_feeds = $arr_post_posts = [];
 		$has_more_posts = false;
 		$query_where = "";
 
@@ -3737,7 +3737,7 @@ class widget_social_feed extends WP_Widget
 	var $widget_ops;
 	var $arr_default = array(
 		'social_heading' => "",
-		'social_feeds' => array(),
+		'social_feeds' => [],
 		'social_filter' => 'no',
 		'social_amount' => 6,
 		'social_load_more_posts' => 'no',
@@ -3825,7 +3825,7 @@ class widget_social_feed extends WP_Widget
 		$new_instance = wp_parse_args((array)$new_instance, $this->arr_default);
 
 		$instance['social_heading'] = sanitize_text_field($new_instance['social_heading']);
-		$instance['social_feeds'] = is_array($new_instance['social_feeds']) ? $new_instance['social_feeds'] : array();
+		$instance['social_feeds'] = is_array($new_instance['social_feeds']) ? $new_instance['social_feeds'] : [];
 		$instance['social_filter'] = sanitize_text_field($new_instance['social_filter']);
 		$instance['social_amount'] = sanitize_text_field($new_instance['social_amount']);
 		$instance['social_load_more_posts'] = sanitize_text_field($new_instance['social_load_more_posts']);
@@ -3849,7 +3849,7 @@ class widget_social_feed extends WP_Widget
 	{
 		$instance = wp_parse_args((array)$instance, $this->arr_default);
 
-		$arr_data_feeds = array();
+		$arr_data_feeds = [];
 		get_post_children(array('post_type' => $this->obj_social_feed->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
 
 		echo "<div class='mf_form'>"

@@ -41,7 +41,7 @@ switch($type)
 
 			else
 			{
-				$arr_vars = array();
+				$arr_vars = [];
 
 				if(get_option('setting_social_debug') == 'yes')
 				{
