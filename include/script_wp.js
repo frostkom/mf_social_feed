@@ -25,7 +25,7 @@ jQuery(function($)
 				return false;
 			}
 
-			dom_obj.html("<i class='fa fa-spinner fa-spin fa-2x'></i>");
+			dom_obj.html(script_social_feed_wp.loading_animation);
 
 			$.ajax(
 			{

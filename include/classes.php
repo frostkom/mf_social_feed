@@ -185,9 +185,9 @@ class mf_social_feed
 					.($attributes['social_amount'] > 0 ? " data-social_amount='".$attributes['social_amount']."'" : "")
 					.($attributes['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$attributes['social_load_more_posts']."'" : "")
 					//.($attributes['social_limit_source'] == 'yes' ? " data-social_limit_source='".$attributes['social_limit_source']."'" : "")
-				.">
-					<i class='fa fa-spinner fa-spin fa-3x'></i>
-					<ul class='sf_feeds hide'></ul>
+				.">"
+					.apply_filters('get_loading_animation', '', ['class' => "fa-3x"])
+					."<ul class='sf_feeds hide'></ul>
 					<ul class='sf_posts";
 
 						if($attributes['social_text'] == 'yes')
@@ -793,7 +793,10 @@ class mf_social_feed
 					case $this->post_type_post:
 						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php"); // Just for icon colors
 
-						mf_enqueue_script('script_social_feed_wp', $plugin_include_url."script_wp.js", array('ajax_url' => admin_url('admin-ajax.php')));
+						mf_enqueue_script('script_social_feed_wp', $plugin_include_url."script_wp.js", array(
+							'ajax_url' => admin_url('admin-ajax.php'),
+							'loading_animation' => apply_filters('get_loading_animation', ''),
+						));
 					break;
 				}
 			break;
@@ -1841,8 +1844,8 @@ class mf_social_feed
 
 								else
 								{
-									echo "<i class='fa fa-spinner fa-spin fa-2x'></i>
-									<div class='row-actions'>".__("I am waiting to get access to the feed", 'lang_social_feed')."</div>";
+									echo apply_filters('get_loading_animation', '')
+									."<div class='row-actions'>".__("I am waiting to get access to the feed", 'lang_social_feed')."</div>";
 								}
 							}
 						}
@@ -3790,9 +3793,9 @@ class widget_social_feed extends WP_Widget
 					.($instance['social_amount'] > 0 ? " data-social_amount='".$instance['social_amount']."'" : "")
 					.($instance['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$instance['social_load_more_posts']."'" : "")
 					//.($instance['social_limit_source'] == 'yes' ? " data-social_limit_source='".$instance['social_limit_source']."'" : "")
-				.">
-					<i class='fa fa-spinner fa-spin fa-3x'></i>
-					<ul class='sf_feeds hide'></ul>
+				.">"
+					.apply_filters('get_loading_animation', '', ['class' => "fa-3x"])
+					."<ul class='sf_feeds hide'></ul>
 					<ul class='sf_posts";
 
 						if($instance['social_text'] == 'yes')

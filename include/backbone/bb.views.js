@@ -155,7 +155,7 @@ var SocialView = Backbone.View.extend(
 			html = "",
 			dom_obj = jQuery("#" + this.model.get('feed_id') + ".section");
 
-		dom_obj.find(".fa-spinner").addClass('hide');
+		dom_obj.find(".loading_animation").addClass('hide');
 
 		if(amount < 3){	dom_obj.find(".sf_posts").addClass('one_column');}
 		else{			dom_obj.find(".sf_posts").removeClass('one_column');}
