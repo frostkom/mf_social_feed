@@ -21,6 +21,7 @@ class mf_social_feed
 	var $facebook_authorize_url = "";
 	var $facebook_redirect_url = "";
 	var $facebook_access_token = "";
+	var $footer_output;
 
 	function __construct($id = 0)
 	{
@@ -174,7 +175,88 @@ class mf_social_feed
 
 		if(count($attributes['social_feeds']) > 0)
 		{
-			$this->wp_head_feed();
+			global $obj_base;
+
+			if(!isset($obj_base))
+			{
+				$obj_base = new mf_base();
+			}
+
+			$plugin_base_include_url = plugins_url()."/mf_base/include/";
+			$plugin_include_url = plugin_dir_url(__FILE__);
+
+			$setting_social_debug = get_option('setting_social_debug');
+
+			mf_enqueue_style('style_social_feed', $plugin_include_url."style.php");
+			mf_enqueue_style('style_base_bb', $plugin_base_include_url."backbone/style.css");
+
+			mf_enqueue_script('underscore');
+			mf_enqueue_script('backbone');
+			mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js");
+
+			mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('ajax_url' => admin_url('admin-ajax.php')));
+			mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug));
+
+			mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js");
+
+			$this->footer_output = $obj_base->get_templates(array('lost_connection'));
+
+			if($setting_social_debug == 'yes')
+			{
+				$this->footer_output .= "<div class='social_debug'></div>";
+			}
+
+			$this->footer_output .= "<script type='text/template' id='template_feed_message'>
+				<li class='no_result'>".__("There are no posts to display", 'lang_social_feed')."</li>
+			</script>
+
+			<script type='text/template' id='template_feed_all'>
+				<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>
+			</script>
+
+			<script type='text/template' id='template_feed'>
+				<li><a href='#<%= id %>' id='<%= id %>'><%= name %></a></li>
+			</script>
+
+			<script type='text/template' id='template_feed_post'>
+				<li class='sf_<%= service %> sf_feed_<%= feed %>'>
+					<% if(image != '')
+					{ %>
+						<div class='image'>
+							<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
+						</div>
+					<% } %>
+					<div class='content'>
+						<div class='meta'>
+							<a href='<%= link %>'>
+								<i class='<%= icon %>'></i>
+
+								<% if(service == 'rss')
+								{ %>
+									<span class='name'><%= feed_title %></span>
+								<% }
+
+								else if(name != '')
+								{ %>
+									<span class='name'><%= name %></span>
+								<% } %>
+
+								<span class='date'><%= date %></span>
+							</a>
+						</div>
+
+						<% if(service == 'rss' && title != '')
+						{ %>
+							<p><a href='<%= link %>'><%= title %></a></p>
+						<% }
+
+						if(content != '')
+						{ %>
+							<div class='text'><a href='<%= link %>'><%= content %></a></div>
+						<% } %>
+					</a>
+				</li>
+			</script>";
 
 			$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
 
@@ -2090,95 +2172,11 @@ class mf_social_feed
 		wp_deregister_style('sb-font-awesome');
 	}
 
-	function wp_head_feed()
-	{
-		$plugin_base_include_url = plugins_url()."/mf_base/include/";
-		$plugin_include_url = plugin_dir_url(__FILE__);
-
-		$setting_social_debug = get_option('setting_social_debug');
-
-		mf_enqueue_style('style_social_feed', $plugin_include_url."style.php");
-		mf_enqueue_style('style_base_bb', $plugin_base_include_url."backbone/style.css");
-
-		mf_enqueue_script('underscore');
-		mf_enqueue_script('backbone');
-		mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js");
-
-		mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('ajax_url' => admin_url('admin-ajax.php')));
-		mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug));
-
-		mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js");
-	}
-
 	function wp_footer()
 	{
-		global $obj_base;
-
-		if(does_post_exists(array('post_type' => $this->post_type)))
+		if($this->footer_output != '')
 		{
-			if(!isset($obj_base))
-			{
-				$obj_base = new mf_base();
-			}
-
-			echo $obj_base->get_templates(array('lost_connection'));
-
-			if(get_option('setting_social_debug') == 'yes')
-			{
-				echo "<div class='social_debug'></div>";
-			}
-
-			echo "<script type='text/template' id='template_feed_message'>
-				<li class='no_result'>".__("There are no posts to display", 'lang_social_feed')."</li>
-			</script>
-
-			<script type='text/template' id='template_feed_all'>
-				<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>
-			</script>
-
-			<script type='text/template' id='template_feed'>
-				<li><a href='#<%= id %>' id='<%= id %>'><%= name %></a></li>
-			</script>
-
-			<script type='text/template' id='template_feed_post'>
-				<li class='sf_<%= service %> sf_feed_<%= feed %>'>
-					<% if(image != '')
-					{ %>
-						<div class='image'>
-							<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
-						</div>
-					<% } %>
-					<div class='content'>
-						<div class='meta'>
-							<a href='<%= link %>'>
-								<i class='<%= icon %>'></i>
-
-								<% if(service == 'rss')
-								{ %>
-									<span class='name'><%= feed_title %></span>
-								<% }
-
-								else if(name != '')
-								{ %>
-									<span class='name'><%= name %></span>
-								<% } %>
-
-								<span class='date'><%= date %></span>
-							</a>
-						</div>
-
-						<% if(service == 'rss' && title != '')
-						{ %>
-							<p><a href='<%= link %>'><%= title %></a></p>
-						<% }
-
-						if(content != '')
-						{ %>
-							<div class='text'><a href='<%= link %>'><%= content %></a></div>
-						<% } %>
-					</a>
-				</li>
-			</script>";
+			echo $this->footer_output;
 		}
 	}
 
@@ -3761,62 +3759,6 @@ class widget_social_feed extends WP_Widget
 	function widget($args, $instance)
 	{
 		do_log(__CLASS__."->".__FUNCTION__."(): Add a block instead", 'publish', false);
-
-		global $obj_social_feed;
-
-		extract($args);
-		$instance = wp_parse_args((array)$instance, $this->arr_default);
-
-		if(count($instance['social_feeds']) > 0)
-		{
-			$obj_social_feed->wp_head_feed();
-
-			echo apply_filters('filter_before_widget', $before_widget);
-
-				if($instance['social_heading'] != '')
-				{
-					$instance['social_heading'] = apply_filters('widget_title', $instance['social_heading'], $instance, $this->id_base);
-
-					echo $before_title
-						.$instance['social_heading']
-					.$after_title;
-				}
-
-				$feed_id = is_array($instance['social_feeds']) && count($instance['social_feeds']) > 0 ? implode("_", $instance['social_feeds']) : 0;
-
-				echo "<div id='feed_".$feed_id."' class='section'"
-					.(is_array($instance['social_feeds']) && count($instance['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $instance['social_feeds'])."'" : "")
-					.($instance['social_filter'] == 'yes' ? " data-social_filter='".$instance['social_filter']."'" : "")
-					.($instance['social_amount'] > 0 ? " data-social_amount='".$instance['social_amount']."'" : "")
-					.($instance['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$instance['social_load_more_posts']."'" : "")
-					//.($instance['social_limit_source'] == 'yes' ? " data-social_limit_source='".$instance['social_limit_source']."'" : "")
-				.">"
-					.apply_filters('get_loading_animation', '', ['class' => "fa-3x"])
-					."<ul class='sf_feeds hide'></ul>
-					<ul class='sf_posts";
-
-						if($instance['social_text'] == 'yes')
-						{
-							echo ($instance['social_read_more'] == 'yes' ? " show_read_more" : '');
-						}
-
-						else
-						{
-							echo " hide_text";
-						}
-
-					echo " hide'></ul>";
-
-					if($instance['social_load_more_posts'] == 'yes')
-					{
-						echo "<div".get_form_button_classes().">
-							<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>
-						</div>";
-					}
-
-				echo "</div>"
-			.$after_widget;
-		}
 	}
 
 	function update($new_instance, $old_instance)
