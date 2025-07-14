@@ -21,6 +21,10 @@ class mf_social_feed
 	var $facebook_authorize_url = "";
 	var $facebook_redirect_url = "";
 	var $facebook_access_token = "";
+	var $instagram_client_id;
+	var $instagram_redirect_url;
+	var $instagram_authorize_url;
+	var $instagram_access_token;
 	var $footer_output;
 
 	function __construct($id = 0)
