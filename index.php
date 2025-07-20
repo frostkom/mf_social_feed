@@ -3,12 +3,14 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description:
-Version: 5.12.4
+Version: 5.12.5
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
 Text Domain: lang_social_feed
 Domain Path: /lang
+
+Requires Plugins: meta-box
 */
 
 if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') && is_plugin_active("mf_base/index.php"))
@@ -17,7 +19,6 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 
 	$obj_social_feed = new mf_social_feed();
 
-	add_action('cron_base', 'activate_social_feed', mt_rand(1, 10));
 	add_action('cron_base', array($obj_social_feed, 'cron_base'), mt_rand(1, 10));
 
 	//add_action('cron_sync', array($obj_social_feed, 'cron_sync'));
@@ -28,7 +29,6 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 
 	if(is_admin())
 	{
-		register_activation_hook(__FILE__, 'activate_social_feed');
 		register_uninstall_hook(__FILE__, 'uninstall_social_feed');
 
 		add_action('admin_enqueue_scripts', array($obj_social_feed, 'admin_enqueue_scripts'), 11);
@@ -74,11 +74,6 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 
 	add_action('wp_ajax_api_social_feed_posts', array($obj_social_feed, 'api_social_feed_posts'));
 	add_action('wp_ajax_nopriv_api_social_feed_posts', array($obj_social_feed, 'api_social_feed_posts'));
-
-	function activate_social_feed()
-	{
-		require_plugin("meta-box/meta-box.php", "Meta Box");
-	}
 
 	function uninstall_social_feed()
 	{
