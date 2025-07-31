@@ -348,10 +348,9 @@ class mf_social_feed
 				'singular_name' => __("Social Feed", 'lang_social_feed'),
 				'menu_name' => __("Social Feeds", 'lang_social_feed'),
 			),
-			'public' => false, // Previously true but changed to hide in sitemap.xml
+			'public' => false,
 			'show_ui' => true,
 			'show_in_nav_menus' => false,
-			'exclude_from_search' => true,
 			'capability_type' => 'page',
 			'menu_position' => 21,
 			'menu_icon' => 'dashicons-megaphone',
@@ -366,11 +365,10 @@ class mf_social_feed
 				'singular_name' => __("Post", 'lang_social_feed'),
 				'menu_name' => __("Posts", 'lang_social_feed')
 			),
-			'public' => false, // Previously true but changed to hide in sitemap.xml
+			'public' => false,
 			'show_ui' => true,
 			'show_in_menu' => false,
 			'show_in_nav_menus' => false,
-			'exclude_from_search' => true,
 			'hierarchical' => true,
 			'has_archive' => false,
 			//Works fine if you're a Superadmin but admins can only view posts after this change
@@ -383,7 +381,6 @@ class mf_social_feed
 			'editor_script' => 'script_social_feed_block_wp',
 			'editor_style' => 'style_base_block_wp',
 			'render_callback' => array($this, 'block_render_callback'),
-			//'style' => 'style_base_block_wp',
 		));
 	}
 
