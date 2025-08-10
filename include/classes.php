@@ -392,23 +392,23 @@ class mf_social_feed
 
 	function settings_social_feed()
 	{
+		global $wpdb;
+
 		$options_area_orig = $options_area = __FUNCTION__;
 
-		$has_facebook = does_post_exists(array(
-			'post_type' => $this->post_type,
-			'post_status' => '',
-			'meta' => array(
-				$this->meta_prefix.'type' => 'facebook',
-			),
-		));
+		//$has_facebook = does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'facebook')));
+		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'facebook'));
+		$has_facebook = ($wpdb->num_rows > 0);
+		
+		//$has_instagram = does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'instagram')));
+		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'instagram'));
+		$has_instagram = ($wpdb->num_rows > 0);
 
-		$has_instagram = does_post_exists(array(
-			'post_type' => $this->post_type,
-			'post_status' => '',
-			'meta' => array(
-				$this->meta_prefix.'type' => 'instagram',
-			),
-		));
+		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'linkedin'));
+		$has_linkedin = ($wpdb->num_rows > 0);
+
+		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'twitter'));
+		$has_twitter = ($wpdb->num_rows > 0);
 
 		//Generic
 		############################
@@ -493,13 +493,7 @@ class mf_social_feed
 
 		//LinkedIn
 		############################
-		if(does_post_exists(array(
-			'post_type' => $this->post_type,
-			'post_status' => '',
-			'meta' => array(
-				$this->meta_prefix.'type' => 'linkedin',
-			),
-		)))
+		if($has_linkedin) //does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'linkedin')))
 		{
 			$options_area = $options_area_orig."_linkedin";
 
@@ -522,13 +516,7 @@ class mf_social_feed
 
 		//Twitter
 		############################
-		if(does_post_exists(array(
-			'post_type' => $this->post_type,
-			'post_status' => '',
-			'meta' => array(
-				$this->meta_prefix.'type' => 'twitter',
-			),
-		)))
+		if($has_twitter) //does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'twitter')))
 		{
 			$options_area = $options_area_orig."_twitter";
 
@@ -884,7 +872,9 @@ class mf_social_feed
 
 		if(function_exists('wp_add_privacy_policy_content'))
 		{
-			if(does_post_exists(array('post_type' => $this->post_type)))
+			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s LIMIT 0, 1", $this->post_type, 'publish'));
+
+			if($wpdb->num_rows > 0) //does_post_exists(array('post_type' => $this->post_type))
 			{
 				$content = __("Posts from social feeds are stored in the database to make it possible to present them in the fastest way possible to you as a visitor.", 'lang_social_feed');
 
