@@ -43,7 +43,7 @@ class mf_social_feed
 		if($obj_cron->is_running == false)
 		{
 			mf_uninstall_plugin(array(
-				'options' => array('setting_social_time_limit', 'setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url', 'setting_social_reload', 'setting_social_deactive_on_error'),
+				'options' => array('setting_social_time_limit', 'setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url', 'setting_social_reload', 'setting_social_deactive_on_error', 'setting_social_full_width'),
 			));
 
 			// Fetch new posts
@@ -199,7 +199,10 @@ class mf_social_feed
 			mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js");
 
 			mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('ajax_url' => admin_url('admin-ajax.php')));
-			mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array('debug' => $setting_social_debug));
+			mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array(
+				'read_more' => __("Read More", 'lang_social_feed'),
+				'debug' => $setting_social_debug
+			));
 
 			mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js");
 
@@ -265,7 +268,7 @@ class mf_social_feed
 			$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
 
 			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed", 'attributes' => $attributes)).">
-				<div id='feed_".$feed_id."' class='section'"
+				<div id='feed_".$feed_id."'"
 					.(is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $attributes['social_feeds'])."'" : "")
 					.($attributes['social_filter'] == 'yes' ? " data-social_filter='".$attributes['social_filter']."'" : "")
 					.($attributes['social_amount'] > 0 ? " data-social_amount='".$attributes['social_amount']."'" : "")
@@ -442,7 +445,7 @@ class mf_social_feed
 			$arr_settings = [];
 			$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
 
-			if(wp_is_block_theme() == false)
+			/*if(wp_is_block_theme() == false)
 			{
 				$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
 			}
@@ -450,7 +453,7 @@ class mf_social_feed
 			else
 			{
 				delete_option('setting_social_full_width');
-			}
+			}*/
 
 			$arr_settings['setting_social_desktop_columns'] = __("Columns", 'lang_social_feed')." (".__("Desktop", 'lang_social_feed').")";
 			$arr_settings['setting_social_tablet_columns'] = __("Columns", 'lang_social_feed')." (".__("Tablet", 'lang_social_feed').")";
@@ -669,13 +672,13 @@ class mf_social_feed
 			echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option));
 		}
 
-		function setting_social_full_width_callback()
+		/*function setting_social_full_width_callback()
 		{
 			$setting_key = get_setting_key(__FUNCTION__);
 			$option = get_option_or_default($setting_key, 'no');
 
 			echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
-		}
+		}*/
 
 		function setting_social_desktop_columns_callback()
 		{

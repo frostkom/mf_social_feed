@@ -1,5 +1,27 @@
 var feed_interval;
 
+jQuery.fn.shorten = function(options)
+{
+	var settings = jQuery.extend(
+	{
+		'ellipsis': "&hellip;",
+		'showChars': 255,
+		'moreText': script_social_feed_views.read_more
+	}, options);
+
+	return this.each(function()
+	{
+		var self = jQuery(this),
+			text_start = self.text().slice(0, settings.showChars),
+			text_end = self.text().slice(settings.showChars);
+
+		if(text_end.length > 0)
+		{
+			self.addClass('shorten-shortened').html(text_start + "<span class='shorten-clipped hide'>" + text_end + "</span><span class='shorten-ellipsis form_button wp-block-button'>" + settings.ellipsis + "<div><a href='#' class='shorten-more-link wp-block-button__link'>" + settings.moreText + settings.ellipsis + "</a></div></span>");
+		}
+	});
+};
+
 var SocialView = Backbone.View.extend(
 {
 	el: jQuery("body"),
@@ -51,7 +73,7 @@ var SocialView = Backbone.View.extend(
 
 		var self = this;
 
-		jQuery(".widget.social_feed").find(".section").each(function()
+		jQuery(".widget.social_feed > div").each(function()
 		{
 			var dom_obj = jQuery(this),
 				arr_data = {action: 'api_social_feed_posts'};
@@ -94,7 +116,7 @@ var SocialView = Backbone.View.extend(
 
 	show_more: function(e)
 	{
-		var dom_ellipsis = jQuery(e.currentTarget).parent(".shorten-ellipsis");
+		var dom_ellipsis = jQuery(e.currentTarget).parents(".shorten-ellipsis");
 
 		dom_ellipsis.addClass('hide').siblings(".shorten-clipped").removeClass('hide').animate(
 		{
@@ -109,7 +131,7 @@ var SocialView = Backbone.View.extend(
 
 	load_more_posts: function(e)
 	{
-		var dom_obj = jQuery(e.currentTarget).parents(".widget.social_feed").find(".section"),
+		var dom_obj = jQuery(e.currentTarget).parents(".widget.social_feed > div"),
 			dom_amount = dom_obj.data('social_amount') || 0;
 
 		if(dom_amount > 0)
@@ -127,7 +149,7 @@ var SocialView = Backbone.View.extend(
 		var response = this.model.get('response_feeds'),
 			amount = response.length,
 			html = "",
-			dom_obj = jQuery("#" + this.model.get('feed_id') + ".section .sf_feeds");
+			dom_obj = jQuery("#" + this.model.get('feed_id') + " .sf_feeds");
 
 		dom_obj.addClass('hide');
 
@@ -153,7 +175,7 @@ var SocialView = Backbone.View.extend(
 		var response = this.model.get('response_posts'),
 			amount = response.length,
 			html = "",
-			dom_obj = jQuery("#" + this.model.get('feed_id') + ".section");
+			dom_obj = jQuery("#" + this.model.get('feed_id'));
 
 		dom_obj.find(".loading_animation").addClass('hide');
 
