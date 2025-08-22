@@ -325,13 +325,13 @@ echo "@media all
 	}
 }";
 
-if($setting_breakpoint_tablet > 0)
+/*if($setting_breakpoint_tablet > 0)
 {
 	echo "@media screen and (min-width: ".$setting_breakpoint_tablet.$setting_breakpoint_suffix.")
 	{
 
 	}";
-}
+}*/
 
 if($setting_breakpoint_mobile > 0 && $setting_breakpoint_tablet > $setting_breakpoint_mobile)
 {
