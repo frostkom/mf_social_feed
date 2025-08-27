@@ -163,19 +163,20 @@ echo "@media all
 			if($setting_social_display_border == 'yes')
 			{
 				echo ".widget.social_feed .sf_posts
-				{
-					margin-right: -.5%;
-					margin-left: -.5%;
-				}
+				{";
+					/*margin-right: -.5%;
+					margin-left: -.5%;*/
+					echo "gap: 1%;
+				}";
 
-					.widget.social_feed .sf_posts li
+					echo ".widget.social_feed .sf_posts li
 					{
 						background: #fff;
-						box-shadow: 0 .5rem .75rem rgba(0, 0, 0, .15);
-						border-top: 0;
+						box-shadow: 0 .5rem .75rem rgba(0, 0, 0, .15);";
+						/*border-top: 0;
 						margin-right: .5%;
-						margin-left: .5%;
-					}";
+						margin-left: .5%;*/
+					echo "}";
 			}
 
 			echo ".widget.social_feed img
@@ -208,18 +209,20 @@ echo "@media all
 				}
 
 				echo ".widget.social_feed .meta
-				{
-					display: flex;
-				}
+				{";
+					/*display: flex;*/
+					echo "font-size: .7em;
+					margin-bottom: .5em;
+				}";
 
-					.widget.social_feed .meta > a
+					echo ".widget.social_feed .meta > a
 					{
 						text-decoration: none;
 					}
 
 					.widget.social_feed .sf_posts li .meta .fa, .widget.social_feed .sf_posts li .meta .fab
 					{
-						flex: 0 0 auto;
+						/*flex: 0 0 auto;*/
 						margin-right: .5em;
 					}
 
@@ -249,31 +252,31 @@ echo "@media all
 						}
 
 					.widget.social_feed .title, .widget.social_feed .name
-					{
-						flex: 0 auto auto;
+					{";
+						/*flex: 0 auto auto;
 						font-size: .7em;
-						line-height: 1.5;
-						margin-right: .5em;
-						overflow: hidden;
+						line-height: 1.5;*/
+						echo "margin-right: .5em;";
+						/*overflow: hidden;
 						text-overflow: ellipsis;
-						white-space: nowrap;
-					}
+						white-space: nowrap;*/
+					echo "}
 
 					.widget.social_feed .date
 					{
-						color: #ccc;
-						flex: 1 0 0;
-						font-size: .6em;
-						line-height: 1.8;
-						text-align: right;
-					}
+						color: #ccc;";
+						/*flex: 1 0 0;*/
+						echo "font-size: .9em;";
+						/*line-height: 1.8;
+						text-align: right;*/
+					echo "}";
 
-				.widget.social_feed p, .widget.social_feed .text
+				/*.widget.social_feed p, .widget.social_feed .text
 				{
 					margin-top: .5em;
-				}
+				}*/
 
-					.widget.social_feed .text
+					echo ".widget.social_feed .text
 					{
 						font-size: .9em;
 					}

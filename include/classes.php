@@ -236,7 +236,7 @@ class mf_social_feed
 					<div class='content'>
 						<div class='meta'>
 							<a href='<%= link %>'>
-								<i class='<%= icon %>'></i>
+								<i class='<%= icon %> fa-lg'></i>
 
 								<% if(service == 'rss')
 								{ %>
