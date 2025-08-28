@@ -3,7 +3,7 @@
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
 Description:
-Version: 5.12.12
+Version: 1.0.0.0
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
@@ -20,9 +20,6 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 	$obj_social_feed = new mf_social_feed();
 
 	add_action('cron_base', array($obj_social_feed, 'cron_base'), mt_rand(1, 10));
-
-	//add_action('cron_sync', array($obj_social_feed, 'cron_sync'));
-	//add_filter('api_sync', array($obj_social_feed, 'api_sync'), 10, 2);
 
 	add_action('enqueue_block_editor_assets', array($obj_social_feed, 'enqueue_block_editor_assets'));
 	add_action('init', array($obj_social_feed, 'init'));
@@ -82,7 +79,7 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 
 		mf_uninstall_plugin(array(
 			'uploads' => $obj_social_feed->post_type,
-			'options' => array('setting_social_design', 'setting_social_full_width', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_mobile_columns', 'setting_social_display_border', 'setting_social_debug', 'setting_linkedin_api_id', 'setting_linkedin_api_secret', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_linkedin_email_when_expired', 'option_linkedin_emailed', 'option_linkedin_authkey', 'setting_twitter_api_key', 'setting_twitter_api_secret', 'setting_twitter_api_token', 'setting_twitter_api_token_secret'),
+			'options' => array('setting_social_design', 'setting_social_debug', 'setting_linkedin_api_id', 'setting_linkedin_api_secret', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_linkedin_email_when_expired', 'option_linkedin_emailed', 'option_linkedin_authkey', 'setting_twitter_api_key', 'setting_twitter_api_secret', 'setting_twitter_api_token', 'setting_twitter_api_token_secret'),
 			'meta' => array('meta_social_feed_callback_url', 'meta_social_feed_access_token'),
 			'post_types' => array($obj_social_feed->post_type, $obj_social_feed->post_type_post),
 		));

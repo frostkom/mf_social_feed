@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-21 13:54+0100\n"
+"POT-Creation-Date: 2025-08-28 07:35+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Martin Fors\n"
 "Language-Team: \n"
@@ -15,597 +15,583 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../include/classes.php:87
+#: ../include/classes.php:85
 #, php-format
 msgid "Expiry Date on %s"
 msgstr "Utgångsdatum på %s"
 
-#: ../include/classes.php:88
+#: ../include/classes.php:86
 #, php-format
 msgid "%s expires %s"
 msgstr "%s går ut %s"
 
-#: ../include/classes.php:203
+#: ../include/classes.php:159
 msgid "Read More"
 msgstr "Läs mer"
 
-#: ../include/classes.php:217
+#: ../include/classes.php:173
 msgid "There are no posts to display"
 msgstr "Det finns inga inlägg att visa"
 
-#: ../include/classes.php:221
+#: ../include/classes.php:177
 msgid "All"
 msgstr "Alla"
 
-#: ../include/classes.php:233
+#: ../include/classes.php:189
 #, php-format
 msgid "Image for the post %s"
 msgstr "Bild till inlägget %s"
 
-#: ../include/classes.php:297
+#: ../include/classes.php:243
 msgid "View More"
 msgstr "Se fler"
 
-#: ../include/classes.php:312
-#: ../include/classes.php:3778
+#: ../include/classes.php:257
+#: ../include/classes.php:3552
 msgid "No"
 msgstr "Nej"
 
-#: ../include/classes.php:313
-#: ../include/classes.php:314
-#: ../include/classes.php:3779
-#: ../include/classes.php:3780
+#: ../include/classes.php:258
+#: ../include/classes.php:259
+#: ../include/classes.php:3553
+#: ../include/classes.php:3554
 msgid "Yes"
 msgstr "Ja"
 
-#: ../include/classes.php:313
-#: ../include/classes.php:3779
+#: ../include/classes.php:258
+#: ../include/classes.php:3553
 msgid "Individually"
 msgstr "Individuellt"
 
-#: ../include/classes.php:314
-#: ../include/classes.php:3780
+#: ../include/classes.php:259
+#: ../include/classes.php:3554
 msgid "Grouped"
 msgstr "Grupperat"
 
-#: ../include/classes.php:329
-#: ../include/classes.php:351
-#: ../include/classes.php:884
-#: ../include/classes.php:3750
+#: ../include/classes.php:274
+#: ../include/classes.php:293
+#: ../include/classes.php:726
+#: ../include/classes.php:3527
 msgid "Social Feed"
 msgstr "Socialt flöde"
 
-#: ../include/classes.php:330
+#: ../include/classes.php:275
 msgid "Display a Social Feed"
 msgstr "Visa sociala flöden"
 
-#: ../include/classes.php:331
-#: ../include/classes.php:3794
+#: ../include/classes.php:276
+#: ../include/classes.php:3568
 msgid "Feeds"
 msgstr "Flöden"
 
-#: ../include/classes.php:333
-#: ../include/classes.php:3795
+#: ../include/classes.php:278
+#: ../include/classes.php:3569
 msgid "Display Filter"
 msgstr "Visa filter"
 
-#: ../include/classes.php:335
-#: ../include/classes.php:1687
-#: ../include/classes.php:3798
+#: ../include/classes.php:280
+#: ../include/classes.php:1528
+#: ../include/classes.php:3572
 msgid "Amount"
 msgstr "Antal"
 
-#: ../include/classes.php:336
-#: ../include/classes.php:3802
+#: ../include/classes.php:281
+#: ../include/classes.php:3573
 msgid "Load More Posts"
 msgstr "Ladda fler inlägg"
 
-#: ../include/classes.php:339
-#: ../include/classes.php:3812
-msgid "Display Text"
-msgstr "Visa text"
-
-#: ../include/classes.php:340
-#: ../include/classes.php:3816
-msgid "Display Read More"
-msgstr "Visa Läs mer"
-
-#: ../include/classes.php:350
-#: ../include/classes.php:352
-#: ../include/classes.php:557
-#: ../include/classes.php:564
-#: ../include/classes.php:571
-#: ../include/classes.php:578
-#: ../include/classes.php:585
-#: ../include/classes.php:659
-#: ../include/classes.php:954
+#: ../include/classes.php:292
+#: ../include/classes.php:294
+#: ../include/classes.php:466
+#: ../include/classes.php:473
+#: ../include/classes.php:480
+#: ../include/classes.php:487
+#: ../include/classes.php:494
+#: ../include/classes.php:796
 msgid "Social Feeds"
 msgstr "Sociala flöden"
 
-#: ../include/classes.php:367
-#: ../include/classes.php:369
-#: ../include/classes.php:940
+#: ../include/classes.php:309
+#: ../include/classes.php:311
+#: ../include/classes.php:782
 msgid "Posts"
 msgstr "Inlägg"
 
-#: ../include/classes.php:368
+#: ../include/classes.php:310
 msgid "Post"
 msgstr "Inlägg"
 
-#: ../include/classes.php:424
+#: ../include/classes.php:366
 msgid "API URL"
 msgstr "API-länk"
 
-#: ../include/classes.php:427
+#: ../include/classes.php:369
 msgid "Keep Posts"
 msgstr "Behåll inlägg"
 
-#: ../include/classes.php:432
-msgid "Debug"
-msgstr "Felsök"
-
-#: ../include/classes.php:446
+#: ../include/classes.php:370
 msgid "Design"
 msgstr "Utseende"
 
-#: ../include/classes.php:450
-msgid "Display Full Width on Large Screens"
-msgstr "Visa fullbredd på stora skärmar"
+#: ../include/classes.php:371
+msgid "Debug"
+msgstr "Felsök"
 
-#: ../include/classes.php:458
-#: ../include/classes.php:459
-#: ../include/classes.php:460
-msgid "Columns"
-msgstr "Kolumner"
-
-#: ../include/classes.php:458
-msgid "Desktop"
-msgstr "Dator"
-
-#: ../include/classes.php:459
-msgid "Tablet"
-msgstr "Platta"
-
-#: ../include/classes.php:460
-msgid "Mobile"
-msgstr "Mobil"
-
-#: ../include/classes.php:461
-msgid "Display Border"
-msgstr "Visa ram"
-
-#: ../include/classes.php:490
-#: ../include/classes.php:506
-#: ../include/classes.php:1148
+#: ../include/classes.php:399
+#: ../include/classes.php:415
+#: ../include/classes.php:990
 msgid "Client ID"
 msgstr "Klient-ID"
 
-#: ../include/classes.php:507
+#: ../include/classes.php:416
 msgid "Client Secret"
 msgstr "Hemlig klientnyckel"
 
-#: ../include/classes.php:511
+#: ../include/classes.php:420
 msgid "Redirect URL"
 msgstr "Skicka vidare till URL"
 
-#: ../include/classes.php:512
+#: ../include/classes.php:421
 msgid "Authorize"
 msgstr "Auktorisera"
 
-#: ../include/classes.php:513
+#: ../include/classes.php:422
 msgid "Email when Expired"
 msgstr "Skicka e-post inför utgång"
 
-#: ../include/classes.php:529
+#: ../include/classes.php:438
 msgid "Key"
 msgstr "Nyckel"
 
-#: ../include/classes.php:530
+#: ../include/classes.php:439
 msgid "Secret"
 msgstr "Hemlig nyckel"
 
-#: ../include/classes.php:531
-#: ../include/classes.php:1482
-#: ../include/classes.php:1530
+#: ../include/classes.php:440
+#: ../include/classes.php:1324
+#: ../include/classes.php:1372
 msgid "Access Token"
 msgstr "Behörighetsnyckel"
 
-#: ../include/classes.php:532
+#: ../include/classes.php:441
 msgid "Access Token Secret"
 msgstr "Hemlig behörighetnyckel"
 
-#: ../include/classes.php:622
+#: ../include/classes.php:531
 msgid "months"
 msgstr "månader"
 
-#: ../include/classes.php:659
-msgid "Styling"
-msgstr "Utseende"
-
-#: ../include/classes.php:668
+#: ../include/classes.php:540
 msgid "Square"
 msgstr "Rutnät"
 
-#: ../include/classes.php:668
+#: ../include/classes.php:540
 msgid "Default"
 msgstr "Standard"
 
-#: ../include/classes.php:669
+#: ../include/classes.php:541
 msgid "Masonry"
 msgstr "Murverk"
 
-#: ../include/classes.php:740
-#: ../include/classes.php:790
-#: ../include/classes.php:1029
+#: ../include/classes.php:582
+#: ../include/classes.php:632
+#: ../include/classes.php:871
 #, php-format
 msgid "Go to %s and log in"
 msgstr "Gå till %s och logga in"
 
-#: ../include/classes.php:741
+#: ../include/classes.php:583
 msgid "Create a new app if you do not have one already and edit the app"
 msgstr "Skapa en ny app om du inte redan har det, och redigera appen"
 
-#: ../include/classes.php:742
+#: ../include/classes.php:584
 #, php-format
 msgid "Copy %s and %s to these fields"
 msgstr "Kopiera %s och %s till dessa fält"
 
-#: ../include/classes.php:743
+#: ../include/classes.php:585
 #, php-format
 msgid "Make sure that %s is checked"
 msgstr "Se till så att %s är markerad"
 
-#: ../include/classes.php:765
+#: ../include/classes.php:607
 #, php-format
 msgid "Add this URL to your Apps %s"
 msgstr "Lägg till denna URL till din apps %s"
 
-#: ../include/classes.php:791
+#: ../include/classes.php:633
 #, php-format
 msgid "Click the tab %s"
 msgstr "Klicka på tabben %s"
 
-#: ../include/classes.php:792
+#: ../include/classes.php:634
 #, php-format
 msgid "Copy %s, %s, %s and %s to paste here"
 msgstr "Kopiera %s, %s, %s och %s för att klistra in här"
 
-#: ../include/classes.php:882
+#: ../include/classes.php:724
 msgid "Posts from social feeds are stored in the database to make it possible to present them in the fastest way possible to you as a visitor."
 msgstr "Inlägg från sociala medier sparas i databasen för att göra det möjligt att presentera dom på snabbast möjliga sätt för dig som besökare."
 
-#: ../include/classes.php:897
+#: ../include/classes.php:739
 msgid "Errors"
 msgstr "Fel"
 
-#: ../include/classes.php:945
-#: ../include/classes.php:1458
+#: ../include/classes.php:787
+#: ../include/classes.php:1300
 msgid "Settings"
 msgstr "Inställningar"
 
-#: ../include/classes.php:962
+#: ../include/classes.php:804
 msgid "Posts can only be fetched from Facebook Pages, not personal Profiles"
 msgstr "Inlägg kan endast hämtas från sk. Facebook Pages, inte från personliga profiler"
 
-#: ../include/classes.php:985
-#: ../include/classes.php:1009
+#: ../include/classes.php:827
+#: ../include/classes.php:851
 #, php-format
 msgid "The access token will expire %s"
 msgstr "Behörighetsnyckeln kommer att gå ut %s"
 
-#: ../include/classes.php:990
-#: ../include/classes.php:1014
+#: ../include/classes.php:832
+#: ../include/classes.php:856
 #, php-format
 msgid "The access token expired %s"
 msgstr "Behörighetsnyckeln gick ut %s"
 
-#: ../include/classes.php:1001
+#: ../include/classes.php:843
 #, php-format
 msgid "Go to %s and log in to renew"
 msgstr "Gå till %s och logga in för att förnya"
 
-#: ../include/classes.php:1017
-#: ../include/classes.php:1132
+#: ../include/classes.php:859
+#: ../include/classes.php:974
 msgid "All Done!"
 msgstr "Nu är allt klart!"
 
-#: ../include/classes.php:1034
-#: ../include/classes.php:1143
+#: ../include/classes.php:876
+#: ../include/classes.php:985
 #, php-format
 msgid "Go to %sSettings%s and add an API URL"
 msgstr "Gå till %sInställningar%s och lägg till en API URL"
 
-#: ../include/classes.php:1045
+#: ../include/classes.php:887
 msgid "Posts can be fetched from @users"
 msgstr "Inlägg kan hämtas från @användare"
 
-#: ../include/classes.php:1084
+#: ../include/classes.php:926
 msgid "Choose an Account"
 msgstr "Välj ett konto"
 
-#: ../include/classes.php:1105
+#: ../include/classes.php:947
 msgid "I could not get the name for the business account"
 msgstr "Jag kunde inte hämta namnet på företagskontot"
 
-#: ../include/classes.php:1116
+#: ../include/classes.php:958
 msgid "There are no business accounts connected to the login that you used"
 msgstr "Det finns inga företagskonton kopplade till den inloggning som du använde"
 
-#: ../include/classes.php:1148
+#: ../include/classes.php:990
 #, php-format
 msgid "Go to %sSettings%s and add a %s"
 msgstr "Gå till %sInställningar%s och lägg till %s"
 
-#: ../include/classes.php:1155
+#: ../include/classes.php:997
 msgid "Authorize Here"
 msgstr "Auktorisera här"
 
-#: ../include/classes.php:1166
+#: ../include/classes.php:1008
 msgid "Posts can be fetched with company ID as seen in the URL when visiting the page"
 msgstr "Inlägg kan hämtas med företags-ID som kan hittas i URLen när man besöker sidan"
 
-#: ../include/classes.php:1171
+#: ../include/classes.php:1013
 msgid "Posts can only be fetched by entering the full URL to the feed"
 msgstr "Inlägg kan endast hämtas genom att fylla i fullständiga URLen till flödet"
 
-#: ../include/classes.php:1176
+#: ../include/classes.php:1018
 msgid "Posts can either be fetched from @users or #hashtags"
 msgstr "Inlägg kan antingen hämtas från @användare eller #hashtaggar"
 
-#: ../include/classes.php:1464
-#: ../include/classes.php:1684
+#: ../include/classes.php:1306
+#: ../include/classes.php:1526
 msgid "Service"
 msgstr "Tjänst"
 
-#: ../include/classes.php:1471
-#: ../include/classes.php:1685
+#: ../include/classes.php:1313
+#: ../include/classes.php:1527
 msgid "Search for"
 msgstr "Sök efter"
 
-#: ../include/classes.php:1474
+#: ../include/classes.php:1316
 msgid "page_name"
 msgstr "sidnamn"
 
-#: ../include/classes.php:1497
+#: ../include/classes.php:1339
 msgid "Report to"
 msgstr "Rapportera till"
 
-#: ../include/classes.php:1508
+#: ../include/classes.php:1350
 msgid "A message is sent when the access token is about to expire"
 msgstr "Ett meddelande skickas när behörighetsnyckeln håller på att gå ut"
 
-#: ../include/classes.php:1511
-#: ../include/classes.php:1600
+#: ../include/classes.php:1353
+#: ../include/classes.php:1442
 msgid "Include"
 msgstr "Inkludera"
 
-#: ../include/classes.php:1515
-#: ../include/classes.php:1604
+#: ../include/classes.php:1357
+#: ../include/classes.php:1446
 msgid "Others"
 msgstr "Andras"
 
-#: ../include/classes.php:1540
+#: ../include/classes.php:1382
 msgid "ID"
 msgstr ""
 
-#: ../include/classes.php:1550
+#: ../include/classes.php:1392
 msgid "Name"
 msgstr "Namn"
 
-#: ../include/classes.php:1560
-#: ../include/classes.php:1695
+#: ../include/classes.php:1402
+#: ../include/classes.php:1536
 msgid "Username"
 msgstr "Användarnamn"
 
-#: ../include/classes.php:1570
+#: ../include/classes.php:1412
 msgid "Profile Picture"
 msgstr "Profilbild"
 
-#: ../include/classes.php:1605
+#: ../include/classes.php:1447
 msgid "Replies"
 msgstr "Svar"
 
-#: ../include/classes.php:1620
-#: ../include/classes.php:1699
+#: ../include/classes.php:1462
+#: ../include/classes.php:1540
 msgid "Information"
 msgstr ""
 
-#: ../include/classes.php:1694
+#: ../include/classes.php:1535
 msgid "Type"
 msgstr "Typ"
 
-#: ../include/classes.php:1696
+#: ../include/classes.php:1537
 msgid "Text"
 msgstr ""
 
-#: ../include/classes.php:1697
+#: ../include/classes.php:1538
 msgid "Image"
 msgstr "Bild"
 
-#: ../include/classes.php:1700
+#: ../include/classes.php:1541
 msgid "Date"
 msgstr "Datum"
 
-#: ../include/classes.php:1730
+#: ../include/classes.php:1571
 #, php-format
 msgid "Will expire %s"
 msgstr "Går ut %s"
 
-#: ../include/classes.php:1735
+#: ../include/classes.php:1576
 #, php-format
 msgid "Expired %s"
 msgstr "Gick ut %s"
 
-#: ../include/classes.php:1788
+#: ../include/classes.php:1629
 msgid "unknown"
 msgstr "okänd"
 
-#: ../include/classes.php:1824
+#: ../include/classes.php:1665
 msgid "Fetch"
 msgstr "Hämta"
 
-#: ../include/classes.php:1833
+#: ../include/classes.php:1674
 msgid "Fetched"
 msgstr "Hämtad"
 
-#: ../include/classes.php:1899
+#: ../include/classes.php:1689
 msgid "I got an error when accessing the feed"
 msgstr "Jag fick ett fel när jag hämtade flödet"
 
-#: ../include/classes.php:1921
+#: ../include/classes.php:1709
 msgid "I am waiting to get access to the feed"
 msgstr "Jag väntar på att få tillgång till flödet"
 
-#: ../include/classes.php:1932
+#: ../include/classes.php:1720
 msgid "Published"
 msgstr "Publik"
 
-#: ../include/classes.php:1936
-#: ../include/classes.php:2004
+#: ../include/classes.php:1724
+#: ../include/classes.php:1792
 msgid "Hidden"
 msgstr "Dold"
 
-#: ../include/classes.php:1941
-#: ../include/classes.php:2000
+#: ../include/classes.php:1729
+#: ../include/classes.php:1788
 msgid "Ignored"
 msgstr "Ignorerad"
 
-#: ../include/classes.php:1957
+#: ../include/classes.php:1745
 msgid "Latest"
 msgstr "Senaste"
 
-#: ../include/classes.php:2041
-#: ../include/classes.php:2058
+#: ../include/classes.php:1829
+#: ../include/classes.php:1846
 msgid "Owner"
 msgstr "Ägare"
 
-#: ../include/classes.php:2046
-#: ../include/classes.php:2063
+#: ../include/classes.php:1834
+#: ../include/classes.php:1851
 msgid "Not Owner"
 msgstr "Inte ägare"
 
-#: ../include/classes.php:2071
+#: ../include/classes.php:1859
 msgid "Answer"
 msgstr "Svar"
 
-#: ../include/classes.php:2107
+#: ../include/classes.php:1895
 msgid "Are you sure?"
 msgstr "Är du säker?"
 
-#: ../include/classes.php:2107
+#: ../include/classes.php:1895
 msgid "Hide"
 msgstr "Dölj"
 
-#: ../include/classes.php:2111
+#: ../include/classes.php:1899
 #, php-format
 msgid "Are you sure? This will make all future posts by %s to be ignored aswell!"
 msgstr "Är du säker? Detta kommer att göra så att alla framtida inlägg av %s också kommer att ignoreras!"
 
-#: ../include/classes.php:2111
+#: ../include/classes.php:1899
 msgid "Ignore Future Posts"
 msgstr "Ignorera framtida inlägg"
 
-#: ../include/classes.php:2199
+#: ../include/classes.php:1987
 msgid "I have hidden the post for you now"
 msgstr "Jag har dolt inlägget åt dig nu"
 
-#: ../include/classes.php:2206
+#: ../include/classes.php:1994
 msgid "I could not hide the post for you. If the problem persists, please contact an admin"
 msgstr "Jag lyckades inte dölja inlägget åt dig. Om problemet kvarstår, var vänlig kontakta en administratör"
 
-#: ../include/classes.php:2230
+#: ../include/classes.php:2018
 msgid "I have ignored the post for you now. This means that all future posts by this user will be ignored aswell"
 msgstr "Jag har ignorerat inlägget åt dig nu. Detta betyder att alla framtida inlägg av denna användare kommer att ignoreras"
 
-#: ../include/classes.php:2237
+#: ../include/classes.php:2025
 msgid "I could not ignore the post for you. If the problem persists, please contact an admin"
 msgstr "Jag lyckades inte ignorera inlägget åt dig. Om problemet kvarstår, var vänlig kontakta en administratör"
 
-#: ../include/classes.php:2302
+#: ../include/classes.php:2090
 msgid "Generate new Access Token"
 msgstr "Generera en ny behörighets-token"
 
-#: ../include/classes.php:2308
+#: ../include/classes.php:2096
 msgid "Generate Access Token"
 msgstr "Generera en behörighets-token"
 
-#: ../include/classes.php:2309
+#: ../include/classes.php:2097
 msgid "You must authorize in order to use the API"
 msgstr "Du måste auktorisera för att kunna använda APIet"
 
-#: ../include/classes.php:2350
+#: ../include/classes.php:2138
 #, php-format
 msgid "%s Access Token has Expired"
 msgstr "%s behörighetsnyckeln har gått ut"
 
-#: ../include/classes.php:2351
+#: ../include/classes.php:2139
 #, php-format
 msgid "Please generate a new Access Token for %s %sHere%s"
 msgstr "Var vänlig generera en ny Access Token för %s %shär%s"
 
-#: ../include/classes.php:2376
+#: ../include/classes.php:2164
 #, php-format
 msgid "Expires in %s days, %s hours"
 msgstr "Går ut om %s dagar, %s timmar"
 
-#: ../include/classes.php:2384
+#: ../include/classes.php:2172
 msgid "The Access Token has expired. Please generate a new"
 msgstr "Behörighets-token har gått ut. Var vänlig generera en ny"
 
-#: ../include/classes.php:2499
+#: ../include/classes.php:2287
 msgid "I could not update the Access Token for you"
 msgstr "Jag kunde inte uppdatera behörighets-token åt dig"
 
-#: ../include/classes.php:2523
+#: ../include/classes.php:2311
 msgid "I updated the Access Token for you"
 msgstr "Jag uppdaterade behörighets-token åt dig"
 
-#: ../include/classes.php:2627
+#: ../include/classes.php:2415
 msgid "An unknown error occurred"
 msgstr "Ett okänt fel inträffade"
 
-#: ../include/classes.php:2630
+#: ../include/classes.php:2418
 msgid "The access token is not valid anymore. Renew it by editing this feed."
 msgstr "Behörighetsnyckeln är inte längre giltig. Förnya den genom att redigera detta flöde."
 
-#: ../include/classes.php:2633
+#: ../include/classes.php:2421
 msgid "The access token has expired. Renew it by editing this feed."
 msgstr "Behörighetsnyckeln har gått ut. Förnya den genom att redigera detta flöde."
 
-#: ../include/classes.php:2636
+#: ../include/classes.php:2424
 msgid "The access token was not accepted. Renew it by editing this feed and logging in with an account that is admin on the page."
 msgstr "Behörighetsnyckeln godkändes inte. Förnya den genom att redigera detta flöde och logga in med ett konto som är admin på sidan."
 
-#: ../include/classes.php:2684
-#: ../include/classes.php:2698
+#: ../include/classes.php:2464
+#: ../include/classes.php:2478
 msgid "Edit and add an access token"
 msgstr "Redigera och lägg till en access token"
 
-#: ../include/classes.php:2882
-#: ../include/classes.php:2917
-#: ../include/classes.php:3005
+#: ../include/classes.php:2662
+#: ../include/classes.php:2697
+#: ../include/classes.php:2785
 msgid "The JSON I got back was not correct"
 msgstr "Jag fick tillbaka JSON som inte var korrekt"
 
-#: ../include/classes.php:3030
+#: ../include/classes.php:2810
 msgid "No key found"
 msgstr "Ingen nyckel hittades"
 
-#: ../include/classes.php:3097
+#: ../include/classes.php:2877
 msgid "Token has expired"
 msgstr "Token har gått ut"
 
-#: ../include/classes.php:3167
+#: ../include/classes.php:2947
 msgid "I could not find a feed"
 msgstr "Jag kunde inte hitta ett flöde"
 
-#: ../include/classes.php:3747
+#: ../include/classes.php:3524
 msgid "Display Social Feeds"
 msgstr "Visa sociala flöden"
 
-#: ../include/classes.php:3792
+#: ../include/classes.php:3566
 msgid "Heading"
 msgstr "Rubrik"
+
+#~ msgid "Display Text"
+#~ msgstr "Visa text"
+
+#~ msgid "Display Read More"
+#~ msgstr "Visa Läs mer"
+
+#~ msgid "Display Full Width on Large Screens"
+#~ msgstr "Visa fullbredd på stora skärmar"
+
+#~ msgid "Columns"
+#~ msgstr "Kolumner"
+
+#~ msgid "Desktop"
+#~ msgstr "Dator"
+
+#~ msgid "Tablet"
+#~ msgstr "Platta"
+
+#~ msgid "Mobile"
+#~ msgstr "Mobil"
+
+#~ msgid "Display Border"
+#~ msgstr "Visa ram"
+
+#~ msgid "Styling"
+#~ msgstr "Utseende"
 
 #~ msgid "Interval to Fetch New"
 #~ msgstr "Intervall för att hämta nytt"

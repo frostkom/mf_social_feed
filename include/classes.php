@@ -43,14 +43,12 @@ class mf_social_feed
 		if($obj_cron->is_running == false)
 		{
 			mf_uninstall_plugin(array(
-				'options' => array('setting_social_time_limit', 'setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url', 'setting_social_reload', 'setting_social_deactive_on_error', 'setting_social_full_width'),
+				'options' => array('setting_social_time_limit', 'setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url', 'setting_social_reload', 'setting_social_deactive_on_error', 'setting_social_full_width', 'setting_social_display_border', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_mobile_columns'),
 			));
 
 			// Fetch new posts
 			#####################
-			$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
-
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_modified < DATE_SUB(NOW(), INTERVAL ".$setting_social_time_limit." MINUTE) ORDER BY RAND()", $this->post_type, 'publish'));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 30 MINUTE) ORDER BY RAND()", $this->post_type, 'publish'));
 
 			foreach($result as $r)
 			{
@@ -126,54 +124,12 @@ class mf_social_feed
 		$obj_cron->end();
 	}
 
-	/*function cron_sync($json)
-	{
-		global $wpdb;
-
-		if(isset($json['settings']) && count($json['settings']) > 0)
-		{
-			foreach($this->sync_settings as $setting_key)
-			{
-				if(isset($json['settings'][$setting_key]) && $json['settings'][$setting_key] != '')
-				{
-					if(get_option($setting_key) == '')
-					{
-						update_option($setting_key, $json['settings'][$setting_key], false);
-					}
-				}
-			}
-		}
-	}
-
-	function api_sync($json_output, $data = [])
-	{
-		if(!isset($json_output['settings']))
-		{
-			$json_output['settings'] = [];
-		}
-
-		foreach($this->sync_settings as $setting_key)
-		{
-			$setting_value = get_option($setting_key);
-
-			if($setting_value != '')
-			{
-				$json_output['settings'][$setting_key] = $setting_value;
-			}
-		}
-
-		return $json_output;
-	}*/
-
 	function block_render_callback($attributes)
 	{
 		if(!isset($attributes['social_feeds'])){										$attributes['social_feeds'] = [];}
 		if(!isset($attributes['social_filter'])){										$attributes['social_filter'] = 'no';}
 		if(!isset($attributes['social_amount']) || $attributes['social_amount'] < 1){	$attributes['social_amount'] = 6;}
 		if(!isset($attributes['social_load_more_posts'])){								$attributes['social_load_more_posts'] = 'no';}
-		//if(!isset($attributes['social_limit_source'])){								$attributes['social_limit_source'] = 'no';}
-		if(!isset($attributes['social_text'])){											$attributes['social_text'] = 'yes';}
-		if(!isset($attributes['social_read_more'])){									$attributes['social_read_more'] = 'yes';}
 
 		$out = "";
 
@@ -227,12 +183,15 @@ class mf_social_feed
 
 			<script type='text/template' id='template_feed_post'>
 				<li class='sf_<%= service %> sf_feed_<%= feed %>'>
-					<% if(image != '')
-					{ %>
-						<div class='image'>
+					<div class='image'>
+						<% if(image != '')
+						{ %>
 							<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
-						</div>
-					<% } %>
+						<% }
+						
+						else
+						{ %>".apply_filters('get_image_fallback', "")."<% } %>
+					</div>
 					<div class='content'>
 						<div class='meta'>
 							<a href='<%= link %>'>
@@ -273,29 +232,15 @@ class mf_social_feed
 					.($attributes['social_filter'] == 'yes' ? " data-social_filter='".$attributes['social_filter']."'" : "")
 					.($attributes['social_amount'] > 0 ? " data-social_amount='".$attributes['social_amount']."'" : "")
 					.($attributes['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$attributes['social_load_more_posts']."'" : "")
-					//.($attributes['social_limit_source'] == 'yes' ? " data-social_limit_source='".$attributes['social_limit_source']."'" : "")
 				.">"
 					.apply_filters('get_loading_animation', '', ['class' => "fa-3x"])
 					."<ul class='sf_feeds hide'></ul>
-					<ul class='sf_posts";
-
-						if($attributes['social_text'] == 'yes')
-						{
-							$out .= ($attributes['social_read_more'] == 'yes' ? " show_read_more" : '');
-						}
-
-						else
-						{
-							$out .= " hide_text";
-						}
-
-					$out .= " hide'></ul>";
+					<ul class='sf_posts show_read_more hide'></ul>";
 
 					if($attributes['social_load_more_posts'] == 'yes')
 					{
 						$out .= "<div".get_form_button_classes().">"
 							.show_button(array('type' => 'button', 'text' => __("View More", 'lang_social_feed'), 'class' => 'load_more_posts hide'))
-							//."<a href='#' class='load_more_posts button hide'>".__("View More", 'lang_social_feed')."</a>"
 						."</div>";
 					}
 
@@ -335,9 +280,6 @@ class mf_social_feed
 			'social_amount_label' => __("Amount", 'lang_social_feed'),
 			'social_load_more_posts_label' => __("Load More Posts", 'lang_social_feed'),
 			'yes_no_for_select' => get_yes_no_for_select(),
-			//'social_limit_source_label' => __("Limit Source", 'lang_social_feed'),
-			'social_text_label' => __("Display Text", 'lang_social_feed'),
-			'social_read_more_label' => __("Display Read More", 'lang_social_feed'),
 		));
 	}
 
@@ -425,43 +367,10 @@ class mf_social_feed
 		}
 
 		$arr_settings['setting_social_keep_posts'] = __("Keep Posts", 'lang_social_feed');
-
-		//$arr_settings['setting_social_time_limit'] = __("Interval to Fetch New", 'lang_social_feed');
-		//$arr_settings['setting_social_deactive_on_error'] = __("Deactivate on Error", 'lang_social_feed');
-
+		$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
 		$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
 
 		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
-		############################
-
-		//Styling
-		############################
-		if(apply_filters('get_block_search', 0, 'mf/socialfeed') > 0)
-		{
-			$options_area = $options_area_orig."_styling";
-
-			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
-
-			$arr_settings = [];
-			$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
-
-			/*if(wp_is_block_theme() == false)
-			{
-				$arr_settings['setting_social_full_width'] = __("Display Full Width on Large Screens", 'lang_social_feed');
-			}
-
-			else
-			{
-				delete_option('setting_social_full_width');
-			}*/
-
-			$arr_settings['setting_social_desktop_columns'] = __("Columns", 'lang_social_feed')." (".__("Desktop", 'lang_social_feed').")";
-			$arr_settings['setting_social_tablet_columns'] = __("Columns", 'lang_social_feed')." (".__("Tablet", 'lang_social_feed').")";
-			$arr_settings['setting_social_mobile_columns'] = __("Columns", 'lang_social_feed')." (".__("Mobile", 'lang_social_feed').")";
-			$arr_settings['setting_social_display_border'] = __("Display Border", 'lang_social_feed');
-
-			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
-		}
 		############################
 
 		//Facebook
@@ -622,25 +531,18 @@ class mf_social_feed
 		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='120'", 'suffix' => __("months", 'lang_social_feed')));
 	}
 
-	/*function setting_social_time_limit_callback()
+	function setting_social_design_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option_or_default($setting_key, 30);
+		$option = get_option($setting_key);
 
-		$setting_min = $this->get_setting_min();
+		$arr_data = array(
+			'' => __("Square", 'lang_social_feed')." (".__("Default", 'lang_social_feed').")",
+			'masonry' => __("Masonry", 'lang_social_feed'),
+		);
 
-		$option = max($option, $setting_min);
-
-		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='".$setting_min."' max='1440'", 'suffix' => __("min", 'lang_social_feed')." (".__("Between each API request", 'lang_social_feed').")"));
-	}*/
-
-	/*function setting_social_deactive_on_error_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option_or_default($setting_key, 'yes');
-
-		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
-	}*/
+		echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option));
+	}
 
 	function setting_social_debug_callback()
 	{
@@ -651,66 +553,6 @@ class mf_social_feed
 
 		echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option, 'description' => $description));
 	}
-
-	function settings_social_feed_styling_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-
-		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - ".__("Styling", 'lang_social_feed'));
-	}
-
-		function setting_social_design_callback()
-		{
-			$setting_key = get_setting_key(__FUNCTION__);
-			$option = get_option($setting_key);
-
-			$arr_data = array(
-				'' => __("Square", 'lang_social_feed')." (".__("Default", 'lang_social_feed').")",
-				'masonry' => __("Masonry", 'lang_social_feed'),
-			);
-
-			echo show_select(array('data' => $arr_data, 'name' => $setting_key, 'value' => $option));
-		}
-
-		/*function setting_social_full_width_callback()
-		{
-			$setting_key = get_setting_key(__FUNCTION__);
-			$option = get_option_or_default($setting_key, 'no');
-
-			echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
-		}*/
-
-		function setting_social_desktop_columns_callback()
-		{
-			$setting_key = get_setting_key(__FUNCTION__);
-			$option = get_option_or_default($setting_key, 3);
-
-			echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='6'"));
-		}
-
-		function setting_social_tablet_columns_callback()
-		{
-			$setting_key = get_setting_key(__FUNCTION__);
-			$option = get_option_or_default($setting_key, 2);
-
-			echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='3'"));
-		}
-
-		function setting_social_mobile_columns_callback()
-		{
-			$setting_key = get_setting_key(__FUNCTION__);
-			$option = get_option_or_default($setting_key, 1);
-
-			echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='3'"));
-		}
-
-		function setting_social_display_border_callback()
-		{
-			$setting_key = get_setting_key(__FUNCTION__);
-			$option = get_option_or_default($setting_key, 'yes');
-
-			echo show_select(array('data' => get_yes_no_for_select(), 'name' => $setting_key, 'value' => $option));
-		}
 
 	function setting_instagram_client_id_callback()
 	{
@@ -1683,7 +1525,6 @@ class mf_social_feed
 
 				$columns['type'] = __("Service", 'lang_social_feed');
 				$columns['search_for'] = __("Search for", 'lang_social_feed');
-				//$columns['in_use'] = __("In Use", 'lang_social_feed');
 				$columns['amount_of_posts'] = __("Amount", 'lang_social_feed');
 			break;
 
@@ -1835,57 +1676,6 @@ class mf_social_feed
 						}
 					break;
 
-					/*case 'in_use':
-						$option_widgets = get_option('widget_social-feed-widget');
-
-						if(is_array($option_widgets))
-						{
-							$is_in_use = false;
-							$example_links = "";
-
-							foreach($option_widgets as $widget_key => $arr_widget)
-							{
-								if(isset($arr_widget['social_feeds']) && (count($arr_widget['social_feeds']) == 0 || in_array($post_id, $arr_widget['social_feeds'])))
-								{
-									$is_in_use = true;
-
-									if(!isset($arr_sidebars))
-									{
-										$arr_sidebars = wp_get_sidebars_widgets();
-									}
-
-									$widget_key = "social-feed-widget-".$widget_key;
-
-									foreach($arr_sidebars as $sidebar_key_temp => $arr_sidebar)
-									{
-										foreach($arr_sidebar as $widget_key_temp)
-										{
-											if($widget_key_temp == $widget_key)
-											{
-												$example_links .= ($example_links != '' ? " | " : "")."<span><a href='".admin_url("widgets.php#".$sidebar_key_temp."&".$widget_key)."'><i class='fa fa-link'></i></a></span>";
-											}
-										}
-									}
-								}
-							}
-
-							if($is_in_use)
-							{
-								echo "<i class='fa fa-check green fa-2x'></i>";
-
-								if($example_links != '')
-								{
-									echo "<div class='row-actions'>".$example_links."</div>";
-								}
-							}
-
-							else
-							{
-								echo "<i class='fa fa-times red fa-2x'></i>";
-							}
-						}
-					break;*/
-
 					case 'amount_of_posts':
 						$amount_publish = $this->get_amount(array('id' => $post_id));
 						$amount_draft = $this->get_amount(array('id' => $post_id, 'post_status' => 'draft'));
@@ -1901,8 +1691,6 @@ class mf_social_feed
 
 						else if($amount_publish == 0)
 						{
-							$setting_social_time_limit = get_option_or_default('setting_social_time_limit', 30);
-
 							$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = %s AND ID = '%d' LIMIT 0, 1", $this->post_type, $post_id));
 
 							foreach($result as $r)
@@ -1910,7 +1698,7 @@ class mf_social_feed
 								$post_date = $r->post_date;
 								$post_modified = $r->post_modified;
 
-								if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime("-".$setting_social_time_limit." minute")))
+								if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime("-30 minute")))
 								{
 									echo "0";
 								}
@@ -2644,14 +2432,6 @@ class mf_social_feed
 				break;
 			}
 		}
-
-		/*if(get_option('setting_social_deactive_on_error', 'yes') == 'yes')
-		{
-			wp_update_post(array(
-				'ID' => $this->id,
-				'post_status' => 'draft',
-			));
-		}*/
 
 		update_post_meta($this->id, $this->meta_prefix.'error', $data['message']);
 	}
@@ -3733,9 +3513,6 @@ class widget_social_feed extends WP_Widget
 		'social_filter' => 'no',
 		'social_amount' => 6,
 		'social_load_more_posts' => 'no',
-		//'social_limit_source' => 'no',
-		'social_text' => 'yes',
-		'social_read_more' => 'yes',
 	);
 
 	function __construct()
@@ -3765,9 +3542,6 @@ class widget_social_feed extends WP_Widget
 		$instance['social_filter'] = sanitize_text_field($new_instance['social_filter']);
 		$instance['social_amount'] = sanitize_text_field($new_instance['social_amount']);
 		$instance['social_load_more_posts'] = sanitize_text_field($new_instance['social_load_more_posts']);
-		//$instance['social_limit_source'] = sanitize_text_field($new_instance['social_limit_source']);
-		$instance['social_text'] = sanitize_text_field($new_instance['social_text']);
-		$instance['social_read_more'] = sanitize_text_field($new_instance['social_read_more']);
 
 		return $instance;
 	}
@@ -3795,28 +3569,9 @@ class widget_social_feed extends WP_Widget
 				.show_select(array('data' => $this->get_display_filter_for_select(), 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']))
 			."</div>
 			<div class='flex_flow'>"
-				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']));
-
-				/*if($instance['social_limit_source'] != 'yes')
-				{*/
-					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_load_more_posts'), 'text' => __("Load More Posts", 'lang_social_feed'), 'value' => $instance['social_load_more_posts']));
-				//}
-
-				/*if(count($instance['social_feeds']) != 1)
-				{
-					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_limit_source'), 'text' => __("Limit Source", 'lang_social_feed')." <i class='fa fa-info-circle blue' title='".__("This will prevent one source from taking over the whole feed if it is posted to much more often than the other sources", 'lang_social_feed')."'></i>", 'value' => $instance['social_limit_source']));
-				}*/
-
-			echo "</div>
-			<div class='flex_flow'>"
-				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_text'), 'text' => __("Display Text", 'lang_social_feed'), 'value' => $instance['social_text']));
-
-				if($instance['social_text'] == 'yes')
-				{
-					echo show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_read_more'), 'text' => __("Display Read More", 'lang_social_feed'), 'value' => $instance['social_read_more']));
-				}
-
-			echo "</div>
+				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
+				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_load_more_posts'), 'text' => __("Load More Posts", 'lang_social_feed'), 'value' => $instance['social_load_more_posts']))
+			."</div>
 		</div>";
 	}
 }

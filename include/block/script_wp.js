@@ -39,16 +39,6 @@
                 'type': 'string',
                 'default': 'no'
             },
-			/*'social_limit_source':
-			{
-                'type': 'string',
-                'default': 'no'
-            },*/
-			'social_text':
-			{
-                'type': 'string',
-                'default': 'yes'
-            },
 			'social_read_more':
 			{
                 'type': 'string',
@@ -137,42 +127,6 @@
 								onChange: function(value)
 								{
 									props.setAttributes({social_load_more_posts: value});
-								}
-							}
-						),
-						/*el(
-							SelectControl,
-							{
-								label: script_social_feed_block_wp.social_limit_source_label,
-								value: props.attributes.social_limit_source,
-								options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
-								onChange: function(value)
-								{
-									props.setAttributes({social_limit_source: value});
-								}
-							}
-						),*/
-						el(
-							SelectControl,
-							{
-								label: script_social_feed_block_wp.social_text_label,
-								value: props.attributes.social_text,
-								options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
-								onChange: function(value)
-								{
-									props.setAttributes({social_text: value});
-								}
-							}
-						),
-						el(
-							SelectControl,
-							{
-								label: script_social_feed_block_wp.social_read_more_label,
-								value: props.attributes.social_read_more,
-								options: convert_php_array_to_block_js(script_social_feed_block_wp.yes_no_for_select),
-								onChange: function(value)
-								{
-									props.setAttributes({social_read_more: value});
 								}
 							}
 						)

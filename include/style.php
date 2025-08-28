@@ -9,6 +9,8 @@ if(!defined('ABSPATH'))
 	require_once($folder."wp-load.php");
 }
 
+// Same as in Navigation
+##########################
 $setting_breakpoint_tablet = apply_filters('get_styles_content', '', 'max_width');
 
 if($setting_breakpoint_tablet != '')
@@ -28,15 +30,13 @@ else
 
 	$setting_breakpoint_suffix = "px";
 }
+##########################
 
 $setting_social_design = get_option('setting_social_design');
-//$setting_social_full_width = get_option('setting_social_full_width');
 
-$setting_social_desktop_columns = get_option_or_default('setting_social_desktop_columns', 3);
-$setting_social_tablet_columns = get_option_or_default('setting_social_tablet_columns', 2);
-$setting_social_mobile_columns = get_option_or_default('setting_social_mobile_columns', 1);
-
-$setting_social_display_border = get_option('setting_social_display_border', 'yes');
+$setting_social_desktop_columns = 3;
+$setting_social_tablet_columns = 2;
+$setting_social_mobile_columns = 1;
 
 $post_container_desktop = $post_container_tablet = $post_container_mobile = $post_item_desktop = $post_item_tablet = $post_item_mobile = "";
 
@@ -76,17 +76,8 @@ switch($setting_social_design)
 }
 
 echo "@media all
-{";
-
-	/*if($setting_social_full_width == 'yes')
-	{
-		echo ".widget.social_feed > div
-		{
-			max-width: 100% !important;
-		}";
-	}*/
-
-	echo ".widget.social_feed .sf_feeds
+{
+	.widget.social_feed .sf_feeds
 	{
 		font-size: .8em;
 		list-style: none;
@@ -158,28 +149,20 @@ echo "@media all
 			.widget.social_feed .sf_posts li.no_result
 			{
 				padding: 1em;
-			}";
-
-			if($setting_social_display_border == 'yes')
-			{
-				echo ".widget.social_feed .sf_posts
-				{";
-					/*margin-right: -.5%;
-					margin-left: -.5%;*/
-					echo "gap: 1%;
-				}";
-
-					echo ".widget.social_feed .sf_posts li
-					{
-						background: #fff;
-						box-shadow: 0 .5rem .75rem rgba(0, 0, 0, .15);";
-						/*border-top: 0;
-						margin-right: .5%;
-						margin-left: .5%;*/
-					echo "}";
 			}
 
-			echo ".widget.social_feed img
+				.widget.social_feed .sf_posts
+				{
+					gap: 1%;
+				}
+
+					.widget.social_feed .sf_posts li
+					{
+						background: #fff;
+						box-shadow: 0 .5rem .75rem rgba(0, 0, 0, .15);
+					}
+
+			.widget.social_feed img
 			{
 				display: block;
 				object-fit: cover;
@@ -198,31 +181,26 @@ echo "@media all
 				display: block;
 				overflow: hidden;
 				padding: .5em;
-			}";
+			}
 
-				if($setting_social_display_border == 'yes')
+				.widget.social_feed .content
 				{
-					echo ".widget.social_feed .content
-					{
-						padding: 1em;
-					}";
+					padding: 1em;
 				}
 
-				echo ".widget.social_feed .meta
-				{";
-					/*display: flex;*/
-					echo "font-size: .7em;
+				.widget.social_feed .meta
+				{
+					font-size: .7em;
 					margin-bottom: .5em;
-				}";
+				}
 
-					echo ".widget.social_feed .meta > a
+					.widget.social_feed .meta > a
 					{
 						text-decoration: none;
 					}
 
 					.widget.social_feed .sf_posts li .meta .fa, .widget.social_feed .sf_posts li .meta .fab
 					{
-						/*flex: 0 0 auto;*/
 						margin-right: .5em;
 					}
 
@@ -252,31 +230,17 @@ echo "@media all
 						}
 
 					.widget.social_feed .title, .widget.social_feed .name
-					{";
-						/*flex: 0 auto auto;
-						font-size: .7em;
-						line-height: 1.5;*/
-						echo "margin-right: .5em;";
-						/*overflow: hidden;
-						text-overflow: ellipsis;
-						white-space: nowrap;*/
-					echo "}
+					{
+						margin-right: .5em;
+					}
 
 					.widget.social_feed .date
 					{
-						color: #ccc;";
-						/*flex: 1 0 0;*/
-						echo "font-size: .9em;";
-						/*line-height: 1.8;
-						text-align: right;*/
-					echo "}";
+						color: #ccc;
+						font-size: .9em;
+					}
 
-				/*.widget.social_feed p, .widget.social_feed .text
-				{
-					margin-top: .5em;
-				}*/
-
-					echo ".widget.social_feed .text
+					.widget.social_feed .text
 					{
 						font-size: .9em;
 					}
@@ -327,14 +291,6 @@ echo "@media all
 		position: fixed;
 	}
 }";
-
-/*if($setting_breakpoint_tablet > 0)
-{
-	echo "@media screen and (min-width: ".$setting_breakpoint_tablet.$setting_breakpoint_suffix.")
-	{
-
-	}";
-}*/
 
 if($setting_breakpoint_mobile > 0 && $setting_breakpoint_tablet > $setting_breakpoint_mobile)
 {
