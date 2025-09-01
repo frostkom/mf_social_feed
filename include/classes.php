@@ -127,7 +127,7 @@ class mf_social_feed
 	function block_render_callback($attributes)
 	{
 		if(!isset($attributes['social_feeds'])){										$attributes['social_feeds'] = [];}
-		if(!isset($attributes['social_filter'])){										$attributes['social_filter'] = 'no';}
+		//if(!isset($attributes['social_filter'])){										$attributes['social_filter'] = 'no';}
 		if(!isset($attributes['social_amount']) || $attributes['social_amount'] < 1){	$attributes['social_amount'] = 6;}
 		if(!isset($attributes['social_load_more_posts'])){								$attributes['social_load_more_posts'] = 'no';}
 
@@ -156,6 +156,7 @@ class mf_social_feed
 
 			mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('ajax_url' => admin_url('admin-ajax.php')));
 			mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array(
+				'image_fallback' => apply_filters('get_image_fallback', ""),
 				'read_more' => __("Read More", 'lang_social_feed'),
 				'debug' => $setting_social_debug
 			));
@@ -188,9 +189,11 @@ class mf_social_feed
 						{ %>
 							<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
 						<% }
-						
+
 						else
-						{ %>".apply_filters('get_image_fallback', "")."<% } %>
+						{ %>"
+							.apply_filters('get_image_fallback', "")
+						."<% } %>
 					</div>
 					<div class='content'>
 						<div class='meta'>
@@ -226,12 +229,13 @@ class mf_social_feed
 
 			$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
 
-			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed", 'attributes' => $attributes)).">
+			$setting_social_design = get_option_or_default('setting_social_design', 'square');
+
+			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed ".$setting_social_design, 'attributes' => $attributes)).">
 				<div id='feed_".$feed_id."'"
 					.(is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $attributes['social_feeds'])."'" : "")
-					.($attributes['social_filter'] == 'yes' ? " data-social_filter='".$attributes['social_filter']."'" : "")
+					//.($attributes['social_filter'] == 'yes' ? " data-social_filter='".$attributes['social_filter']."'" : "")
 					.($attributes['social_amount'] > 0 ? " data-social_amount='".$attributes['social_amount']."'" : "")
-					.($attributes['social_load_more_posts'] == 'yes' ? " data-social_load_more_posts='".$attributes['social_load_more_posts']."'" : "")
 				.">"
 					.apply_filters('get_loading_animation', '', ['class' => "fa-3x"])
 					."<ul class='sf_feeds hide'></ul>
@@ -275,8 +279,8 @@ class mf_social_feed
 			'block_description' => __("Display a Social Feed", 'lang_social_feed'),
 			'social_feeds_label' => __("Feeds", 'lang_social_feed'),
 			'social_feeds' => $arr_data_feeds,
-			'social_filter_label' => __("Display Filter", 'lang_social_feed'),
-			'social_filter' => $this->get_display_filter_for_select(),
+			/*'social_filter_label' => __("Display Filter", 'lang_social_feed'),
+			'social_filter' => $this->get_display_filter_for_select(),*/
 			'social_amount_label' => __("Amount", 'lang_social_feed'),
 			'social_load_more_posts_label' => __("Load More Posts", 'lang_social_feed'),
 			'yes_no_for_select' => get_yes_no_for_select(),
@@ -344,7 +348,7 @@ class mf_social_feed
 		//$has_facebook = does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'facebook')));
 		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'facebook'));
 		$has_facebook = ($wpdb->num_rows > 0);
-		
+
 		//$has_instagram = does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'instagram')));
 		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'instagram'));
 		$has_instagram = ($wpdb->num_rows > 0);
@@ -537,7 +541,7 @@ class mf_social_feed
 		$option = get_option($setting_key);
 
 		$arr_data = array(
-			'' => __("Square", 'lang_social_feed')." (".__("Default", 'lang_social_feed').")",
+			'square' => __("Square", 'lang_social_feed')." (".__("Default", 'lang_social_feed').")",
 			'masonry' => __("Masonry", 'lang_social_feed'),
 		);
 
@@ -2040,7 +2044,7 @@ class mf_social_feed
 
 		$feed_id = check_var('feed_id', 'char');
 		$feeds = check_var('feeds', 'char');
-		$filter = check_var('filter', 'char');
+		//$social_filter = check_var('social_filter', 'char');
 		$amount = check_var('amount', 'int');
 		$load_more_posts = check_var('load_more_posts', 'char');
 		$limit_source = check_var('limit_source', 'char');
@@ -2050,7 +2054,7 @@ class mf_social_feed
 			$feeds = explode(",", $feeds);
 		}
 
-		list($arr_post_feeds, $arr_post_posts, $has_more_posts) = $this->get_feeds_and_posts(array('feeds' => $feeds, 'filter' => $filter, 'amount' => $amount, 'limit_source' => $limit_source));
+		list($arr_post_feeds, $arr_post_posts, $has_more_posts) = $this->get_feeds_and_posts(array('feeds' => $feeds, 'amount' => $amount, 'limit_source' => $limit_source)); //, 'social_filter' => $social_filter
 
 		$json_output['success'] = true;
 		$json_output['feed_id'] = $feed_id;
@@ -3366,8 +3370,8 @@ class mf_social_feed
 	{
 		global $wpdb, $obj_base;
 
-		if(!isset($data['filter']) || $data['filter'] == ''){				$data['filter'] = 'no';}
-		if(!isset($data['limit_source']) || $data['limit_source'] == ''){	$data['limit_source'] = 'no';}
+		//if(!isset($data['social_filter']) || $data['social_filter'] == ''){		$data['social_filter'] = 'no';}
+		if(!isset($data['limit_source']) || $data['limit_source'] == ''){		$data['limit_source'] = 'no';}
 
 		$arr_public_feeds = $arr_post_feeds_count = $arr_post_feeds = $arr_post_posts = [];
 		$has_more_posts = false;
@@ -3391,10 +3395,10 @@ class mf_social_feed
 		{
 			$limit_start = 0;
 
-			if($data['filter'] == 'group')
+			/*if($data['social_filter'] == 'group')
 			{
 				$arr_services = $this->get_social_types_for_select();
-			}
+			}*/
 
 			$limit_source_amount = ($data['limit_source'] == 'yes' && $count_public_feeds != 1 ? ceil(($data['amount'] / $count_public_feeds) * 1.2) : $data['amount']);
 
@@ -3441,7 +3445,7 @@ class mf_social_feed
 
 						if($post_content != '' || $post_image != '')
 						{
-							switch($data['filter'])
+							/*switch($data['social_filter'])
 							{
 								case 'yes':
 									$arr_post_feeds[$post_feed] = array(
@@ -3456,7 +3460,7 @@ class mf_social_feed
 										'name' => $arr_services[$post_service],
 									);
 								break;
-							}
+							}*/
 
 							if(!isset($arr_post_feeds_count[$post_feed]) || $arr_post_feeds_count[$post_feed] < $limit_source_amount)
 							{
@@ -3488,7 +3492,7 @@ class mf_social_feed
 				}
 			}
 
-			if($data['filter'] != 'no' && count($arr_post_feeds) > 1)
+			if(count($arr_post_feeds) > 1) //$data['social_filter'] != 'no' && 
 			{
 				if(!isset($obj_base))
 				{
@@ -3510,7 +3514,7 @@ class widget_social_feed extends WP_Widget
 	var $arr_default = array(
 		'social_heading' => "",
 		'social_feeds' => [],
-		'social_filter' => 'no',
+		//'social_filter' => 'no',
 		'social_amount' => 6,
 		'social_load_more_posts' => 'no',
 	);
@@ -3539,7 +3543,7 @@ class widget_social_feed extends WP_Widget
 
 		$instance['social_heading'] = sanitize_text_field($new_instance['social_heading']);
 		$instance['social_feeds'] = is_array($new_instance['social_feeds']) ? $new_instance['social_feeds'] : [];
-		$instance['social_filter'] = sanitize_text_field($new_instance['social_filter']);
+		//$instance['social_filter'] = sanitize_text_field($new_instance['social_filter']);
 		$instance['social_amount'] = sanitize_text_field($new_instance['social_amount']);
 		$instance['social_load_more_posts'] = sanitize_text_field($new_instance['social_load_more_posts']);
 
@@ -3564,11 +3568,9 @@ class widget_social_feed extends WP_Widget
 
 		echo "<div class='mf_form'>"
 			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='".$this->widget_ops['classname']."-title'"))
+			.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']))
+			//.show_select(array('data' => $this->get_display_filter_for_select(), 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']))
 			."<div class='flex_flow'>"
-				.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']))
-				.show_select(array('data' => $this->get_display_filter_for_select(), 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']))
-			."</div>
-			<div class='flex_flow'>"
 				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
 				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_load_more_posts'), 'text' => __("Load More Posts", 'lang_social_feed'), 'value' => $instance['social_load_more_posts']))
 			."</div>

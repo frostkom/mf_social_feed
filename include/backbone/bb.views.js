@@ -80,9 +80,13 @@ var SocialView = Backbone.View.extend(
 
 			if(typeof dom_obj.attr('id') != 'undefined'){						arr_data.feed_id = dom_obj.attr('id');}
 			if(typeof dom_obj.attr('data-social_feeds') != 'undefined'){		arr_data.feeds = dom_obj.data('social_feeds');}
-			if(typeof dom_obj.attr('data-social_filter') != 'undefined'){		arr_data.filter = dom_obj.data('social_filter');}
+			/*if(typeof dom_obj.attr('data-social_filter') != 'undefined'){		arr_data.social_filter = dom_obj.data('social_filter');}*/
 			if(typeof dom_obj.data('social_amount') != 'undefined'){			arr_data.amount = dom_obj.data('social_amount');}
-			if(typeof dom_obj.data('social_load_more_posts') != 'undefined'){	arr_data.load_more_posts = dom_obj.data('social_load_more_posts');}
+
+			if(dom_obj.find(".load_more_posts").length > 0)
+			{
+				arr_data.load_more_posts = 'yes';
+			}
 
 			self.loadPage(arr_data);
 		});
@@ -132,7 +136,7 @@ var SocialView = Backbone.View.extend(
 	load_more_posts: function(e)
 	{
 		var dom_obj = jQuery(e.currentTarget).parents(".widget.social_feed > div"),
-			dom_amount = dom_obj.data('social_amount') || 0;
+			dom_amount = (dom_obj.data('social_amount') || 0);
 
 		if(dom_amount > 0)
 		{
@@ -204,7 +208,7 @@ var SocialView = Backbone.View.extend(
 		/* Just in case image errors have occured, it has been cached through JS and then retrieved by someone else, we have to first display images and then check again */
 		dom_obj.find(".sf_posts img").removeClass('hide').on("error", function()
 		{
-			jQuery(this).addClass('hide');
+			jQuery(this).parent(".image").html(script_social_feed_views.image_fallback);
 		});
 
 		if(this.model.get('has_more_posts'))

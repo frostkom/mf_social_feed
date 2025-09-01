@@ -32,13 +32,9 @@ else
 }
 ##########################
 
-$setting_social_design = get_option('setting_social_design');
-
 $setting_social_desktop_columns = 3;
 $setting_social_tablet_columns = 2;
 $setting_social_mobile_columns = 1;
-
-$post_container_desktop = $post_container_tablet = $post_container_mobile = $post_item_desktop = $post_item_tablet = $post_item_mobile = "";
 
 if(!function_exists('calc_width'))
 {
@@ -48,32 +44,9 @@ if(!function_exists('calc_width'))
 	}
 }
 
-switch($setting_social_design)
-{
-	case 'masonry':
-		$post_container_desktop = "column-count: ".$setting_social_desktop_columns.";";
-		$post_container_tablet = "column-count: ".$setting_social_tablet_columns.";";
-		$post_container_mobile = "column-count: ".$setting_social_mobile_columns.";";
-
-		$post_item_desktop = "page-break-inside: avoid;
-		break-inside: avoid;";
-	break;
-
-	default:
-		$column_width_desktop = calc_width($setting_social_desktop_columns);
-		$column_width_tablet = calc_width($setting_social_tablet_columns);
-		$column_width_mobile = calc_width($setting_social_mobile_columns);
-
-		$post_container_desktop = "display: flex;
-		flex-wrap: wrap;";
-
-		$post_item_desktop = "flex: 0 1 auto;
-		width: ".$column_width_desktop."%;";
-
-		$post_item_tablet = "width: ".$column_width_tablet."%;";
-		$post_item_mobile = "width: ".$column_width_mobile."%;";
-	break;
-}
+$column_width_desktop = calc_width($setting_social_desktop_columns);
+$column_width_tablet = calc_width($setting_social_tablet_columns);
+$column_width_mobile = calc_width($setting_social_mobile_columns);
 
 echo "@media all
 {
@@ -103,20 +76,41 @@ echo "@media all
 				}
 
 	.widget.social_feed .sf_posts
-	{"
-		.$post_container_desktop
-		."list-style: none;
+	{
+		list-style: none;
 		padding-left: 0;
 	}
+	
+		.widget.social_feed.masonry .sf_posts
+		{
+			column-count: ".$setting_social_desktop_columns.";
+		}
+		
+		.widget.social_feed.square .sf_posts
+		{
+			display: flex;
+			flex-wrap: wrap;
+		}
 
 		.widget.social_feed .sf_posts li
-		{"
-			.$post_item_desktop
-			."margin: 0 0 .6em;
+		{
+			margin: 0 0 .6em;
 			overflow: hidden;
 			position: relative;
 			text-align: left;
 		}
+		
+			.widget.social_feed.masonry .sf_posts li
+			{
+				page-break-inside: avoid;
+				break-inside: avoid;
+			}
+			
+			.widget.social_feed.square .sf_posts li
+			{
+				flex: 0 1 auto;
+				width: ".$column_width_desktop."%;
+			}
 
 			.widget.social_feed .sf_posts.one_column li + li
 			{
@@ -245,6 +239,11 @@ echo "@media all
 						font-size: .9em;
 					}
 
+						.widget.social_feed .text a
+						{
+							text-decoration: none;
+						}
+
 					.widget.social_feed .shorten-shortened
 					{
 						position: relative;
@@ -295,53 +294,37 @@ echo "@media all
 if($setting_breakpoint_mobile > 0 && $setting_breakpoint_tablet > $setting_breakpoint_mobile)
 {
 	echo "@media screen and (min-width: ".$setting_breakpoint_mobile.$setting_breakpoint_suffix.") and (max-width: ".($setting_breakpoint_tablet - 1).$setting_breakpoint_suffix.")
-	{";
-
-		if($post_container_tablet != '')
+	{
+		.widget.social_feed.masonry .sf_posts
 		{
-			echo ".widget.social_feed .sf_posts
-			{"
-				.$post_container_tablet
-			."}";
+			column-count: ".$setting_social_tablet_columns.";
 		}
 
-		if($post_item_tablet != '')
+		.widget.social_feed.square .sf_posts li
 		{
-			echo ".widget.social_feed .sf_posts li
-			{"
-				.$post_item_tablet
-			."}";
+			width: ".$column_width_tablet."%;
 		}
-
-	echo "}";
+	}";
 }
 
 if($setting_breakpoint_mobile > 0)
 {
 	echo "@media screen and (max-width: ".($setting_breakpoint_mobile - 1).$setting_breakpoint_suffix.")
-	{";
-
-		if($post_container_mobile != '')
+	{
+		.widget.social_feed.masonry .sf_posts
 		{
-			echo ".widget.social_feed .sf_posts
-			{"
-				.$post_container_mobile
-			."}";
+			column-count: ".$setting_social_mobile_columns.";
 		}
 
-		if($post_item_mobile != '')
+		.widget.social_feed.square .sf_posts li
 		{
-			echo ".widget.social_feed .sf_posts li
-			{"
-				.$post_item_mobile
-			."}";
+			width: ".$column_width_mobile."%;
 		}
 
-			echo ".widget.social_feed .sf_posts li + li
+			.widget.social_feed .sf_posts li + li
 			{
 				border-top: 1px solid #ccc;
 				padding-top: 1em;
-			}";
-
-	echo "}";
+			}
+	}";
 }

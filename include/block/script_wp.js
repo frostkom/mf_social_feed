@@ -24,11 +24,11 @@
                 'type': 'array',
                 'default': ''
             },
-			'social_filter':
+			/*'social_filter':
 			{
                 'type': 'string',
                 'default': 'no'
-            },
+            },*/
 			'social_amount':
 			{
                 'type': 'string',
@@ -94,7 +94,7 @@
 								}
 							}
 						),
-						el(
+						/*el(
 							SelectControl,
 							{
 								label: script_social_feed_block_wp.social_filter_label,
@@ -105,7 +105,7 @@
 									props.setAttributes({social_filter: value});
 								}
 							}
-						),
+						),*/
 						el(
 							TextControl,
 							{
