@@ -25,7 +25,6 @@ class mf_social_feed
 	var $instagram_redirect_url;
 	var $instagram_authorize_url;
 	var $instagram_access_token;
-	var $footer_output;
 
 	function __construct($id = 0)
 	{
@@ -149,108 +148,79 @@ class mf_social_feed
 
 			mf_enqueue_style('style_base_grid_columns', $plugin_base_include_url."style_grid_columns.php");
 			mf_enqueue_style('style_social_feed', $plugin_include_url."style.css");
-			mf_enqueue_style('style_base_bb', $plugin_base_include_url."backbone/style.css");
-
-			mf_enqueue_script('underscore');
-			mf_enqueue_script('backbone');
-			mf_enqueue_script('script_base_plugins', $plugin_base_include_url."backbone/bb.plugins.js");
-
-			mf_enqueue_script('script_social_feed_models', $plugin_include_url."backbone/bb.models.js", array('ajax_url' => admin_url('admin-ajax.php')));
-			mf_enqueue_script('script_social_feed_views', $plugin_include_url."backbone/bb.views.js", array(
+			mf_enqueue_script('script_social_feed', $plugin_include_url."script.js", array(
 				'image_fallback' => apply_filters('get_image_fallback', ""),
 				'read_more' => __("Read More", 'lang_social_feed'),
-				'debug' => $setting_social_debug
 			));
 
-			mf_enqueue_script('script_base_init', $plugin_base_include_url."backbone/bb.init.js");
-
-			$this->footer_output = $obj_base->get_templates(array('lost_connection'));
-
-			if($setting_social_debug == 'yes')
-			{
-				$this->footer_output .= "<div class='social_debug'></div>";
-			}
-
-			$this->footer_output .= "<script type='text/template' id='template_feed_message'>
-				<li class='no_result'>".__("There are no posts to display", 'lang_social_feed')."</li>
-			</script>
-
-			<script type='text/template' id='template_feed_all'>
-				<li class='active'><a href='#'>".__("All", 'lang_social_feed')."</a></li>
-			</script>
-
-			<script type='text/template' id='template_feed'>
-				<li><a href='#<%= id %>' id='<%= id %>'><%= name %></a></li>
-			</script>
-
-			<script type='text/template' id='template_feed_post'>
-				<li class='sf_<%= service %> sf_feed_<%= feed %>'>
-					<div class='image'>
-						<% if(image != '')
-						{ %>
-							<img src='<%= image %>' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), "<%= name %>")."'>
-						<% }
-
-						else
-						{ %>"
-							.apply_filters('get_image_fallback', "")
-						."<% } %>
-					</div>
-					<div class='content'>
-						<div class='meta'>
-							<a href='<%= link %>'>
-								<i class='<%= icon %> fa-lg'></i>
-
-								<% if(service == 'rss')
-								{ %>
-									<span class='name'><%= feed_title %></span>
-								<% }
-
-								else if(name != '')
-								{ %>
-									<span class='name'><%= name %></span>
-								<% } %>
-
-								<span class='date'><%= date %></span>
-							</a>
-						</div>
-
-						<% if(service == 'rss' && title != '')
-						{ %>
-							<p><a href='<%= link %>'><%= title %></a></p>
-						<% }
-
-						if(content != '')
-						{ %>
-							<div class='text'><a href='<%= link %>'><%= content %></a></div>
-						<% } %>
-					</a>
-				</li>
-			</script>";
-
-			$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
+			//$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
 
 			$setting_social_design = get_option_or_default('setting_social_design', 'square');
 
 			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed ".$setting_social_design, 'attributes' => $attributes)).">
-				<div id='feed_".$feed_id."'"
-					.(is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? " data-social_feeds='".implode(",", $attributes['social_feeds'])."'" : "")
-					//.($attributes['social_filter'] == 'yes' ? " data-social_filter='".$attributes['social_filter']."'" : "")
-					.($attributes['social_amount'] > 0 ? " data-social_amount='".$attributes['social_amount']."'" : "")
-				.">"
-					.apply_filters('get_loading_animation', '', ['class' => "fa-3x"])
-					//."<ul class='sf_feeds hide'></ul>"
-					."<ul class='sf_posts grid_columns'></ul>"; //show_read_more hide
+				<ul class='grid_columns'>";
 
-					if($attributes['social_load_more_posts'] == 'yes')
+					$arr_post_posts = $this->get_feeds_and_posts(array('feeds' => $attributes['social_feeds'], 'amount' => $attributes['social_amount']));
+
+					foreach($arr_post_posts as $arr_post)
 					{
-						$out .= "<div".get_form_button_classes().">"
-							.show_button(array('type' => 'button', 'text' => __("View More", 'lang_social_feed'), 'class' => 'load_more_posts hide'))
-						."</div>";
+						$out .= "<li>" // class='sf_<%= service']." sf_feed_<%= feed']."'
+							."<div class='image'>";
+
+								if($arr_post['image'] != '')
+								{
+									$out .= "<img src='".$arr_post['image']."' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), $arr_post['name'])."'>";
+								}
+
+								else
+								{
+									$out .= apply_filters('get_image_fallback', "");
+								}
+
+							$out .= "</div>
+							<div class='content'>
+								<div class='meta'>
+									<a href='".$arr_post['link']."'>
+										<i class='".$arr_post['icon']." fa-lg'></i>";
+
+										if($arr_post['service'] == 'rss')
+										{
+											$out .= "<span class='name'>".$arr_post['feed_title']."</span>";
+										}
+
+										else if($arr_post['name'] != '')
+										{
+											$out .= "<span class='name'>".$arr_post['name']."</span>";
+										}
+
+										$out .= "<span class='date'>".$arr_post['date']."</span>
+									</a>
+								</div>";
+
+								if($arr_post['service'] == 'rss' && $arr_post['title'] != '')
+								{
+									$out .= "<p><a href='".$arr_post['link']."'>".$arr_post['title']."</a></p>";
+								}
+
+								if($arr_post['content'] != '')
+								{
+									$out .= "<div class='text'><a href='".$arr_post['link']."'>".$arr_post['content']."</a></div>";
+								}
+
+							$out .= "</a>
+						</li>";
 					}
 
-				$out .= "</div>"
-			."</div>";
+				$out .= "</ul>";
+
+				/*if($attributes['social_load_more_posts'] == 'yes')
+				{
+					$out .= "<div".get_form_button_classes().">"
+						.show_button(array('type' => 'button', 'text' => __("View More", 'lang_social_feed'), 'class' => 'load_more_posts hide'))
+					."</div>";
+				}*/
+
+				$out .= "</div>";
 		}
 
 		return $out;
@@ -1897,11 +1867,11 @@ class mf_social_feed
 			{
 				unset($arr_actions['trash']);
 
-				$arr_actions['api_social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; //draft
+				$arr_actions['api_social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; // draft
 
 				if($post_username != $feed_name)
 				{
-					$arr_actions['api_social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!", 'lang_social_feed'), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; //pending
+					$arr_actions['api_social_feed_action_ignore'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_ignore' confirm_text='".sprintf(__("Are you sure? This will make all future posts by %s to be ignored aswell!", 'lang_social_feed'), $post_username)."'>".__("Ignore Future Posts", 'lang_social_feed')."</a>"; // pending
 				}
 			}
 		}
@@ -1957,14 +1927,6 @@ class mf_social_feed
 	{
 		// Disable SB FB style
 		wp_deregister_style('sb-font-awesome');
-	}
-
-	function wp_footer()
-	{
-		if($this->footer_output != '')
-		{
-			echo $this->footer_output;
-		}
 	}
 
 	function widgets_init()
@@ -2031,37 +1993,6 @@ class mf_social_feed
 		}
 
 		$json_output['html'] = get_notification();
-
-		header("Content-Type: application/json");
-		echo json_encode($json_output);
-		die();
-	}
-
-	function api_social_feed_posts()
-	{
-		$json_output = array(
-			'success' => false,
-		);
-
-		$feed_id = check_var('feed_id', 'char');
-		$feeds = check_var('feeds', 'char');
-		//$social_filter = check_var('social_filter', 'char');
-		$amount = check_var('amount', 'int');
-		$load_more_posts = check_var('load_more_posts', 'char');
-		$limit_source = check_var('limit_source', 'char');
-
-		if($feeds != '')
-		{
-			$feeds = explode(",", $feeds);
-		}
-
-		list($arr_post_feeds, $arr_post_posts, $has_more_posts) = $this->get_feeds_and_posts(array('feeds' => $feeds, 'amount' => $amount, 'limit_source' => $limit_source)); //, 'social_filter' => $social_filter
-
-		$json_output['success'] = true;
-		$json_output['feed_id'] = $feed_id;
-		//$json_output['response_feeds'] = $arr_post_feeds;
-		$json_output['response_posts'] = $arr_post_posts;
-		$json_output['has_more_posts'] = ($load_more_posts == 'yes' && $has_more_posts == true);
 
 		header("Content-Type: application/json");
 		echo json_encode($json_output);
@@ -3371,11 +3302,9 @@ class mf_social_feed
 	{
 		global $wpdb, $obj_base;
 
-		//if(!isset($data['social_filter']) || $data['social_filter'] == ''){		$data['social_filter'] = 'no';}
 		if(!isset($data['limit_source']) || $data['limit_source'] == ''){		$data['limit_source'] = 'no';}
 
-		$arr_public_feeds = $arr_post_feeds_count = $arr_post_feeds = $arr_post_posts = [];
-		$has_more_posts = false;
+		$arr_public_feeds = $arr_post_posts = [];
 		$query_where = "";
 
 		if(is_array($data['feeds']) && count($data['feeds']) > 0)
@@ -3394,117 +3323,51 @@ class mf_social_feed
 
 		if($count_public_feeds > 0)
 		{
-			$limit_start = 0;
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, post_parent, guid FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".$data['amount'], $this->post_type_post, 'publish'));
 
-			/*if($data['social_filter'] == 'group')
+			foreach($result as $r)
 			{
-				$arr_services = $this->get_social_types_for_select();
-			}*/
+				$post_id = $r->ID;
+				$post_title = $r->post_title;
+				$post_content = $r->post_content;
+				$post_date = $r->post_date;
 
-			$limit_source_amount = ($data['limit_source'] == 'yes' && $count_public_feeds != 1 ? ceil(($data['amount'] / $count_public_feeds) * 1.2) : $data['amount']);
+				$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
 
-			/* Group Posts */
-			$query_select = $query_group = "";
+				$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
+				$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
+				$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
+				$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
 
-			if($count_public_feeds > 1)
-			{
-				$query_select = ", CONCAT(SUBSTRING(post_date, 1, 10), SUBSTRING(post_content, 1, 40)) AS post_group";
-				$query_group = " GROUP BY post_group";
-			}
-
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, post_parent, guid".$query_select." FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."')".$query_group." ORDER BY post_date DESC LIMIT ".$limit_start.", ".($data['amount'] + 1), $this->post_type_post, 'publish'));
-			$rows = $wpdb->num_rows;
-
-			if($rows > 0)
-			{
-				foreach($result as $r)
+				if($post_content != '' || $post_image != '')
 				{
-					if(count($arr_post_posts) < $data['amount'])
+					if($post_service == '')
 					{
-						$post_id = $r->ID;
-						$post_title = $r->post_title;
-						$post_content = $r->post_content;
-						$post_date = $r->post_date;
-
-						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
-						//$post_feed = $r->post_parent;
-
-						$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
-						$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
-						$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
-						$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
-
-						if($post_service == '')
-						{
-							list($post_service, $service_id) = explode(" ", $r->post_title);
-						}
-
-						if($post_link == '')
-						{
-							$post_link = $r->guid;
-						}
-
-						if($post_content != '' || $post_image != '')
-						{
-							/*switch($data['social_filter'])
-							{
-								case 'yes':
-									$arr_post_feeds[$post_feed] = array(
-										'id' => "sf_feed_".$post_feed,
-										'name' => get_the_title($post_feed),
-									);
-								break;
-
-								case 'group':
-									$arr_post_feeds[$post_service] = array(
-										'id' => "sf_".$post_service,
-										'name' => $arr_services[$post_service],
-									);
-								break;
-							}*/
-
-							if(!isset($arr_post_feeds_count[$post_feed]) || $arr_post_feeds_count[$post_feed] < $limit_source_amount)
-							{
-								$arr_post_posts[] = array(
-									'service' => $post_service,
-									'icon' => $this->get_post_icon($post_service),
-									'feed' => $post_feed,
-									'feed_title' => get_the_title($post_feed),
-									'link' => $post_link,
-									'name' => $post_username,
-									'title' => $post_title,
-									'content' => apply_filters('the_content', $post_content),
-									'image' => $post_image,
-									'date' => format_date($post_date),
-								);
-
-								if(isset($arr_post_feeds_count[$post_feed])){	$arr_post_feeds_count[$post_feed]++;}
-								else{											$arr_post_feeds_count[$post_feed] = 0;}
-							}
-						}
+						list($post_service, $service_id) = explode(" ", $r->post_title);
 					}
 
-					else
+					if($post_link == '')
 					{
-						$has_more_posts = true;
-
-						break;
+						$post_link = $r->guid;
 					}
-				}
-			}
 
-			if(count($arr_post_feeds) > 1) //$data['social_filter'] != 'no' && 
-			{
-				if(!isset($obj_base))
-				{
-					$obj_base = new mf_base();
+					$arr_post_posts[] = array(
+						'service' => $post_service,
+						'icon' => $this->get_post_icon($post_service),
+						'feed' => $post_feed,
+						'feed_title' => get_the_title($post_feed),
+						'link' => $post_link,
+						'name' => $post_username,
+						'title' => $post_title,
+						'content' => apply_filters('the_content', $post_content),
+						'image' => $post_image,
+						'date' => format_date($post_date),
+					);
 				}
-
-				$arr_post_feeds = $obj_base->array_sort(array('array' => $arr_post_feeds, 'on' => 'name'));
 			}
 		}
 
-		return array($arr_post_feeds, $arr_post_posts, $has_more_posts);
+		return $arr_post_posts;
 	}
 	#########################
 }

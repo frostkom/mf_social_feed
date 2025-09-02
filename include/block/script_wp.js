@@ -115,7 +115,9 @@
 								onChange: function(value)
 								{
 									props.setAttributes({social_amount: value});
-								}
+								},
+								min: 0,
+								step: 3,
 							}
 						),
 						el(
