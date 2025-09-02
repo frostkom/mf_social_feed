@@ -126,9 +126,7 @@ class mf_social_feed
 	function block_render_callback($attributes)
 	{
 		if(!isset($attributes['social_feeds'])){										$attributes['social_feeds'] = [];}
-		//if(!isset($attributes['social_filter'])){										$attributes['social_filter'] = 'no';}
 		if(!isset($attributes['social_amount']) || $attributes['social_amount'] < 1){	$attributes['social_amount'] = 6;}
-		if(!isset($attributes['social_load_more_posts'])){								$attributes['social_load_more_posts'] = 'no';}
 
 		$out = "";
 
@@ -153,8 +151,6 @@ class mf_social_feed
 				'read_more' => __("Read More", 'lang_social_feed'),
 			));
 
-			//$feed_id = (is_array($attributes['social_feeds']) && count($attributes['social_feeds']) > 0 ? implode("_", $attributes['social_feeds']) : 0);
-
 			$setting_social_design = get_option_or_default('setting_social_design', 'square');
 
 			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed ".$setting_social_design, 'attributes' => $attributes)).">
@@ -164,8 +160,8 @@ class mf_social_feed
 
 					foreach($arr_post_posts as $arr_post)
 					{
-						$out .= "<li>" // class='sf_<%= service']." sf_feed_<%= feed']."'
-							."<div class='image'>";
+						$out .= "<li>
+							<div class='image'>";
 
 								if($arr_post['image'] != '')
 								{
@@ -211,28 +207,11 @@ class mf_social_feed
 						</li>";
 					}
 
-				$out .= "</ul>";
-
-				/*if($attributes['social_load_more_posts'] == 'yes')
-				{
-					$out .= "<div".get_form_button_classes().">"
-						.show_button(array('type' => 'button', 'text' => __("View More", 'lang_social_feed'), 'class' => 'load_more_posts hide'))
-					."</div>";
-				}*/
-
-				$out .= "</div>";
+				$out .= "</ul>
+			</div>";
 		}
 
 		return $out;
-	}
-
-	function get_display_filter_for_select()
-	{
-		return array(
-			'no' => __("No", 'lang_social_feed'),
-			'yes' => __("Yes", 'lang_social_feed')." (".__("Individually", 'lang_social_feed').")",
-			'group' => __("Yes", 'lang_social_feed')." (".__("Grouped", 'lang_social_feed').")",
-		);
 	}
 
 	function enqueue_block_editor_assets()
@@ -250,11 +229,7 @@ class mf_social_feed
 			'block_description' => __("Display a Social Feed", 'lang_social_feed'),
 			'social_feeds_label' => __("Feeds", 'lang_social_feed'),
 			'social_feeds' => $arr_data_feeds,
-			/*'social_filter_label' => __("Display Filter", 'lang_social_feed'),
-			'social_filter' => $this->get_display_filter_for_select(),*/
 			'social_amount_label' => __("Amount", 'lang_social_feed'),
-			'social_load_more_posts_label' => __("Load More Posts", 'lang_social_feed'),
-			'yes_no_for_select' => get_yes_no_for_select(),
 		));
 	}
 
@@ -3378,9 +3353,7 @@ class widget_social_feed extends WP_Widget
 	var $arr_default = array(
 		'social_heading' => "",
 		'social_feeds' => [],
-		//'social_filter' => 'no',
 		'social_amount' => 6,
-		'social_load_more_posts' => 'no',
 	);
 
 	function __construct()
@@ -3407,20 +3380,9 @@ class widget_social_feed extends WP_Widget
 
 		$instance['social_heading'] = sanitize_text_field($new_instance['social_heading']);
 		$instance['social_feeds'] = is_array($new_instance['social_feeds']) ? $new_instance['social_feeds'] : [];
-		//$instance['social_filter'] = sanitize_text_field($new_instance['social_filter']);
 		$instance['social_amount'] = sanitize_text_field($new_instance['social_amount']);
-		$instance['social_load_more_posts'] = sanitize_text_field($new_instance['social_load_more_posts']);
 
 		return $instance;
-	}
-
-	function get_display_filter_for_select()
-	{
-		return array(
-			'no' => __("No", 'lang_social_feed'),
-			'yes' => __("Yes", 'lang_social_feed')." (".__("Individually", 'lang_social_feed').")",
-			'group' => __("Yes", 'lang_social_feed')." (".__("Grouped", 'lang_social_feed').")",
-		);
 	}
 
 	function form($instance)
@@ -3433,11 +3395,7 @@ class widget_social_feed extends WP_Widget
 		echo "<div class='mf_form'>"
 			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='".$this->widget_ops['classname']."-title'"))
 			.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']))
-			//.show_select(array('data' => $this->get_display_filter_for_select(), 'name' => $this->get_field_name('social_filter'), 'text' => __("Display Filter", 'lang_social_feed'), 'value' => $instance['social_filter']))
-			."<div class='flex_flow'>"
-				.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
-				.show_select(array('data' => get_yes_no_for_select(), 'name' => $this->get_field_name('social_load_more_posts'), 'text' => __("Load More Posts", 'lang_social_feed'), 'value' => $instance['social_load_more_posts']))
-			."</div>
-		</div>";
+			.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
+		."</div>";
 	}
 }
