@@ -142,12 +142,13 @@ class mf_social_feed
 				$obj_base = new mf_base();
 			}
 
+			$setting_social_debug = get_option('setting_social_debug');
+
 			$plugin_base_include_url = plugins_url()."/mf_base/include/";
 			$plugin_include_url = plugin_dir_url(__FILE__);
 
-			$setting_social_debug = get_option('setting_social_debug');
-
-			mf_enqueue_style('style_social_feed', $plugin_include_url."style.php");
+			mf_enqueue_style('style_base_grid_columns', $plugin_base_include_url."style_grid_columns.php");
+			mf_enqueue_style('style_social_feed', $plugin_include_url."style.css");
 			mf_enqueue_style('style_base_bb', $plugin_base_include_url."backbone/style.css");
 
 			mf_enqueue_script('underscore');
@@ -238,8 +239,8 @@ class mf_social_feed
 					.($attributes['social_amount'] > 0 ? " data-social_amount='".$attributes['social_amount']."'" : "")
 				.">"
 					.apply_filters('get_loading_animation', '', ['class' => "fa-3x"])
-					."<ul class='sf_feeds hide'></ul>
-					<ul class='sf_posts show_read_more hide'></ul>";
+					//."<ul class='sf_feeds hide'></ul>"
+					."<ul class='sf_posts grid_columns'></ul>"; //show_read_more hide
 
 					if($attributes['social_load_more_posts'] == 'yes')
 					{
@@ -703,12 +704,12 @@ class mf_social_feed
 				switch(check_var('post_type'))
 				{
 					case $this->post_type:
-						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php"); // Just for icon colors
+						mf_enqueue_style('style_social_feed', $plugin_include_url."style.css"); // Just for icon colors
 						mf_enqueue_style('style_social_feed_wp', $plugin_include_url."style_wp.css");
 					break;
 
 					case $this->post_type_post:
-						mf_enqueue_style('style_social_feed', $plugin_include_url."style.php"); // Just for icon colors
+						mf_enqueue_style('style_social_feed', $plugin_include_url."style.css"); // Just for icon colors
 
 						mf_enqueue_script('script_social_feed_wp', $plugin_include_url."script_wp.js", array(
 							'ajax_url' => admin_url('admin-ajax.php'),
@@ -2058,7 +2059,7 @@ class mf_social_feed
 
 		$json_output['success'] = true;
 		$json_output['feed_id'] = $feed_id;
-		$json_output['response_feeds'] = $arr_post_feeds;
+		//$json_output['response_feeds'] = $arr_post_feeds;
 		$json_output['response_posts'] = $arr_post_posts;
 		$json_output['has_more_posts'] = ($load_more_posts == 'yes' && $has_more_posts == true);
 

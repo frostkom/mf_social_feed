@@ -17,7 +17,7 @@ jQuery.fn.shorten = function(options)
 
 		if(text_end.length > 0)
 		{
-			self.addClass('shorten-shortened').html(text_start + "<span class='shorten-clipped hide'>" + text_end + "</span><span class='shorten-ellipsis form_button wp-block-button'>" + settings.ellipsis + "<div><a href='#' class='shorten-more-link wp-block-button__link'>" + settings.moreText + settings.ellipsis + "</a></div></span>");
+			self.addClass('shorten-shortened').html(text_start + "<span class='shorten-clipped hide'>" + text_end + "</span><span class='shorten-ellipsis form_button wp-block-button'>" + settings.ellipsis + "<div><a href='#' class='shorten-more-link wp-block-button__link'>" + settings.moreText + "</a></div></span>");
 		}
 	});
 };
@@ -35,7 +35,7 @@ var SocialView = Backbone.View.extend(
 
 		if(jQuery(".widget.social_feed").length > 0)
 		{
-			this.model.on("change:response_feeds", this.show_feeds, this);
+			/*this.model.on("change:response_feeds", this.show_feeds, this);*/
 			this.model.on("change:response_posts", this.show_posts, this);
 
 			if(jQuery(".widget.social_feed").find(".sf_posts li").length == 0)
@@ -47,7 +47,7 @@ var SocialView = Backbone.View.extend(
 
 	events:
 	{
-		"click ul.sf_feeds a": "change_tab",
+		/*"click ul.sf_feeds a": "change_tab",*/
 		"click .shorten-more-link": "show_more",
 		"click .load_more_posts": "load_more_posts",
 	},
@@ -97,7 +97,7 @@ var SocialView = Backbone.View.extend(
 		this.model.getPage(arr_data);
 	},
 
-	change_tab: function(e)
+	/*change_tab: function(e)
 	{
 		var self = jQuery(e.currentTarget),
 			feed_id = self.attr('id'),
@@ -116,7 +116,7 @@ var SocialView = Backbone.View.extend(
 		self.parent("li").addClass('active').siblings("li").removeClass('active');
 
 		return false;
-	},
+	},*/
 
 	show_more: function(e)
 	{
@@ -148,7 +148,7 @@ var SocialView = Backbone.View.extend(
 		return false;
 	},
 
-	show_feeds: function()
+	/*show_feeds: function()
 	{
 		var response = this.model.get('response_feeds'),
 			amount = response.length,
@@ -170,7 +170,7 @@ var SocialView = Backbone.View.extend(
 
 			dom_obj.html(html).removeClass('hide');
 		}
-	},
+	},*/
 
 	show_posts: function()
 	{
@@ -183,8 +183,8 @@ var SocialView = Backbone.View.extend(
 
 		dom_obj.find(".loading_animation").addClass('hide');
 
-		if(amount < 3){	dom_obj.find(".sf_posts").addClass('one_column');}
-		else{			dom_obj.find(".sf_posts").removeClass('one_column');}
+		/*if(amount < 3){	dom_obj.find(".sf_posts").addClass('one_column');}
+		else{			dom_obj.find(".sf_posts").removeClass('one_column');}*/
 
 		if(amount > 0)
 		{
@@ -203,7 +203,7 @@ var SocialView = Backbone.View.extend(
 
 		dom_obj.find(".sf_posts").html(html).removeClass('hide');
 
-		dom_obj.find(".sf_posts.show_read_more .text").shorten();
+		dom_obj.find(".sf_posts .text").shorten(); /*.show_read_more*/
 
 		/* Just in case image errors have occured, it has been cached through JS and then retrieved by someone else, we have to first display images and then check again */
 		dom_obj.find(".sf_posts img").removeClass('hide').on("error", function()

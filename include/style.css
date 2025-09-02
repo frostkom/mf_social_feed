@@ -1,0 +1,88 @@
+@media all
+{
+	.widget.social_feed .sf_posts li.no_result
+	{
+		padding: 1em;
+	}
+
+			.widget.social_feed .sf_posts li .meta .fa, .widget.social_feed .sf_posts li .meta .fab
+			{
+				margin-right: .5em;
+			}
+
+				.sf_facebook .fa, .sf_facebook .fab, .column-type .fa-facebook
+				{
+					color: #3b5998;
+				}
+
+				.sf_instagram .fa, .sf_instagram .fab, .column-type .fa-instagram
+				{
+					color: #c02f2e;
+				}
+
+				.sf_linkedin .fa, .sf_linkedin .fab, .column-type .fa-linkedin-in
+				{
+					color: #0077b5;
+				}
+
+				.sf_rss .fa, .sf_rss .fab, .column-type .fa-rss
+				{
+					color: #e9bb63;
+				}
+
+				.sf_twitter .fa, .sf_twitter .fab, .column-type .fa-twitter
+				{
+					color: #55acee;
+				}
+
+			.widget.social_feed .title, .widget.social_feed .name
+			{
+				margin-right: .5em;
+			}
+
+			.widget.social_feed .shorten-shortened
+			{
+				position: relative;
+			}
+
+				.widget.social_feed .shorten-shortened:after
+				{
+					bottom: 0;
+					content: '';
+					height: 40%;
+					left: 0;
+					position: absolute;
+					right: 0;
+				}
+
+					.widget.social_feed .shorten-clipped
+					{
+						opacity: 0;
+					}
+
+					.widget.social_feed .shorten-ellipsis > div
+					{
+						text-align: right;
+					}
+
+						.widget.social_feed .shorten-more-link
+						{
+							font-size: 0.9em;
+							margin: .5em 0 0 !important;
+							padding: .5em 1em;
+							position: relative;
+							z-index: 1000;
+						}
+
+	.social_debug
+	{
+		background: #000;
+		background: rgba(0, 0, 0, .5);
+		bottom: 0;
+		color: #fff;
+		display: none;
+		left: 0;
+		padding: .5em;
+		position: fixed;
+	}
+}
