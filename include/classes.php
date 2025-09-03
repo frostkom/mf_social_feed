@@ -165,7 +165,7 @@ class mf_social_feed
 						$arr_public_feeds[] = $r->ID;
 					}
 
-					$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, post_parent, guid, meta_value FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."') AND (post_content != '' OR meta_key = %s AND meta_value != '') GROUP BY ID ORDER BY post_date DESC LIMIT 0, ".$attributes['social_amount'], $this->post_type_post, 'publish', $this->meta_prefix.'image'));
+					$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, post_parent, guid FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."') AND (post_content != '' OR meta_key = %s AND meta_value != '') GROUP BY ID ORDER BY post_date DESC LIMIT 0, ".$attributes['social_amount'], $this->post_type_post, 'publish', $this->meta_prefix.'image'));
 
 					foreach($result as $r)
 					{
@@ -174,12 +174,10 @@ class mf_social_feed
 						$post_content = $r->post_content;
 						$post_date = $r->post_date;
 
-						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
-
+						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
 						$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 						$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
-						//$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
-						$post_image = $r->meta_value;
+						$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
 						$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
 
 						if($post_service == '')
@@ -229,7 +227,7 @@ class mf_social_feed
 
 								if($post_service == 'rss' && $post_title != '')
 								{
-									$out .= "<p><a href='".$post_link."'>".$post_title."</a></p>";
+									$out .= "<p class='text'><a href='".$post_link."'>".$post_title."</a></p>";
 								}
 
 								if($post_content != '')
@@ -647,7 +645,7 @@ class mf_social_feed
 
 	function admin_init()
 	{
-		global $wpdb, $pagenow;
+		global $wpdb, $pagenow, $menu;
 
 		switch($pagenow)
 		{
@@ -718,9 +716,17 @@ class mf_social_feed
 
 			if($rows > 0)
 			{
-				$plugin_include_url = plugin_dir_url(__FILE__);
-
-				mf_enqueue_script('script_social_feed_wp_errors', $plugin_include_url."script_wp_errors.js", array('error_text' => __("Errors", 'lang_social_feed'), 'error_amount' => $rows));
+				foreach($menu as $key => $menu_item)
+				{
+					if(isset($menu_item[2]) && $menu_item[2] == 'edit.php?post_type=mf_social_feed')
+					{
+						if(!preg_match("/update-plugins/i", $menu[$key][0]))
+						{
+							$menu[$key][0] .= " <span class='update-plugins'><span>".$rows."</span></span>";
+							break;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1025,9 +1031,7 @@ class mf_social_feed
 		$post_id = $post->ID;
 		$post_date = $post->post_date;
 
-		$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
-		//$post_feed = $post->post_parent;
-
+		$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
 		$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
 		$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
 		$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
@@ -1738,8 +1742,7 @@ class mf_social_feed
 				switch($column)
 				{
 					case 'type':
-						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
-						//$post_feed = $r->post_parent;
+						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
 
 						$post_meta = get_post_meta($post_feed, $this->meta_prefix.$column, true);
 
@@ -1798,8 +1801,7 @@ class mf_social_feed
 					break;
 
 					case 'info':
-						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
-						//$post_feed = $r->post_parent;
+						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
 
 						$post_meta = get_post_meta($post_feed, $this->meta_prefix.'type', true);
 
@@ -1864,19 +1866,18 @@ class mf_social_feed
 
 			$post_id = $post->ID;
 
-			$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
-			//$post_feed = $r->post_parent;
-
-			$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
-
-			$post_username = "@".$post_username;
-			$feed_name = get_post_meta($post_feed, $this->meta_prefix.'search_for', true);
-
 			if($post->post_status == 'publish')
 			{
 				unset($arr_actions['trash']);
 
 				$arr_actions['api_social_feed_action_hide'] = "<a href='#id_".$post_id."' class='social_feed_post_action api_social_feed_action_hide' confirm_text='".__("Are you sure?", 'lang_social_feed')."'>".__("Hide", 'lang_social_feed')."</a>"; // draft
+
+				$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+
+				$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
+				$post_username = "@".$post_username;
+
+				$feed_name = get_post_meta($post_feed, $this->meta_prefix.'search_for', true);
 
 				if($post_username != $feed_name)
 				{
@@ -3219,13 +3220,13 @@ class mf_social_feed
 					'post_title' => $post_title,
 					'post_content' => $post['text'],
 					'post_parent' => $this->id,
-					'meta_input' => apply_filters('filter_meta_input', array(
+					'meta_input' => array(
 						$this->meta_prefix.'service' => $post['type'],
-						$this->meta_prefix.'feed_id' => $this->id, //This can be removed when post_parent is used everywhere
+						$this->meta_prefix.'feed_id' => $this->id,
 						$this->meta_prefix.'name' => $post['name'],
 						$this->meta_prefix.'image' => $post['image'],
 						$this->meta_prefix.'link' => $post['link'],
-					)),
+					),
 				);
 
 				$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id');
@@ -3240,27 +3241,7 @@ class mf_social_feed
 
 				$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d'", $this->post_type_post, 'publish', $post_title, $post_name, $this->id));
 
-				if($wpdb->num_rows == 0)
-				{
-					if($this->check_is_settings($post))
-					{
-						$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
-						$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
-
-						/*if($post_status == 'draft')
-						{
-							do_log("A post was set to ".$post_status." because ".$post['name']." previously has been set to be ignored (".$wpdb->last_query.")");
-						}*/
-
-						$post_data['post_type'] = $this->post_type_post;
-						$post_data['post_status'] = $post_status;
-						$post_data['post_date'] = $post['created'];
-
-						$post_id = wp_insert_post($post_data);
-					}
-				}
-
-				else
+				if($wpdb->num_rows > 0)
 				{
 					$i = 0;
 
@@ -3271,6 +3252,7 @@ class mf_social_feed
 						if($this->check_is_settings($post) && $i == 0)
 						{
 							$post_data['ID'] = $post_id;
+							$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
 
 							wp_update_post($post_data);
 
@@ -3281,6 +3263,22 @@ class mf_social_feed
 						{
 							wp_trash_post($post_id);
 						}
+					}
+				}
+
+				else
+				{
+					if($this->check_is_settings($post))
+					{
+						$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
+						$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
+
+						$post_data['post_type'] = $this->post_type_post;
+						$post_data['post_status'] = $post_status;
+						$post_data['post_date'] = $post['created'];
+						$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
+
+						$post_id = wp_insert_post($post_data);
 					}
 				}
 			}
