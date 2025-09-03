@@ -5,27 +5,27 @@
 		margin-right: .5em;
 	}
 
-		.sf_facebook .fa, .sf_facebook .fab, .column-type .fa-facebook
+		.fa-facebook
 		{
 			color: #3b5998;
 		}
 
-		.sf_instagram .fa, .sf_instagram .fab, .column-type .fa-instagram
+		.fa-instagram
 		{
 			color: #c02f2e;
 		}
 
-		.sf_linkedin .fa, .sf_linkedin .fab, .column-type .fa-linkedin-in
+		.fa-linkedin-in
 		{
 			color: #0077b5;
 		}
 
-		.sf_rss .fa, .sf_rss .fab, .column-type .fa-rss
+		.fa-rss
 		{
 			color: #e9bb63;
 		}
 
-		.sf_twitter .fa, .sf_twitter .fab, .column-type .fa-twitter
+		.fa-twitter
 		{
 			color: #55acee;
 		}
