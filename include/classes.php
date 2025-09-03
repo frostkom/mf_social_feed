@@ -125,6 +125,8 @@ class mf_social_feed
 
 	function block_render_callback($attributes)
 	{
+		global $wpdb, $obj_base;
+
 		if(!isset($attributes['social_feeds'])){										$attributes['social_feeds'] = [];}
 		if(!isset($attributes['social_amount']) || $attributes['social_amount'] < 1){	$attributes['social_amount'] = 6;}
 
@@ -132,8 +134,6 @@ class mf_social_feed
 
 		if(count($attributes['social_feeds']) > 0)
 		{
-			global $obj_base;
-
 			if(!isset($obj_base))
 			{
 				$obj_base = new mf_base();
@@ -156,51 +156,85 @@ class mf_social_feed
 			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed ".$setting_social_design, 'attributes' => $attributes)).">
 				<ul class='grid_columns'>";
 
-					$arr_post_posts = $this->get_feeds_and_posts(array('feeds' => $attributes['social_feeds'], 'amount' => $attributes['social_amount']));
+					$arr_public_feeds = [];
 
-					foreach($arr_post_posts as $arr_post)
+					$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND ID IN('".implode("','", $attributes['social_feeds'])."')", $this->post_type, 'publish'));
+
+					foreach($result as $r)
 					{
+						$arr_public_feeds[] = $r->ID;
+					}
+
+					$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, post_parent, guid, meta_value FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."') AND (post_content != '' OR meta_key = %s AND meta_value != '') GROUP BY ID ORDER BY post_date DESC LIMIT 0, ".$attributes['social_amount'], $this->post_type_post, 'publish', $this->meta_prefix.'image'));
+
+					foreach($result as $r)
+					{
+						$post_id = $r->ID;
+						$post_title = $r->post_title;
+						$post_content = $r->post_content;
+						$post_date = $r->post_date;
+
+						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
+
+						$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
+						$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
+						//$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
+						$post_image = $r->meta_value;
+						$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
+
+						if($post_service == '')
+						{
+							list($post_service, $service_id) = explode(" ", $r->post_title);
+						}
+
+						if($post_link == '')
+						{
+							$post_link = $r->guid;
+						}
+
 						$out .= "<li>
-							<div class='image'>";
+							<div class='image'>
+								<a href='".$post_link."'>";
 
-								if($arr_post['image'] != '')
-								{
-									$out .= "<img src='".$arr_post['image']."' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), $arr_post['name'])."'>";
-								}
+									if($post_image != '')
+									{
+										$out .= "<img src='".$post_image."' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), $post_title)."'>";
+									}
 
-								else
-								{
-									$out .= apply_filters('get_image_fallback', "");
-								}
+									else
+									{
+										$out .= apply_filters('get_image_fallback', "");
+									}
 
-							$out .= "</div>
+								$out .= "</a>
+							</div>
 							<div class='content'>
 								<div class='meta'>
-									<a href='".$arr_post['link']."'>
-										<i class='".$arr_post['icon']." fa-lg'></i>";
+									<a href='".$post_link."'>
+										<i class='".$this->get_post_icon($post_service)." fa-lg'></i>";
 
-										if($arr_post['service'] == 'rss')
+										if($post_service == 'rss')
 										{
-											$out .= "<span class='name'>".$arr_post['feed_title']."</span>";
+											$out .= "<span class='name'>".get_the_title($post_feed)."</span>";
 										}
 
-										else if($arr_post['name'] != '')
+										else if($post_username != '')
 										{
-											$out .= "<span class='name'>".$arr_post['name']."</span>";
+											$out .= "<span class='name'>".$post_username."</span>";
 										}
 
-										$out .= "<span class='date'>".$arr_post['date']."</span>
+										$out .= "<span class='date'>".format_date($post_date)."</span>
 									</a>
 								</div>";
 
-								if($arr_post['service'] == 'rss' && $arr_post['title'] != '')
+								if($post_service == 'rss' && $post_title != '')
 								{
-									$out .= "<p><a href='".$arr_post['link']."'>".$arr_post['title']."</a></p>";
+									$out .= "<p><a href='".$post_link."'>".$post_title."</a></p>";
 								}
 
-								if($arr_post['content'] != '')
+								if($post_content != '')
 								{
-									$out .= "<div class='text'><a href='".$arr_post['link']."'>".$arr_post['content']."</a></div>";
+									$out .= "<div class='text'><a href='".$post_link."'>".apply_filters('the_content', $post_content)."</a></div>";
 								}
 
 							$out .= "</a>
@@ -3268,81 +3302,6 @@ class mf_social_feed
 			}
 		}
 		###########
-	}
-	#########################
-
-	// Public
-	#########################
-	function get_feeds_and_posts($data)
-	{
-		global $wpdb, $obj_base;
-
-		if(!isset($data['limit_source']) || $data['limit_source'] == ''){		$data['limit_source'] = 'no';}
-
-		$arr_public_feeds = $arr_post_posts = [];
-		$query_where = "";
-
-		if(is_array($data['feeds']) && count($data['feeds']) > 0)
-		{
-			$query_where = " AND ID IN('".implode("','", $data['feeds'])."')";
-		}
-
-		$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s".$query_where, $this->post_type, 'publish'));
-
-		foreach($result as $r)
-		{
-			$arr_public_feeds[] = $r->ID;
-		}
-
-		$count_public_feeds = count($arr_public_feeds);
-
-		if($count_public_feeds > 0)
-		{
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, post_parent, guid FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."') ORDER BY post_date DESC LIMIT 0, ".$data['amount'], $this->post_type_post, 'publish'));
-
-			foreach($result as $r)
-			{
-				$post_id = $r->ID;
-				$post_title = $r->post_title;
-				$post_content = $r->post_content;
-				$post_date = $r->post_date;
-
-				$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true); //This can be removed when post_parent is used everywhere
-
-				$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
-				$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
-				$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
-				$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
-
-				if($post_content != '' || $post_image != '')
-				{
-					if($post_service == '')
-					{
-						list($post_service, $service_id) = explode(" ", $r->post_title);
-					}
-
-					if($post_link == '')
-					{
-						$post_link = $r->guid;
-					}
-
-					$arr_post_posts[] = array(
-						'service' => $post_service,
-						'icon' => $this->get_post_icon($post_service),
-						'feed' => $post_feed,
-						'feed_title' => get_the_title($post_feed),
-						'link' => $post_link,
-						'name' => $post_username,
-						'title' => $post_title,
-						'content' => apply_filters('the_content', $post_content),
-						'image' => $post_image,
-						'date' => format_date($post_date),
-					);
-				}
-			}
-		}
-
-		return $arr_post_posts;
 	}
 	#########################
 }

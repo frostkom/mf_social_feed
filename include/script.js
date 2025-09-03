@@ -28,7 +28,7 @@ jQuery(function($)
 
 	dom_obj.find("img").removeClass('hide').on("error", function()
 	{
-		jQuery(this).parent(".image").html(script_social_feed.image_fallback);
+		jQuery(this).parents(".image").children("a").html(script_social_feed.image_fallback);
 	});
 
 	$(document).on('click', ".shorten-more-link", function(e)
