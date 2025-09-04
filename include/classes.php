@@ -718,7 +718,7 @@ class mf_social_feed
 			{
 				foreach($menu as $key => $menu_item)
 				{
-					if(isset($menu_item[2]) && $menu_item[2] == 'edit.php?post_type=mf_social_feed')
+					if(isset($menu_item[2]) && $menu_item[2] == 'edit.php?post_type='.$this->post_type)
 					{
 						if(!preg_match("/update-plugins/i", $menu[$key][0]))
 						{
