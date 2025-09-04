@@ -714,7 +714,7 @@ class mf_social_feed
 			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = %s AND meta_value != ''", $this->post_type, 'draft', $this->meta_prefix.'error'));
 			$rows = $wpdb->num_rows;
 
-			if($rows > 0)
+			if($rows > 0 && is_array($menu))
 			{
 				foreach($menu as $key => $menu_item)
 				{
