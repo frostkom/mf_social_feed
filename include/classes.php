@@ -42,12 +42,12 @@ class mf_social_feed
 		if($obj_cron->is_running == false)
 		{
 			mf_uninstall_plugin(array(
-				'options' => array('setting_social_time_limit', 'setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url', 'setting_social_reload', 'setting_social_deactive_on_error', 'setting_social_full_width', 'setting_social_display_border', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_mobile_columns'),
+				'options' => array('setting_social_time_limit', 'setting_linkedin_company_id', 'setting_linkedin_redirect_url', 'setting_linkedin_authorize', 'setting_instagram_api_token', 'setting_facebook_api_id', 'setting_facebook_api_secret', 'setting_instagram_activate_alt_fetch', 'option_social_callback_url', 'setting_social_reload', 'setting_social_deactive_on_error', 'setting_social_full_width', 'setting_social_display_border', 'setting_social_desktop_columns', 'setting_social_tablet_columns', 'setting_social_mobile_columns', 'setting_social_keep_posts'),
 			));
 
 			// Fetch new posts
 			#####################
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 30 MINUTE) ORDER BY RAND()", $this->post_type, 'publish'));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s", $this->post_type, 'publish')); // AND post_modified < DATE_SUB(NOW(), INTERVAL 30 MINUTE) ORDER BY RAND()
 
 			foreach($result as $r)
 			{
@@ -107,6 +107,16 @@ class mf_social_feed
 				}
 			}
 			#####################
+
+			// Remove old posts
+			###########
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status IN ('draft', 'publish') AND post_date < DATE_SUB(NOW(), INTERVAL 1 YEAR)", $this->post_type_post));
+
+			foreach($result as $r)
+			{
+				wp_trash_post($r->ID);
+			}
+			###########
 
 			// Delete old uploads
 			#######################
@@ -323,18 +333,16 @@ class mf_social_feed
 
 		$options_area_orig = $options_area = __FUNCTION__;
 
-		//$has_facebook = does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'facebook')));
-		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'facebook'));
+		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s GROUP BY ID LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'facebook'));
 		$has_facebook = ($wpdb->num_rows > 0);
 
-		//$has_instagram = does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'instagram')));
-		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'instagram'));
+		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s GROUP BY ID LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'instagram'));
 		$has_instagram = ($wpdb->num_rows > 0);
 
-		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'linkedin'));
+		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s GROUP BY ID LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'linkedin'));
 		$has_linkedin = ($wpdb->num_rows > 0);
 
-		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'twitter'));
+		$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s GROUP BY ID LIMIT 0, 1", $this->post_type, $this->meta_prefix.'type', 'twitter'));
 		$has_twitter = ($wpdb->num_rows > 0);
 
 		//Generic
@@ -348,7 +356,6 @@ class mf_social_feed
 			$arr_settings['setting_social_api_url'] = __("API URL", 'lang_social_feed');
 		}
 
-		$arr_settings['setting_social_keep_posts'] = __("Keep Posts", 'lang_social_feed');
 		$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
 		$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
 
@@ -387,7 +394,7 @@ class mf_social_feed
 
 		//LinkedIn
 		############################
-		if($has_linkedin) //does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'linkedin')))
+		if($has_linkedin)
 		{
 			$options_area = $options_area_orig."_linkedin";
 
@@ -410,7 +417,7 @@ class mf_social_feed
 
 		//Twitter
 		############################
-		if($has_twitter) //does_post_exists(array('post_type' => $this->post_type, 'post_status' => '', 'meta' => array($this->meta_prefix.'type' => 'twitter')))
+		if($has_twitter)
 		{
 			$options_area = $options_area_orig."_twitter";
 
@@ -503,14 +510,6 @@ class mf_social_feed
 				return 15;
 			break;
 		}
-	}
-
-	function setting_social_keep_posts_callback()
-	{
-		$setting_key = get_setting_key(__FUNCTION__);
-		$option = get_option_or_default($setting_key, 12);
-
-		echo show_textfield(array('type' => 'number', 'name' => $setting_key, 'value' => $option, 'xtra' => "min='1' max='120'", 'suffix' => __("months", 'lang_social_feed')));
 	}
 
 	function setting_social_design_callback()
@@ -701,7 +700,7 @@ class mf_social_feed
 		{
 			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s LIMIT 0, 1", $this->post_type, 'publish'));
 
-			if($wpdb->num_rows > 0) //does_post_exists(array('post_type' => $this->post_type))
+			if($wpdb->num_rows > 0)
 			{
 				$content = __("Posts from social feeds are stored in the database to make it possible to present them in the fastest way possible to you as a visitor.", 'lang_social_feed');
 
@@ -711,7 +710,7 @@ class mf_social_feed
 
 		if(IS_EDITOR)
 		{
-			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = %s AND meta_value != ''", $this->post_type, 'draft', $this->meta_prefix.'error'));
+			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = %s AND meta_value != '' GROUP BY ID", $this->post_type, 'draft', $this->meta_prefix.'error'));
 			$rows = $wpdb->num_rows;
 
 			if($rows > 0 && is_array($menu))
@@ -1029,7 +1028,6 @@ class mf_social_feed
 		global $post;
 
 		$post_id = $post->ID;
-		$post_date = $post->post_date;
 
 		$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
 		$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
@@ -1040,9 +1038,18 @@ class mf_social_feed
 		$out = "<ul id='".$this->meta_prefix."info'>"
 			."<li><i class='".$this->get_post_icon($post_service)."'></i> ".get_the_title($post_feed)."</li>"
 			."<li><a href='".$post_link."'>@".$post_username."</a></li>"
-			.($post_image != '' ? "<li><img src='".$post_image."'></li>" : "")
-			."<li>".format_date($post_date)."</li>"
-		."</ul>";
+			.($post_image != '' ? "<li><img src='".$post_image."'></li>" : "");
+
+			if(IS_SUPER_ADMIN)
+			{
+				$out .= "<li>post_type: ".get_post_type($post_id)."</li>"
+				."<li>post_status: ".get_post_status($post_id)."</li>"
+				."<li>post_title: ".get_the_title($post_id)."</li>"
+				."<li>post_name: ".mf_get_post_content($post_id, 'post_name')."</li>"
+				."<li>post_parent: ".mf_get_post_content($post_id, 'post_parent')."</li>";
+			}
+
+		$out .= "</ul>";
 
 		return $out;
 	}
@@ -1093,7 +1100,7 @@ class mf_social_feed
 			{
 				switch_to_blog($r->blog_id);
 
-				$result_posts = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s", $this->post_type, $this->meta_prefix.'type', $post_type));
+				$result_posts = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND meta_key = %s AND meta_value = %s GROUP BY ID", $this->post_type, $this->meta_prefix.'type', $post_type));
 
 				foreach($result_posts as $r)
 				{
@@ -1450,12 +1457,17 @@ class mf_social_feed
 			'title' => __("Information", 'lang_social_feed'),
 			'post_types' => array($this->post_type_post),
 			'context' => 'side',
-			'priority' => 'high',
+			//'priority' => 'high',
 			'fields' => array(
 				array(
 					'id' => $this->meta_prefix.'info',
 					'type' => 'custom_html',
 					'callback' => array($this, 'meta_post_info'),
+				),
+				array(
+					'name' => __("Feed", 'lang_social_feed'),
+					'id' => $this->meta_prefix.'feed_id',
+					'type' => 'text',
 				),
 			)
 		);
@@ -1517,7 +1529,7 @@ class mf_social_feed
 			break;
 
 			case $this->post_type_post:
-				unset($columns['title']);
+				//unset($columns['title']);
 				unset($columns['date']);
 
 				$columns['type'] = __("Type", 'lang_social_feed');
@@ -1525,7 +1537,7 @@ class mf_social_feed
 				$columns['text'] = __("Text", 'lang_social_feed');
 				$columns['image'] = __("Image", 'lang_social_feed');
 				//$columns['post_id'] = __("ID", 'lang_social_feed');
-				$columns['info'] = __("Information", 'lang_social_feed');
+				//$columns['info'] = __("Information", 'lang_social_feed');
 				$columns['date'] = __("Date", 'lang_social_feed');
 			break;
 		}
@@ -1796,7 +1808,7 @@ class mf_social_feed
 						}
 					break;
 
-					case 'post_id':
+					/*case 'post_id':
 						echo get_the_title($post_id);
 					break;
 
@@ -1851,7 +1863,7 @@ class mf_social_feed
 								}
 							break;
 						}
-					break;
+					break;*/
 				}
 			break;
 		}
@@ -3123,9 +3135,7 @@ class mf_social_feed
 	{
 		$out = true;
 
-		$setting_social_keep_posts = get_option_or_default('setting_social_keep_posts', 12);
-
-		if($post['created'] < date("Y-m-d", strtotime("-".$setting_social_keep_posts." month")))
+		if($post['created'] < date("Y-m-d", strtotime("-1 year")))
 		{
 			$out = false;
 		}
@@ -3208,98 +3218,78 @@ class mf_social_feed
 			do_log(__FUNCTION__.": ".htmlspecialchars(var_export($this->arr_posts, true)));
 		}
 
-		if(count($this->arr_posts) > 0)
+		foreach($this->arr_posts as $post)
 		{
-			foreach($this->arr_posts as $post)
+			$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type'].(isset($post['id']) && $post['id'] != '' ? " ".$post['id'] : ''));
+			$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
+
+			$post_data = array(
+				'post_name' => $post_name,
+				'post_title' => $post_title,
+				'post_content' => $post['text'],
+				'post_parent' => $this->id,
+				'meta_input' => array(
+					$this->meta_prefix.'service' => $post['type'],
+					$this->meta_prefix.'feed_id' => $this->id,
+					$this->meta_prefix.'name' => $post['name'],
+					$this->meta_prefix.'image' => $post['image'],
+					$this->meta_prefix.'link' => $post['link'],
+				),
+			);
+
+			$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id');
+
+			foreach($arr_meta_input_types as $meta_input_type)
 			{
-				$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type'].(isset($post['id']) && $post['id'] != '' ? " ".$post['id'] : ''));
-				$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
-
-				$post_data = array(
-					'post_name' => $post_name,
-					'post_title' => $post_title,
-					'post_content' => $post['text'],
-					'post_parent' => $this->id,
-					'meta_input' => array(
-						$this->meta_prefix.'service' => $post['type'],
-						$this->meta_prefix.'feed_id' => $this->id,
-						$this->meta_prefix.'name' => $post['name'],
-						$this->meta_prefix.'image' => $post['image'],
-						$this->meta_prefix.'link' => $post['link'],
-					),
-				);
-
-				$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id');
-
-				foreach($arr_meta_input_types as $meta_input_type)
+				if(isset($post[$meta_input_type]) && $post[$meta_input_type] > 0)
 				{
-					if(isset($post[$meta_input_type]) && $post[$meta_input_type] > 0)
-					{
-						$post_data['meta_input'][$this->meta_prefix.$meta_input_type] = $post[$meta_input_type];
-					}
+					$post_data['meta_input'][$this->meta_prefix.$meta_input_type] = $post[$meta_input_type];
 				}
+			}
 
-				$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND post_parent = '%d'", $this->post_type_post, 'publish', $post_title, $post_name, $this->id));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND (post_parent = '%d' OR meta_key = %s AND meta_value = %s) GROUP BY ID", $this->post_type_post, 'publish', $post_title, $post_name, $this->id, $this->meta_prefix.'feed_id', $this->id));
 
-				if($wpdb->num_rows > 0)
+			if($wpdb->num_rows > 0)
+			{
+				$i = 0;
+
+				foreach($result as $r)
 				{
-					$i = 0;
+					$post_id = $r->ID;
 
-					foreach($result as $r)
+					if($this->check_is_settings($post) && $i == 0)
 					{
-						$post_id = $r->ID;
+						$post_data['ID'] = $post_id;
+						$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
 
-						if($this->check_is_settings($post) && $i == 0)
-						{
-							$post_data['ID'] = $post_id;
-							$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
+						wp_update_post($post_data);
 
-							wp_update_post($post_data);
-
-							$i++;
-						}
-
-						else
-						{
-							wp_trash_post($post_id);
-						}
+						$i++;
 					}
-				}
 
-				else
-				{
-					if($this->check_is_settings($post))
+					else
 					{
-						$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
-						$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
-
-						$post_data['post_type'] = $this->post_type_post;
-						$post_data['post_status'] = $post_status;
-						$post_data['post_date'] = $post['created'];
-						$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
-
-						$post_id = wp_insert_post($post_data);
+						wp_trash_post($post_id);
 					}
 				}
 			}
-		}
 
-		// Remove old posts
-		###########
-		$setting_social_keep_posts = get_option_or_default('setting_social_keep_posts', 12);
-
-		$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND (post_excerpt = '%d' OR post_parent = '%d') AND post_status = %s AND post_date < %s", $this->post_type_post, $this->id, $this->id, 'publish', date("Y-m-d", strtotime("-".$setting_social_keep_posts." month"))));
-
-		if($wpdb->num_rows > 0)
-		{
-			foreach($result as $r)
+			else
 			{
-				$post_id = $r->ID;
+				if($this->check_is_settings($post))
+				{
+					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s GROUP BY ID LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
+					$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
 
-				wp_trash_post($post_id);
+					$post_data['post_type'] = $this->post_type_post;
+					$post_data['post_status'] = $post_status;
+					$post_data['post_date'] = $post['created'];
+					$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
+
+					$post_id = wp_insert_post($post_data);
+				}
 			}
 		}
-		###########
 	}
 	#########################
 }
