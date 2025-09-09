@@ -223,16 +223,16 @@ class mf_social_feed
 
 										if($post_service == 'rss')
 										{
-											$out .= "<span class='name'>".get_the_title($post_feed)."</span>";
+											$out .= get_the_title($post_feed);
 										}
 
 										else if($post_username != '')
 										{
-											$out .= "<span class='name'>".$post_username."</span>";
+											$out .= $post_username;
 										}
 
-										$out .= "<span class='date'>".format_date($post_date)."</span>
-									</a>
+									$out .= "</a>
+									<span class='grey'>".format_date($post_date)."</span>
 								</div>";
 
 								if($post_service == 'rss' && $post_title != '')
