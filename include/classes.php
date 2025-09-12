@@ -284,6 +284,10 @@ class mf_social_feed
 				'name' => __("Social Feeds", 'lang_social_feed'),
 				'singular_name' => __("Social Feed", 'lang_social_feed'),
 				'menu_name' => __("Social Feeds", 'lang_social_feed'),
+				'all_items' => __('List', 'lang_social_feed'),
+				'edit_item' => __('Edit', 'lang_social_feed'),
+				'view_item' => __('View', 'lang_social_feed'),
+				'add_new_item' => __('Add New', 'lang_social_feed'),
 			),
 			'public' => false,
 			'show_ui' => true,
@@ -300,7 +304,11 @@ class mf_social_feed
 			'labels' => array(
 				'name' => __("Posts", 'lang_social_feed'),
 				'singular_name' => __("Post", 'lang_social_feed'),
-				'menu_name' => __("Posts", 'lang_social_feed')
+				'menu_name' => __("Posts", 'lang_social_feed'),
+				'all_items' => __('List', 'lang_social_feed'),
+				'edit_item' => __('Edit', 'lang_social_feed'),
+				'view_item' => __('View', 'lang_social_feed'),
+				'add_new_item' => __('Add New', 'lang_social_feed'),
 			),
 			'public' => false,
 			'show_ui' => true,
