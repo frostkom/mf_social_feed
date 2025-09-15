@@ -1877,7 +1877,7 @@ class mf_social_feed
 		}
 	}
 
-	function row_actions($arr_actions, $post)
+	function post_row_actions($arr_actions, $post)
 	{
 		if($post->post_type == $this->post_type_post)
 		{
