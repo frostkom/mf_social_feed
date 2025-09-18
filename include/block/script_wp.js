@@ -79,18 +79,6 @@
 								}
 							}
 						),
-						/*el(
-							SelectControl,
-							{
-								label: script_social_feed_block_wp.social_filter_label,
-								value: props.attributes.social_filter,
-								options: convert_php_array_to_block_js(script_social_feed_block_wp.social_filter),
-								onChange: function(value)
-								{
-									props.setAttributes({social_filter: value});
-								}
-							}
-						),*/
 						el(
 							TextControl,
 							{

@@ -1959,14 +1959,6 @@ class mf_social_feed
 		wp_deregister_style('sb-font-awesome');
 	}
 
-	function widgets_init()
-	{
-		if(wp_is_block_theme() == false)
-		{
-			register_widget('widget_social_feed');
-		}
-	}
-
 	function api_social_feed_action_hide()
 	{
 		global $wpdb, $done_text, $error_text;
@@ -3300,57 +3292,4 @@ class mf_social_feed
 		}
 	}
 	#########################
-}
-
-class widget_social_feed extends WP_Widget
-{
-	var $widget_ops;
-	var $arr_default = array(
-		'social_heading' => "",
-		'social_feeds' => [],
-		'social_amount' => 6,
-	);
-
-	function __construct()
-	{
-		$this->obj_social_feed = new mf_social_feed();
-
-		$this->widget_ops = array(
-			'classname' => 'social_feed',
-			'description' => __("Display Social Feeds", 'lang_social_feed'),
-		);
-
-		parent::__construct(str_replace("_", "-", $this->widget_ops['classname']).'-widget', __("Social Feed", 'lang_social_feed'), $this->widget_ops);
-	}
-
-	function widget($args, $instance)
-	{
-		do_log(__CLASS__."->".__FUNCTION__."(): Add a block instead", 'publish', false);
-	}
-
-	function update($new_instance, $old_instance)
-	{
-		$instance = $old_instance;
-		$new_instance = wp_parse_args((array)$new_instance, $this->arr_default);
-
-		$instance['social_heading'] = sanitize_text_field($new_instance['social_heading']);
-		$instance['social_feeds'] = is_array($new_instance['social_feeds']) ? $new_instance['social_feeds'] : [];
-		$instance['social_amount'] = sanitize_text_field($new_instance['social_amount']);
-
-		return $instance;
-	}
-
-	function form($instance)
-	{
-		$instance = wp_parse_args((array)$instance, $this->arr_default);
-
-		$arr_data_feeds = [];
-		get_post_children(array('post_type' => $this->obj_social_feed->post_type, 'order_by' => 'post_title'), $arr_data_feeds);
-
-		echo "<div class='mf_form'>"
-			.show_textfield(array('name' => $this->get_field_name('social_heading'), 'text' => __("Heading", 'lang_social_feed'), 'value' => $instance['social_heading'], 'xtra' => " id='".$this->widget_ops['classname']."-title'"))
-			.show_select(array('data' => $arr_data_feeds, 'name' => $this->get_field_name('social_feeds')."[]", 'text' => __("Feeds", 'lang_social_feed'), 'value' => $instance['social_feeds']))
-			.show_textfield(array('type' => 'number', 'name' => $this->get_field_name('social_amount'), 'text' => __("Amount", 'lang_social_feed'), 'value' => $instance['social_amount']))
-		."</div>";
-	}
 }
