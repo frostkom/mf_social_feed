@@ -10,13 +10,15 @@ class mf_social_feed
 	var $meta_prefix;
 	var $sync_settings = array(
 		'setting_social_api_url',
+		'setting_social_api_instagram_url',
 		'setting_instagram_client_id',
 	);
 	var $client_id = "";
 	var $auth_options = "";
 	var $settings_url = "";
 	var $token_life = "";
-	var $setting_social_api_url = "";
+	var $setting_social_api_url;
+	var $setting_social_api_instagram_url;
 	var $arr_posts = [];
 	var $facebook_authorize_url = "";
 	var $facebook_redirect_url = "";
@@ -361,7 +363,8 @@ class mf_social_feed
 
 		if($has_facebook || $has_instagram)
 		{
-			$arr_settings['setting_social_api_url'] = __("API URL", 'lang_social_feed');
+			$arr_settings['setting_social_api_url'] = __("API URL", 'lang_social_feed')." (Facebook)";
+			$arr_settings['setting_social_api_instagram_url'] = __("API URL", 'lang_social_feed')." (Instagram)";
 		}
 
 		$arr_settings['setting_social_design'] = __("Design", 'lang_social_feed');
@@ -492,6 +495,15 @@ class mf_social_feed
 	}
 
 	function setting_social_api_url_callback()
+	{
+		$setting_key = get_setting_key(__FUNCTION__);
+		settings_save_site_wide($setting_key);
+		$option = get_site_option($setting_key, get_option($setting_key));
+
+		echo show_textfield(array('type' => 'url', 'name' => $setting_key, 'value' => $option, 'placeholder' => get_site_url()));
+	}
+
+	function setting_social_api_instagram_url_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 		settings_save_site_wide($setting_key);
@@ -661,6 +673,7 @@ class mf_social_feed
 				{
 					switch($_GET['page'])
 					{
+						// FB
 						case 'cff-top':
 						case 'cff-feed-builder':
 							$this->get_api_credentials('facebook');
@@ -673,10 +686,17 @@ class mf_social_feed
 							mf_redirect($this->facebook_redirect_url."&access_token=".check_var('cff_access_token'));
 						break;
 
-						case 'sb-instagram-feed':
+						// IG
+						/*case 'sb-instagram-feed':
 							$this->get_api_credentials('instagram');
 
 							mf_redirect($this->instagram_redirect_url."&access_token=".check_var('cff_access_token'));
+						break;*/
+
+						case 'sbi-feed-builder':
+							$this->get_api_credentials('instagram');
+
+							mf_redirect($this->instagram_redirect_url."&access_token=".check_var('sbi_access_token'));
 						break;
 					}
 				}
@@ -777,9 +797,14 @@ class mf_social_feed
 			$menu_start = "edit.php?post_type=".$this->post_type;
 			$menu_capability = 'edit_posts';
 			$menu_title = __("Posts", 'lang_social_feed');
+
+			// FB
 			add_submenu_page('cff-top', $menu_title, $menu_title, $menu_capability, 'cff-top', 'cff_settings_page');
 			add_submenu_page('cff-feed-builder', $menu_title, $menu_title, $menu_capability, 'cff-feed-builder', 'cff_settings_page');
-			add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', array($this, 'sb_instagram_settings_page'));
+
+			// IG
+			//add_submenu_page('sb-instagram-feed', $menu_title, $menu_title, $menu_capability, 'sb-instagram-feed', array($this, 'sb_instagram_settings_page'));
+			add_submenu_page('sbi-feed-builder', $menu_title, $menu_title, $menu_capability, 'sbi-feed-builder', array($this, 'sb_instagram_settings_page'));
 
 			$menu_title = __("Settings", 'lang_social_feed');
 			add_submenu_page($menu_start, $menu_title, $menu_title, $menu_capability, admin_url("options-general.php?page=settings_mf_base#settings_social_feed"));
@@ -977,7 +1002,7 @@ class mf_social_feed
 			{
 				$this->get_api_credentials('instagram');
 
-				if($this->setting_social_api_url == '')
+				if($this->setting_social_api_instagram_url == '')
 				{
 					$out .= "<strong>".sprintf(__("Go to %sSettings%s and add an API URL", 'lang_social_feed'), "<a href='".admin_url("options-general.php?page=settings_mf_base#settings_social_feed")."'>", "</a>")."</strong>";
 				}
@@ -2319,17 +2344,17 @@ class mf_social_feed
 			case 'facebook':
 				$this->setting_social_api_url = get_site_option('setting_social_api_url', get_option('setting_social_api_url'));
 
-				//$this->facebook_authorize_url = $this->setting_social_api_url."/facebook-login.php?state=".admin_url("admin.php?page=cff-top");
 				$this->facebook_authorize_url = $this->setting_social_api_url."/facebook-login.php?state={%27{url=".admin_url("admin.php?page=cff-top").",user=".get_bloginfo('admin_email').",opt=in,cff_con=2b7c59d51d}%27}";
 				$this->facebook_redirect_url = get_site_url()."/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=fb_login";
 			break;
 
 			case 'instagram':
-				$this->setting_social_api_url = get_site_option('setting_social_api_url', get_option('setting_social_api_url'));
+				$this->setting_social_api_instagram_url = get_site_option('setting_social_api_instagram_url', get_option('setting_social_api_instagram_url'));
 				$this->instagram_client_id = get_site_option('setting_instagram_client_id', get_option('setting_instagram_client_id'));
 
 				$this->instagram_redirect_url = get_site_url()."/wp-content/plugins/mf_social_feed/include/api/passthru.php?type=instagram_login";
-				$this->instagram_authorize_url = "//facebook.com/dialog/oauth?client_id=".$this->instagram_client_id."&redirect_uri=".$this->setting_social_api_url."/instagram-graph-api-redirect.php&scope=manage_pages,instagram_basic,instagram_manage_insights,instagram_manage_comments&state=".admin_url("admin.php?page=sb-instagram-feed");
+				//$this->instagram_authorize_url = "//facebook.com/dialog/oauth?client_id=".$this->instagram_client_id."&redirect_uri=".$this->setting_social_api_instagram_url."/instagram-graph-api-redirect.php&scope=manage_pages,instagram_basic,instagram_manage_insights,instagram_manage_comments&state=".admin_url("admin.php")."?page=sb-instagram-feed";
+				$this->instagram_authorize_url = "https://www.instagram.com/oauth/authorize?client_id=".$this->instagram_client_id."&redirect_uri=".$this->setting_social_api_instagram_url."/instagram-business-redirect.php&response_type=code&scope=instagram_business_basic&state={%27{url={%27{url=".admin_url("admin.php")."?page=sbi-feed-builder,is_setup_page=yes}%27},user=test@test.com,opt=in,sbi_con=98517fda86,type=business_basic,vn=6.9.1,v=free}%27}";
 			break;
 
 			case 'linkedin':
