@@ -1716,13 +1716,14 @@ class mf_social_feed
 
 						$post_error = get_post_meta($post_id, $this->meta_prefix.'error', true);
 
+						$row_actions = "";
+
 						if($post_error != '')
 						{
-							echo "<i class='fa fa-times red fa-2x'></i>
-							<div class='row-actions'>".($post_error != '' ? $post_error : __("I got an error when accessing the feed", 'lang_social_feed'))."</div>";
+							$row_actions .= ($row_actions != '' ? " | " : "")."<i class='fa fa-exclamation-triangle yellow fa-lg'></i> ".($post_error != '' ? $post_error : __("I got an error when accessing the feed", 'lang_social_feed'));
 						}
 
-						else if($amount_publish == 0)
+						if($amount_publish == 0)
 						{
 							$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = %s AND ID = '%d' LIMIT 0, 1", $this->post_type, $post_id));
 
@@ -1738,8 +1739,9 @@ class mf_social_feed
 
 								else
 								{
-									echo apply_filters('get_loading_animation', '')
-									."<div class='row-actions'>".__("I am waiting to get access to the feed", 'lang_social_feed')."</div>";
+									echo apply_filters('get_loading_animation', '');
+
+									$row_actions .= ($row_actions != '' ? " | " : "").__("I am waiting to get access to the feed", 'lang_social_feed');
 								}
 							}
 						}
@@ -1774,10 +1776,13 @@ class mf_social_feed
 
 							if($post_latest > DEFAULT_DATE)
 							{
-								echo "<div class='row-actions'>"
-									.__("Latest", 'lang_social_feed').": ".format_date($post_latest)
-								."</div>";
+								$row_actions .= ($row_actions != '' ? " | " : "").__("Latest", 'lang_social_feed').": ".format_date($post_latest);
 							}
+						}
+
+						if($row_actions != '')
+						{
+							echo "<div class='row-actions'>".$row_actions."</div>";
 						}
 					break;
 				}
@@ -2863,7 +2868,7 @@ class mf_social_feed
 
 	function fetch_rss()
 	{
-		include_once("simplepie_1.3.1.compiled.php");
+		include_once(ABSPATH.WPINC."/class-simplepie.php");
 
 		$feed = new SimplePie();
 		$feed->set_feed_url(validate_url($this->search, false));
@@ -2874,9 +2879,8 @@ class mf_social_feed
 		//$feed->enable_order_by_date(false);
 		$feed->strip_htmltags(array('a', 'b', 'div', 'p', 'span'));
 		$feed->strip_attributes(array('class', 'target', 'style', 'align'));
-		$check = $feed->init();
 
-		if($check)
+		if($feed->init())
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
