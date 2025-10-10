@@ -446,7 +446,23 @@ class mf_social_feed
 		############################
 	}
 
-	function pre_update_option($new_value, $old_value)
+	function pre_update_option($new_value, $option_key, $old_value)
+	{
+		if($new_value != '')
+		{
+			switch($option_key)
+			{
+				case 'setting_linkedin_api_secret':
+					$obj_encryption = new mf_encryption(__CLASS__);
+					$new_value = $obj_encryption->encrypt($new_value, md5(AUTH_KEY));
+				break;
+			}
+		}
+
+		return $new_value;
+	}
+
+	/*function pre_update_option($new_value, $old_value)
 	{
 		$out = "";
 
@@ -457,7 +473,7 @@ class mf_social_feed
 		}
 
 		return $out;
-	}
+	}*/
 
 	function settings_social_feed_callback()
 	{
