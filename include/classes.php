@@ -1094,8 +1094,8 @@ class mf_social_feed
 				$out .= "<li>post_type: ".get_post_type($post_id)."</li>"
 				."<li>post_status: ".get_post_status($post_id)."</li>"
 				."<li>post_title: ".get_the_title($post_id)."</li>"
-				."<li>post_name: ".mf_get_post_content($post_id, 'post_name')."</li>"
-				."<li>post_parent: ".mf_get_post_content($post_id, 'post_parent')."</li>";
+				."<li>post_name: ".get_post_field('post_name', $post_id)."</li>"
+				."<li>post_parent: ".get_post_field('post_parent', $post_id)."</li>";
 			}
 
 		$out .= "</ul>";
@@ -1848,7 +1848,7 @@ class mf_social_feed
 					break;
 
 					case 'text':
-						$post_content = mf_get_post_content($post_id);
+						$post_content = get_post_field('post_content', $post_id);
 
 						echo shorten_text(array('string' => $post_content, 'limit' => 50));
 					break;
