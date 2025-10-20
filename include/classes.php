@@ -712,7 +712,6 @@ class mf_social_feed
 				{
 					case $this->post_type:
 						mf_enqueue_style('style_social_feed', $plugin_include_url."style.css"); // Just for icon colors
-						mf_enqueue_style('style_social_feed_wp', $plugin_include_url."style_wp.css");
 					break;
 
 					case $this->post_type_post:
