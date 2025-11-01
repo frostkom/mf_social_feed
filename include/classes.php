@@ -5,8 +5,8 @@ class mf_social_feed
 	var $id;
 	var $type = "";
 	var $search = "";
-	var $post_type = 'mf_social_feed';
-	var $post_type_post = 'mf_social_feed_post';
+	var $post_type = __CLASS__;
+	var $post_type_post = __CLASS__.'_post';
 	var $meta_prefix;
 	var $sync_settings = array(
 		'setting_social_api_url',
@@ -1553,6 +1553,8 @@ class mf_social_feed
 	{
 		global $post_type;
 
+		do_action('load_font_awesome');
+
 		switch($post_type)
 		{
 			case $this->post_type:
@@ -2137,6 +2139,8 @@ class mf_social_feed
 
 		if($this->token_life)
 		{
+			do_action('load_font_awesome');
+
 			$datetime = new DateTime('@'.$this->token_life, new DateTimeZone('UTC'));
 			$date = new DateTime();
 			$times = array(
