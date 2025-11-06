@@ -533,7 +533,7 @@ class Twitter_OAuthRequest
 class Twitter_OAuthServer
 {
 	protected $timestamp_threshold = 300; // in seconds, five minutes
-	protected $version = '1.0';             // hi blaine
+	protected $version = '1.0';			 // hi blaine
 	protected $signature_methods = [];
 
 	protected $data_store;
@@ -821,7 +821,7 @@ class Twitter_OAuthUtil
 	// parameters, has to do some unescaping
 	// Can filter out any non-oauth parameters if needed (default behaviour)
 	// May 28th, 2010 - method updated to tjerk.meesters for a speed improvement.
-	//                  see http://code.google.com/p/oauth/issues/detail?id=163
+	//				  see http://code.google.com/p/oauth/issues/detail?id=163
 	public static function split_header($header, $only_allow_oauth_parameters = true) {
 		$params = [];
 		if (preg_match_all('/('.($only_allow_oauth_parameters ? 'oauth_' : '').'[a-z_-]*)=(:?"([^"]*)"|([^,]*))/', $header, $matches)) {

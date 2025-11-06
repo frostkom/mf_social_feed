@@ -21,14 +21,14 @@
 			},
 			'social_feeds':
 			{
-                'type': 'array',
-                'default': ''
-            },
+				'type': 'array',
+				'default': ''
+			},
 			'social_amount':
 			{
-                'type': 'string',
-                'default': 6
-            }
+				'type': 'string',
+				'default': 6
+			}
 		},
 		'supports':
 		{

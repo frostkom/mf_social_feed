@@ -6,9 +6,9 @@
  * Copyright (c) 2008 David Grudl (https://davidgrudl.com)
  * This software is licensed under the New BSD License.
  *
- * Homepage:    https://phpfashion.com/twitter-for-php
+ * Homepage:	https://phpfashion.com/twitter-for-php
  * Twitter API: https://dev.twitter.com/rest/public
- * Version:     3.6
+ * Version:	 3.6
  */
 
 /**
@@ -141,8 +141,8 @@ class Twitter
 
 	/**
 	 * Returns the most recent statuses.
-	 * @param  int    timeline (ME | ME_AND_FRIENDS | REPLIES) and optional (RETWEETS)
-	 * @param  int    number of statuses to retrieve
+	 * @param  int	timeline (ME | ME_AND_FRIENDS | REPLIES) and optional (RETWEETS)
+	 * @param  int	number of statuses to retrieve
 	 * @param  array  additional options, see https://dev.twitter.com/rest/reference/get/statuses/user_timeline
 	 * @return stdClass[]
 	 * @throws TwitterException
