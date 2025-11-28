@@ -203,8 +203,8 @@ class mf_social_feed
 						}
 
 						$out .= "<li>
-							<div class='image'>
-								<a href='".$post_link."'>";
+							<a href='".$post_link."'>
+								<div class='image'>";
 
 									if($post_image != '')
 									{
@@ -216,8 +216,8 @@ class mf_social_feed
 										$out .= apply_filters('get_image_fallback', "");
 									}
 
-								$out .= "</a>
-							</div>
+								$out .= "</div>
+							</a>
 							<div class='content'>
 								<div class='meta'>
 									<a href='".$post_link."'>
