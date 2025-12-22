@@ -2114,11 +2114,6 @@ class mf_social_feed
 
 				update_option('option_linkedin_emailed', 1, false);
 			}
-
-			else
-			{
-				//add_action('admin_notices', '');
-			}
 		}
 
 		return $this->token_life;
