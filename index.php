@@ -2,8 +2,8 @@
 /*
 Plugin Name: MF Social Feed
 Plugin URI: https://github.com/frostkom/mf_social_feed
-Description:
-Version: 1.0.0.31
+Description: Adds support for fetching and displaying posts from social networks and RSS feeds
+Version: 1.0.0.32
 Licence: GPLv2 or later
 Author: Martin Fors
 Author URI: https://martinfors.se
@@ -54,7 +54,7 @@ if(!function_exists('is_plugin_active') || function_exists('is_plugin_active') &
 		add_action('wp_trash_post', array($obj_social_feed, 'wp_trash_post'));
 
 		add_filter('filter_last_updated_post_types', array($obj_social_feed, 'filter_last_updated_post_types'), 10, 2);
-		
+
 		if(wp_doing_ajax())
 		{
 			add_action('wp_ajax_api_social_feed_action_hide', array($obj_social_feed, 'api_social_feed_action_hide'));
