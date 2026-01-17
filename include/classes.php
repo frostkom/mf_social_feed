@@ -1685,7 +1685,7 @@ class mf_social_feed
 
 							$fetch_link = "";
 
-							$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = %d AND post_type = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $post_id, $this->post_type));
+							$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s AND post_modified < DATE_SUB(NOW(), INTERVAL 1 MINUTE) LIMIT 0, 1", $post_id, $this->post_type));
 
 							if($wpdb->num_rows > 0)
 							{
@@ -1703,7 +1703,7 @@ class mf_social_feed
 								}
 							}
 
-							$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = %d AND post_type = %s", $post_id, $this->post_type));
+							$post_modified = $wpdb->get_var($wpdb->prepare("SELECT post_modified FROM ".$wpdb->posts." WHERE ID = '%d' AND post_type = %s", $post_id, $this->post_type));
 
 							echo "<a href='".$feed_url."'>".$post_meta_search_for."</a>
 							<div class='row-actions'>"
@@ -1729,7 +1729,7 @@ class mf_social_feed
 
 						if($amount_publish == 0)
 						{
-							$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = %s AND ID = %d LIMIT 0, 1", $this->post_type, $post_id));
+							$result = $wpdb->get_results($wpdb->prepare("SELECT post_date, post_modified FROM ".$wpdb->posts." WHERE post_type = %s AND ID = '%d' LIMIT 0, 1", $this->post_type, $post_id));
 
 							foreach($result as $r)
 							{
@@ -1776,7 +1776,7 @@ class mf_social_feed
 
 							echo "</a>";
 
-							$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = %d ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $post_id));
+							$post_latest = $wpdb->get_var($wpdb->prepare("SELECT post_date FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = '%d' ORDER BY post_date DESC LIMIT 0, 1", $this->post_type_post, $post_id));
 
 							if($post_latest > DEFAULT_DATE)
 							{
@@ -1967,7 +1967,7 @@ class mf_social_feed
 
 		if(get_post_type($post_id) == $this->post_type)
 		{
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = %d", $this->post_type_post, $post_id));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_parent = '%d'", $this->post_type_post, $post_id));
 
 			foreach($result as $r)
 			{
@@ -2003,7 +2003,7 @@ class mf_social_feed
 
 		$action_id = check_var('action_id', 'int');
 
-		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = %s WHERE ID = %d AND post_type = %s", 'draft', $action_id, $this->post_type_post));
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = %s WHERE ID = '%d' AND post_type = %s", 'draft', $action_id, $this->post_type_post));
 
 		if($wpdb->rows_affected > 0)
 		{
@@ -2034,7 +2034,7 @@ class mf_social_feed
 
 		$action_id = check_var('action_id', 'int');
 
-		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = %s WHERE ID = %d AND post_type = %s", 'pending', $action_id, $this->post_type_post));
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_status = %s WHERE ID = '%d' AND post_type = %s", 'pending', $action_id, $this->post_type_post));
 
 		if($wpdb->rows_affected > 0)
 		{
@@ -2392,7 +2392,7 @@ class mf_social_feed
 			$this->id = $data['id'];
 		}
 
-		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = '".$this->meta_prefix."feed_id' AND meta_value = %d", $this->post_type_post, $data['post_status'], $this->id));
+		return $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = '".$this->meta_prefix."feed_id' AND meta_value = '%d'", $this->post_type_post, $data['post_status'], $this->id));
 	}
 
 	function save_error($data)
@@ -3158,7 +3158,7 @@ class mf_social_feed
 	{
 		global $wpdb;
 
-		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_modified = NOW() WHERE ID = %d AND post_type = %s", $this->id, $this->post_type));
+		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_modified = NOW() WHERE ID = '%d' AND post_type = %s", $this->id, $this->post_type));
 	}
 
 	function check_is_settings($post)
@@ -3277,7 +3277,7 @@ class mf_social_feed
 				}
 			}
 
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND (post_parent = %d OR meta_key = %s AND meta_value = %s) GROUP BY ID", $this->post_type_post, 'publish', $post_title, $post_name, $this->id, $this->meta_prefix.'feed_id', $this->id));
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND (post_parent = '%d' OR meta_key = %s AND meta_value = %s) GROUP BY ID", $this->post_type_post, 'publish', $post_title, $post_name, $this->id, $this->meta_prefix.'feed_id', $this->id));
 
 			if($wpdb->num_rows > 0)
 			{
@@ -3308,7 +3308,7 @@ class mf_social_feed
 			{
 				if($this->check_is_settings($post))
 				{
-					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = %d AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s GROUP BY ID LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
+					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s GROUP BY ID LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
 					$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
 
 					$post_data['post_type'] = $this->post_type_post;
