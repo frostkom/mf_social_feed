@@ -1203,13 +1203,13 @@ class mf_social_feed
 					{
 						case 200:
 						case 201:
-							$json = json_decode($content, true);
+							$arr_json = json_decode($content, true);
 
 							//{"id": "[number]"}
 
-							if(isset($json['id']) && $json['id'] > 0)
+							if(isset($arr_json['id']) && $arr_json['id'] > 0)
 							{
-								$page_id = $json['id'];
+								$page_id = $arr_json['id'];
 
 								// Get available tokens
 								########################
@@ -1224,7 +1224,7 @@ class mf_social_feed
 								{
 									case 200:
 									case 201:
-										$json = json_decode($content, true);
+										$arr_json = json_decode($content, true);
 
 										$page_access_token = "";
 
@@ -1259,7 +1259,7 @@ class mf_social_feed
 										   }
 										}*/
 
-										foreach($json['data'] as $arr_page)
+										foreach($arr_json['data'] as $arr_page)
 										{
 											if($arr_page['id'] == $page_id)
 											{
@@ -2181,18 +2181,18 @@ class mf_social_feed
 
 		$url = "https://linkedin.com/uas/oauth2/accessToken?".http_build_query($arr_post_data);
 		$result = wp_remote_retrieve_body(wp_remote_get($url));
-		$json = json_decode($result);
+		$arr_json = json_decode($result);
 
-		if(!isset($json->access_token) || 5 >= strlen($json->access_token))
+		if(!isset($arr_json->access_token) || 5 >= strlen($arr_json->access_token))
 		{
-			do_log("I did not recieve an access token (".var_export($json, true).")");
+			do_log("I did not recieve an access token (".var_export($arr_json, true).")");
 
 			return false;
 		}
 
 		else
 		{
-			return $json;
+			return $arr_json;
 		}
 
 		/* Does not work yet */
@@ -2206,18 +2206,18 @@ class mf_social_feed
 		{
 			case 200:
 			case 201:
-				$json = json_decode($result['body'], true);
+				$arr_json = json_decode($result['body'], true);
 
-				if(!isset($json->access_token) || 5 >= strlen($json->access_token))
+				if(!isset($arr_json->access_token) || 5 >= strlen($arr_json->access_token))
 				{
-					do_log("I did not recieve an access token (".var_export($json, true).")");
+					do_log("I did not recieve an access token (".var_export($arr_json, true).")");
 
 					return false;
 				}
 
 				else
 				{
-					return $json;
+					return $arr_json;
 				}
 			break;
 
@@ -2240,18 +2240,18 @@ class mf_social_feed
 		{
 			case 200:
 			case 201:
-				$json = json_decode($content, true);
+				$arr_json = json_decode($content, true);
 
-				if(!isset($json->access_token) || 5 >= strlen($json->access_token))
+				if(!isset($arr_json->access_token) || 5 >= strlen($arr_json->access_token))
 				{
-					do_log("I did not recieve an access token (".var_export($json, true).")");
+					do_log("I did not recieve an access token (".var_export($arr_json, true).")");
 
 					return false;
 				}
 
 				else
 				{
-					return $json;
+					return $arr_json;
 				}
 			break;
 
@@ -2517,13 +2517,13 @@ class mf_social_feed
 		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$facebook_access_token; //."&limit=10"
 
 		list($content, $headers) = get_url_content(array('url' => $fb_feed_url, 'catch_head' => true));
-		$json = json_decode($content, true);
+		$arr_json = json_decode($content, true);
 
-		if(isset($json['data']))
+		if(isset($arr_json['data']))
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				$data_temp = $json['data'];
+				$data_temp = $arr_json['data'];
 				$count_temp = count($data_temp);
 
 				for($i = 0; $i < $count_temp; $i++)
@@ -2539,7 +2539,7 @@ class mf_social_feed
 				do_log(__FUNCTION__.": ".$fb_feed_url." -> ".htmlspecialchars(var_export($data_temp, true)));
 			}
 
-			foreach($json['data'] as $post)
+			foreach($arr_json['data'] as $post)
 			{
 				/*array (
 					'id' => '[id]_[id]',
@@ -2598,10 +2598,10 @@ class mf_social_feed
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log(__FUNCTION__.": ".$fb_feed_url." -> ".$json['error']['message']);
+				do_log(__FUNCTION__.": ".$fb_feed_url." -> ".$arr_json['error']['message']);
 			}
 
-			$this->save_error(array('message' => (isset($json['error']['message']) ? $json['error']['message'] : "Unknown FB error"))); //"Facebook: ".
+			$this->save_error(array('message' => (isset($arr_json['error']['message']) ? $arr_json['error']['message'] : "Unknown FB error"))); //"Facebook: ".
 		}
 	}
 
@@ -2621,18 +2621,18 @@ class mf_social_feed
 		}*/
 
 		$result = wp_remote_retrieve_body(wp_remote_get($url));
-		$json = json_decode($result);
+		$arr_json = json_decode($result);
 
-		if(isset($json->data))
+		if(isset($arr_json->data))
 		{
 			$arr_ids = [];
 
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log(__FUNCTION__.": ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
+				do_log(__FUNCTION__.": ".$url." -> ".htmlspecialchars(var_export($arr_json->data, true)));
 			}
 
-			foreach($json->data as $data_account)
+			foreach($arr_json->data as $data_account)
 			{
 				if(isset($data_account->instagram_business_account->id))
 				{
@@ -2665,19 +2665,19 @@ class mf_social_feed
 		}*/
 
 		$result = wp_remote_retrieve_body(wp_remote_get($url));
-		$json = json_decode($result);
+		$arr_json = json_decode($result);
 
-		if(isset($json->name))
+		if(isset($arr_json->name))
 		{
 			if(get_option('setting_social_debug') == 'yes')
 			{
-				do_log(__FUNCTION__.": ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
+				do_log(__FUNCTION__.": ".$url." -> ".htmlspecialchars(var_export($arr_json->data, true)));
 			}
 
 			return array(
-				'name' => $json->name,
-				'username' => $json->username,
-				'profile_picture' => $json->profile_picture_url,
+				'name' => $arr_json->name,
+				'username' => $arr_json->username,
+				'profile_picture' => $arr_json->profile_picture_url,
 			);
 		}
 
@@ -2701,16 +2701,16 @@ class mf_social_feed
 			// "https://graph.facebook.com/".$instagram_id."/insights?metric=impressions,reach,profile_views&period=day&access_token=".$this->instagram_access_token;
 
 			$result = wp_remote_retrieve_body(wp_remote_get($url));
-			$json = json_decode($result);
+			$arr_json = json_decode($result);
 
-			if(isset($json->data))
+			if(isset($arr_json->data))
 			{
 				if(get_option('setting_social_debug') == 'yes')
 				{
-					do_log(__FUNCTION__.": ".$url." -> ".htmlspecialchars(var_export($json->data, true)));
+					do_log(__FUNCTION__.": ".$url." -> ".htmlspecialchars(var_export($arr_json->data, true)));
 				}
 
-				foreach($json->data as $post)
+				foreach($arr_json->data as $post)
 				{
 					/*{
 						"data": [
@@ -2785,24 +2785,24 @@ class mf_social_feed
 
 		$url = "https://api.linkedin.com/v1/companies/".$path."?".http_build_query(array_merge($default_params, $params));
 		$result = wp_remote_retrieve_body(wp_remote_get($url));
-		$json = json_decode($result, true);
+		$arr_json = json_decode($result, true);
 
-		if(false === $json || !isset($json[$key]) || empty($json[$key]))
+		if(false === $arr_json || !isset($arr_json[$key]) || empty($arr_json[$key]))
 		{
-			if(isset($json['message']))
+			if(isset($arr_json['message']))
 			{
-				$this->save_error(array('message' => $json['message'])); //"LinkedIn: ".
+				$this->save_error(array('message' => $arr_json['message'])); //"LinkedIn: ".
 			}
 
 			else
 			{
-				$this->save_error(array('message' => __("No key found", 'lang_social_feed')." (".var_export($json, true).")"));
+				$this->save_error(array('message' => __("No key found", 'lang_social_feed')." (".var_export($arr_json, true).")"));
 			}
 
 			return false;
 		}
 
-		return $json[$key];
+		return $arr_json[$key];
 	}
 
 	function fetch_linkedin()
