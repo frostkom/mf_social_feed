@@ -95,7 +95,7 @@ class mf_social_feed
 
 									if($sent)
 									{
-										update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_message_sent', date("Y-m-d H:i:s"));
+										update_post_meta($post_id, $this->meta_prefix.'facebook_access_token_message_sent', current_time('mysql'));
 									}
 
 									else
@@ -146,113 +146,120 @@ class mf_social_feed
 
 		if(count($attributes['social_feeds']) > 0)
 		{
-			if(!isset($obj_base))
+			/*if(!isset($obj_base))
 			{
 				$obj_base = new mf_base();
+			}*/
+
+			//$setting_social_debug = get_option('setting_social_debug');
+
+			$arr_public_feeds = [];
+
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND ID IN('".implode("','", $attributes['social_feeds'])."')", $this->post_type, 'publish'));
+
+			foreach($result as $r)
+			{
+				$arr_public_feeds[] = $r->ID;
 			}
 
-			$setting_social_debug = get_option('setting_social_debug');
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, post_parent, guid FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."') AND (post_content != '' OR meta_key = %s AND meta_value != '') GROUP BY ID ORDER BY post_date DESC LIMIT 0, ".$attributes['social_amount'], $this->post_type_post, 'publish', $this->meta_prefix.'image'));
 
-			$plugin_base_include_url = plugins_url()."/mf_base/include/";
-			$plugin_include_url = plugin_dir_url(__FILE__);
+			$arr_out = [];
 
-			mf_enqueue_style('style_base_grid_columns', $plugin_base_include_url."style_grid_columns.php");
-			mf_enqueue_style('style_social_feed', $plugin_include_url."style.css");
-			mf_enqueue_script('script_social_feed', $plugin_include_url."script.js", array(
-				'image_fallback' => apply_filters('get_image_fallback', ""),
-				'read_more' => __("Read More", 'lang_social_feed'),
-			));
+			foreach($result as $r)
+			{
+				$post_id = $r->ID;
+				$post_title = $r->post_title;
+				$post_content = $r->post_content;
+				$post_date = $r->post_date;
 
-			$setting_social_design = get_option_or_default('setting_social_design', 'square');
+				$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
+				$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
+				$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
+				$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
+				$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
 
-			$out .= "<div".parse_block_attributes(array('class' => "widget social_feed ".$setting_social_design, 'attributes' => $attributes)).">
-				<ul class='grid_columns'>";
+				if($post_service == '')
+				{
+					list($post_service, $service_id) = explode(" ", $r->post_title);
+				}
 
-					$arr_public_feeds = [];
+				if($post_link == '')
+				{
+					$post_link = $r->guid;
+				}
 
-					$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND ID IN('".implode("','", $attributes['social_feeds'])."')", $this->post_type, 'publish'));
+				$out_temp = "<li>
+					<a href='".$post_link."'>
+						<div class='image'>";
 
-					foreach($result as $r)
-					{
-						$arr_public_feeds[] = $r->ID;
-					}
+							if($post_image != '')
+							{
+								$out_temp .= "<img src='".$post_image."' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), $post_title)."'>";
+							}
 
-					$result = $wpdb->get_results($wpdb->prepare("SELECT ID, post_title, post_content, post_parent, post_date, post_parent, guid FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND post_parent IN('".implode("','", $arr_public_feeds)."') AND (post_content != '' OR meta_key = %s AND meta_value != '') GROUP BY ID ORDER BY post_date DESC LIMIT 0, ".$attributes['social_amount'], $this->post_type_post, 'publish', $this->meta_prefix.'image'));
+							else
+							{
+								$out_temp .= apply_filters('get_image_fallback', "");
+							}
 
-					foreach($result as $r)
-					{
-						$post_id = $r->ID;
-						$post_title = $r->post_title;
-						$post_content = $r->post_content;
-						$post_date = $r->post_date;
-
-						$post_feed = get_post_meta($post_id, $this->meta_prefix.'feed_id', true);
-						$post_service = get_post_meta($post_id, $this->meta_prefix.'service', true);
-						$post_username = get_post_meta($post_id, $this->meta_prefix.'name', true);
-						$post_image = get_post_meta($post_id, $this->meta_prefix.'image', true);
-						$post_link = get_post_meta($post_id, $this->meta_prefix.'link', true);
-
-						if($post_service == '')
-						{
-							list($post_service, $service_id) = explode(" ", $r->post_title);
-						}
-
-						if($post_link == '')
-						{
-							$post_link = $r->guid;
-						}
-
-						$out .= "<li>
+						$out_temp .= "</div>
+					</a>
+					<div class='content'>
+						<div class='meta'>
 							<a href='".$post_link."'>
-								<div class='image'>";
+								<i class='".$this->get_post_icon($post_service)." fa-lg'></i>";
 
-									if($post_image != '')
-									{
-										$out .= "<img src='".$post_image."' alt='".sprintf(__("Image for the post %s", 'lang_social_feed'), $post_title)."'>";
-									}
-
-									else
-									{
-										$out .= apply_filters('get_image_fallback', "");
-									}
-
-								$out .= "</div>
-							</a>
-							<div class='content'>
-								<div class='meta'>
-									<a href='".$post_link."'>
-										<i class='".$this->get_post_icon($post_service)." fa-lg'></i>";
-
-										if($post_service == 'rss')
-										{
-											$out .= get_the_title($post_feed);
-										}
-
-										else if($post_username != '')
-										{
-											$out .= $post_username;
-										}
-
-									$out .= "</a>
-									<span class='grey'>".format_date($post_date)."</span>
-								</div>";
-
-								if($post_service == 'rss' && $post_title != '')
+								if($post_service == 'rss')
 								{
-									$out .= "<p class='text'><a href='".$post_link."'>".$post_title."</a></p>";
+									$out_temp .= get_the_title($post_feed);
 								}
 
-								if($post_content != '')
+								else if($post_username != '')
 								{
-									$out .= "<div class='text'><a href='".$post_link."'>".apply_filters('the_content', $post_content)."</a></div>";
+									$out_temp .= $post_username;
 								}
 
-							$out .= "</a>
-						</li>";
-					}
+							$out_temp .= "</a>
+							<span class='grey'>".format_date($post_date)."</span>
+						</div>";
 
-				$out .= "</ul>
-			</div>";
+						if($post_service == 'rss' && $post_title != '')
+						{
+							$out_temp .= "<p class='text'><a href='".$post_link."'>".$post_title."</a></p>";
+						}
+
+						if($post_content != '')
+						{
+							$out_temp .= "<div class='text'><a href='".$post_link."'>".apply_filters('the_content', $post_content)."</a></div>";
+						}
+
+					$out_temp .= "</a>
+				</li>";
+
+				$arr_out[] = $out_temp;
+			}
+
+			if(count($arr_out) > 0)
+			{
+				$setting_social_design = get_option_or_default('setting_social_design', 'square');
+
+				$plugin_base_include_url = plugins_url()."/mf_base/include/";
+				$plugin_include_url = plugin_dir_url(__FILE__);
+
+				mf_enqueue_style('style_base_grid_columns', $plugin_base_include_url."style_grid_columns.php");
+				mf_enqueue_style('style_social_feed', $plugin_include_url."style.css");
+				mf_enqueue_script('script_social_feed', $plugin_include_url."script.js", array(
+					'image_fallback' => apply_filters('get_image_fallback', ""),
+					'read_more' => __("Read More", 'lang_social_feed'),
+				));
+
+				$out .= "<div".parse_block_attributes(array('class' => "widget social_feed ".$setting_social_design, 'attributes' => $attributes)).">
+					<ul class='grid_columns".(count($arr_out) < 3 ? " grid_grow" : "")."'>"
+						.implode("", $arr_out)
+					."</ul>
+				</div>";
+			}
 		}
 
 		return $out;
@@ -2901,7 +2908,7 @@ class mf_social_feed
 					$post_image = $enclosure->get_link();
 				}*/
 
-				$post_date = $item->get_date("Y-m-d H:i:s");
+				$post_date = $item->get_current_time('mysql');
 
 				$this->arr_posts[] = array(
 					'type' => $this->type,
