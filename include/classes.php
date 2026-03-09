@@ -2908,7 +2908,7 @@ class mf_social_feed
 					$post_image = $enclosure->get_link();
 				}*/
 
-				$post_date = $item->get_current_time('mysql');
+				$post_date = $item->get_date("Y-m-d H:i:s");
 
 				$this->arr_posts[] = array(
 					'type' => $this->type,
