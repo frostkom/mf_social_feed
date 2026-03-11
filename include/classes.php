@@ -205,24 +205,24 @@ class mf_social_feed
 
 						$out_temp .= "</div>
 					</a>
-					<div class='content'>
-						<div class='meta'>
-							<a href='".$post_link."'>
-								<i class='".$this->get_post_icon($post_service)." fa-lg'></i>";
+					<div class='grid_meta'>
+						<a href='".$post_link."'>
+							<i class='".$this->get_post_icon($post_service)." fa-lg'></i>";
 
-								if($post_service == 'rss')
-								{
-									$out_temp .= get_the_title($post_feed);
-								}
+							if($post_service == 'rss')
+							{
+								$out_temp .= get_the_title($post_feed);
+							}
 
-								else if($post_username != '')
-								{
-									$out_temp .= $post_username;
-								}
+							else if($post_username != '')
+							{
+								$out_temp .= $post_username;
+							}
 
-							$out_temp .= "</a>
-							<span class='grey'>".format_date($post_date)."</span>
-						</div>";
+						$out_temp .= "</a>
+						<span class='grey'>".format_date($post_date)."</span>
+					</div>
+					<div class='content'>";
 
 						if($post_service == 'rss' && $post_title != '')
 						{
