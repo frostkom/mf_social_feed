@@ -191,7 +191,7 @@ class mf_social_feed
 
 				$out_temp = "<li>
 					<a href='".$post_link."'>
-						<div class='image'>";
+						<div class='grid_image'>";
 
 							if($post_image != '')
 							{
