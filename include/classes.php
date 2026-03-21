@@ -259,7 +259,7 @@ class mf_social_feed
 				));
 
 				$out .= "<div".parse_block_attributes(array('class' => "widget social_feed ".$setting_social_design, 'attributes' => $attributes)).">
-					<ul class='grid_columns".(count($arr_out) < 3 ? " grid_grow" : "")."'>"
+					<ul class='grid_columns'>" //".(count($arr_out) < 3 ? " grid_grow" : "")."
 						.implode("", $arr_out)
 					."</ul>
 				</div>";
