@@ -248,10 +248,10 @@ class mf_social_feed
 			{
 				$setting_social_design = get_option_or_default('setting_social_design', 'square');
 
-				$plugin_base_include_url = plugins_url()."/mf_base/include/";
+				do_action('load_grid_columns');
+
 				$plugin_include_url = plugin_dir_url(__FILE__);
 
-				mf_enqueue_style('style_base_grid_columns', $plugin_base_include_url."style_grid_columns.php");
 				mf_enqueue_style('style_social_feed', $plugin_include_url."style.css");
 				mf_enqueue_script('script_social_feed', $plugin_include_url."script.js", array(
 					'image_fallback' => apply_filters('get_image_fallback', ""),
