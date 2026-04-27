@@ -251,7 +251,6 @@ class mf_social_feed
 				do_action('load_grid_columns');
 
 				$plugin_include_url = plugin_dir_url(__FILE__);
-
 				mf_enqueue_style('style_social_feed', $plugin_include_url."style.css");
 				mf_enqueue_script('script_social_feed', $plugin_include_url."script.js", array(
 					'image_fallback' => apply_filters('get_image_fallback', ""),
@@ -751,10 +750,7 @@ class mf_social_feed
 
 		if(IS_EDITOR)
 		{
-			$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = %s AND meta_value != '' GROUP BY ID", $this->post_type, 'draft', $this->meta_prefix.'error'));
-			$rows = $wpdb->num_rows;
-
-			if($rows > 0 && is_array($menu))
+			if(is_array($menu))
 			{
 				foreach($menu as $key => $menu_item)
 				{
@@ -762,8 +758,14 @@ class mf_social_feed
 					{
 						if(!preg_match("/update-plugins/i", $menu[$key][0]))
 						{
-							$menu[$key][0] .= " <span class='update-plugins'><span>".$rows."</span></span>";
-							break;
+							$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND meta_key = %s AND meta_value != '' GROUP BY ID", $this->post_type, 'draft', $this->meta_prefix.'error'));
+							$rows = $wpdb->num_rows;
+
+							if($rows > 0)
+							{
+								$menu[$key][0] .= " <span class='update-plugins'><span>".$rows."</span></span>";
+								break;
+							}
 						}
 					}
 				}
