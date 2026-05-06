@@ -1749,7 +1749,7 @@ class mf_social_feed
 								$post_date = $r->post_date;
 								$post_modified = $r->post_modified;
 
-								if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime("-30 minute")))
+								if($post_modified > $post_date || $post_modified < date("Y-m-d H:i:s", strtotime(current_time('mysql')." -30 minute")))
 								{
 									echo "0";
 								}
