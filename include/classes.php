@@ -49,7 +49,7 @@ class mf_social_feed
 
 			// Fetch new posts
 			#####################
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s", $this->post_type, 'publish')); // AND post_modified < DATE_SUB(NOW(), INTERVAL 30 MINUTE) ORDER BY RAND()
+			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s", $this->post_type, 'publish'));
 
 			foreach($result as $r)
 			{
@@ -146,13 +146,6 @@ class mf_social_feed
 
 		if(count($attributes['social_feeds']) > 0)
 		{
-			/*if(!isset($obj_base))
-			{
-				$obj_base = new mf_base();
-			}*/
-
-			//$setting_social_debug = get_option('setting_social_debug');
-
 			$arr_public_feeds = [];
 
 			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." WHERE post_type = %s AND post_status = %s AND ID IN('".implode("','", $attributes['social_feeds'])."')", $this->post_type, 'publish'));
@@ -258,7 +251,7 @@ class mf_social_feed
 				));
 
 				$out .= "<div".parse_block_attributes(array('class' => "widget social_feed ".$setting_social_design, 'attributes' => $attributes)).">
-					<ul class='grid_columns'>" //".(count($arr_out) < 3 ? " grid_grow" : "")."
+					<ul class='grid_columns'>"
 						.implode("", $arr_out)
 					."</ul>
 				</div>";
@@ -328,10 +321,6 @@ class mf_social_feed
 			'show_in_nav_menus' => false,
 			'hierarchical' => true,
 			'has_archive' => false,
-			//Works fine if you're a Superadmin but admins can only view posts after this change
-			/*'capabilities' => array(
-				'create_posts' => (is_multisite() ? 'do_not_allow' : false),
-			),*/
 		));
 
 		register_block_type('mf/socialfeed', array(
@@ -381,20 +370,6 @@ class mf_social_feed
 		$arr_settings['setting_social_debug'] = __("Debug", 'lang_social_feed');
 
 		show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
-		############################
-
-		//Facebook
-		############################
-		/*if($has_facebook)
-		{
-			$options_area = $options_area_orig."_facebook";
-
-			add_settings_section($options_area, "", array($this, $options_area."_callback"), BASE_OPTIONS_PAGE);
-
-			$arr_settings = [];
-
-			show_settings_fields(array('area' => $options_area, 'object' => $this, 'settings' => $arr_settings));
-		}*/
 		############################
 
 		//Instagram
@@ -479,12 +454,12 @@ class mf_social_feed
 		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed'));
 	}
 
-	function settings_social_feed_facebook_callback()
+	/*function settings_social_feed_facebook_callback()
 	{
 		$setting_key = get_setting_key(__FUNCTION__);
 
 		echo settings_header($setting_key, __("Social Feeds", 'lang_social_feed')." - Facebook");
-	}
+	}*/
 
 	function settings_social_feed_instagram_callback()
 	{
@@ -523,26 +498,6 @@ class mf_social_feed
 		$option = get_site_option($setting_key, get_option($setting_key));
 
 		echo show_textfield(array('type' => 'url', 'name' => $setting_key, 'value' => $option, 'placeholder' => get_site_url()));
-	}
-
-	function get_setting_min()
-	{
-		$setting_base_cron = get_option('setting_base_cron');
-
-		switch($setting_base_cron)
-		{
-			case 'every_two_minutes':
-				return 2;
-			break;
-
-			case 'every_ten_minutes':
-				return 10;
-			break;
-
-			default:
-				return 15;
-			break;
-		}
 	}
 
 	function setting_social_design_callback()
@@ -1579,7 +1534,6 @@ class mf_social_feed
 			break;
 
 			case $this->post_type_post:
-				//unset($columns['title']);
 				unset($columns['date']);
 
 				$columns['type'] = __("Type", 'lang_social_feed');
@@ -2527,7 +2481,7 @@ class mf_social_feed
 		$this->search = $this->filter_search_for($this->search);
 
 		$facebook_access_token = $this->facebook_access_token;
-		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$facebook_access_token; //."&limit=10"
+		$fb_feed_url = "https://graph.facebook.com/".$this->search."/feed?fields=id,from,message,story,full_picture,created_time&access_token=".$facebook_access_token;
 
 		list($content, $headers) = get_url_content(array('url' => $fb_feed_url, 'catch_head' => true));
 		$arr_json = json_decode($content, true);
@@ -2886,11 +2840,6 @@ class mf_social_feed
 
 		$feed = new SimplePie();
 		$feed->set_feed_url(validate_url($this->search, false));
-		//$feed->set_cache_location($globals['server_temp_cache']);
-		//$feed->enable_cache(false);
-		//$feed->handle_content_type(); // text/html utf-8 character encoding
-		//$feed->set_output_encoding('ISO-8859-1');
-		//$feed->enable_order_by_date(false);
 		$feed->strip_htmltags(array('a', 'b', 'div', 'p', 'span'));
 		$feed->strip_attributes(array('class', 'target', 'style', 'align'));
 
