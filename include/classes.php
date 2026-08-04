@@ -241,6 +241,7 @@ class mf_social_feed
 			{
 				$setting_social_design = get_option_or_default('setting_social_design', 'square');
 
+				do_action('load_font_awesome');
 				do_action('load_grid_columns');
 
 				$plugin_include_url = plugin_dir_url(__FILE__);

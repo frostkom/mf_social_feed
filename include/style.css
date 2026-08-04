@@ -53,11 +53,16 @@
 			opacity: 0;
 		}
 
-			.widget.social_feed .shorten-more-link
+			.widget.social_feed .shorten-ellipsis > div
 			{
-				/*font-size: .9em;*/
-				height: auto;
-				margin: .5em 0 0 !important;
-				position: relative;
-				z-index: 1000;
+				margin-top: 1em;
+				margin-bottom: .5em;
 			}
+
+				.widget.social_feed .shorten-more-link
+				{
+					height: auto;
+					margin: .5em 0 0 !important;
+					position: relative;
+					z-index: 1000;
+				}
