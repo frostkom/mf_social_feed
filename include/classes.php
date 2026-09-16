@@ -215,18 +215,18 @@ class mf_social_feed
 						$out_temp .= "</a>
 						<span class='grey'>".format_date($post_date)."</span>
 					</div>
-					<div class='content'>";
+					<div class='grid_content'>";
 
 						if($post_service == 'rss' && $post_title != '')
 						{
-							$out_temp .= "<p class='text'>
+							$out_temp .= "<p class='grid_text'>
 								<a href='".$post_link."' class='grid_title'>".$post_title."</a>
 							</p>";
 						}
 
 						if($post_content != '')
 						{
-							$out_temp .= "<div class='text'>
+							$out_temp .= "<div class='grid_text'>
 								<a href='".$post_link."' class='grid_title'>".apply_filters('the_content', $post_content)."</a>
 							</div>";
 						}
