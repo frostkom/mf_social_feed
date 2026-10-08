@@ -34,6 +34,163 @@ class mf_social_feed
 		$this->meta_prefix = $this->post_type.'_';
 	}
 
+	function fetch_feed()
+	{
+		global $wpdb;
+
+		$this->get_type();
+
+		if($this->search != '')
+		{
+			$this->arr_posts = [];
+
+			switch($this->type)
+			{
+				case 'facebook':
+					$this->facebook_access_token = get_post_meta($this->id, $this->meta_prefix.'facebook_access_token', true);
+
+					if($this->facebook_access_token == '')
+					{
+						$this->save_error(array('message' => __("Edit and add an access token", 'lang_social_feed')));
+					}
+
+					else
+					{
+						$this->fetch_facebook();
+					}
+				break;
+
+				case 'instagram':
+					$this->instagram_access_token = get_post_meta($this->id, $this->meta_prefix.'instagram_access_token', true);
+
+					if($this->instagram_access_token == '')
+					{
+						$this->save_error(array('message' => __("Edit and add an access token", 'lang_social_feed')));
+					}
+
+					else
+					{
+						$this->fetch_instagram();
+					}
+				break;
+
+				case 'linkedin':
+					$this->fetch_linkedin();
+				break;
+
+				case 'rss':
+					$this->fetch_rss();
+				break;
+
+				case 'twitter':
+					$this->fetch_twitter();
+				break;
+			}
+
+			//$this->set_date_modified();
+			$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_modified = NOW() WHERE ID = '%d' AND post_type = %s", $this->id, $this->post_type));
+
+			//$this->insert_posts();
+			if(get_option('setting_social_debug') == 'yes')
+			{
+				do_log(__FUNCTION__.": ".htmlspecialchars(var_export($this->arr_posts, true)));
+			}
+
+			$is_updated = false;
+
+			foreach($this->arr_posts as $post)
+			{
+				$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type'].(isset($post['id']) && $post['id'] != '' ? " ".$post['id'] : ''));
+				$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
+
+				$post_data = array(
+					'post_name' => $post_name,
+					'post_title' => $post_title,
+					'post_content' => $post['text'],
+					'post_parent' => $this->id,
+					'meta_input' => array(
+						$this->meta_prefix.'service' => $post['type'],
+						$this->meta_prefix.'feed_id' => $this->id,
+						$this->meta_prefix.'name' => $post['name'],
+						$this->meta_prefix.'image' => $post['image'],
+						$this->meta_prefix.'link' => $post['link'],
+					),
+				);
+
+				$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id');
+
+				foreach($arr_meta_input_types as $meta_input_type)
+				{
+					if(isset($post[$meta_input_type]) && $post[$meta_input_type] > 0)
+					{
+						$post_data['meta_input'][$this->meta_prefix.$meta_input_type] = $post[$meta_input_type];
+					}
+				}
+
+				$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND (post_parent = '%d' OR meta_key = %s AND meta_value = %s) GROUP BY ID", $this->post_type_post, 'publish', $post_title, $post_name, $this->id, $this->meta_prefix.'feed_id', $this->id));
+
+				if($wpdb->num_rows > 0)
+				{
+					$i = 0;
+
+					foreach($result as $r)
+					{
+						$post_id = $r->ID;
+
+						if($this->check_is_settings($post) && $i == 0)
+						{
+							$post_data['ID'] = $post_id;
+							$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
+
+							if(wp_update_post($post_data))
+							{
+								$is_updated = true;
+
+								$i++;
+							}
+						}
+
+						else
+						{
+							wp_trash_post($post_id);
+
+							$is_updated = true;
+						}
+					}
+				}
+
+				else
+				{
+					if($this->check_is_settings($post))
+					{
+						$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s GROUP BY ID LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
+						$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
+
+						$post_data['post_type'] = $this->post_type_post;
+						$post_data['post_status'] = $post_status;
+						$post_data['post_date'] = $post['created'];
+						$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
+
+						if(wp_insert_post($post_data) > 0)
+						{
+							$is_updated = true;
+						}
+					}
+				}
+			}
+
+			if($is_updated == true)
+			{
+				$post_id_social_feed = apply_filters('get_block_search', 0, 'mf/socialfeed');
+
+				if($post_id_social_feed > 0)
+				{
+					do_action('clear_page_cache', $post_id_social_feed);
+				}
+			}
+		}
+	}
+
 	function cron_base()
 	{
 		global $wpdb;
@@ -2403,63 +2560,6 @@ class mf_social_feed
 		delete_post_meta($this->id, $this->meta_prefix.'error');
 	}
 
-	function fetch_feed()
-	{
-		$this->get_type();
-
-		if($this->search != '')
-		{
-			$this->arr_posts = [];
-
-			switch($this->type)
-			{
-				case 'facebook':
-					$this->facebook_access_token = get_post_meta($this->id, $this->meta_prefix.'facebook_access_token', true);
-
-					if($this->facebook_access_token == '')
-					{
-						$this->save_error(array('message' => __("Edit and add an access token", 'lang_social_feed')));
-					}
-
-					else
-					{
-						$this->fetch_facebook();
-					}
-				break;
-
-				case 'instagram':
-					$this->instagram_access_token = get_post_meta($this->id, $this->meta_prefix.'instagram_access_token', true);
-
-					if($this->instagram_access_token == '')
-					{
-						$this->save_error(array('message' => __("Edit and add an access token", 'lang_social_feed')));
-					}
-
-					else
-					{
-						$this->fetch_instagram();
-					}
-				break;
-
-				case 'linkedin':
-					$this->fetch_linkedin();
-				break;
-
-				case 'rss':
-					$this->fetch_rss();
-				break;
-
-				case 'twitter':
-					$this->fetch_twitter();
-				break;
-			}
-
-			$this->set_date_modified();
-
-			$this->insert_posts();
-		}
-	}
-
 	function filter_search_for($value)
 	{
 		if(strpos($value, "/"))
@@ -3117,13 +3217,6 @@ class mf_social_feed
 		}
 	}
 
-	function set_date_modified()
-	{
-		global $wpdb;
-
-		$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_modified = NOW() WHERE ID = '%d' AND post_type = %s", $this->id, $this->post_type));
-	}
-
 	function check_is_settings($post)
 	{
 		$out = true;
@@ -3200,89 +3293,6 @@ class mf_social_feed
 		}
 
 		return $out;
-	}
-
-	function insert_posts()
-	{
-		global $wpdb;
-
-		if(get_option('setting_social_debug') == 'yes')
-		{
-			do_log(__FUNCTION__.": ".htmlspecialchars(var_export($this->arr_posts, true)));
-		}
-
-		foreach($this->arr_posts as $post)
-		{
-			$post_title = (isset($post['title']) && $post['title'] != '' ? $post['title'] : $post['type'].(isset($post['id']) && $post['id'] != '' ? " ".$post['id'] : ''));
-			$post_name = sanitize_title_with_dashes(sanitize_title($post_title));
-
-			$post_data = array(
-				'post_name' => $post_name,
-				'post_title' => $post_title,
-				'post_content' => $post['text'],
-				'post_parent' => $this->id,
-				'meta_input' => array(
-					$this->meta_prefix.'service' => $post['type'],
-					$this->meta_prefix.'feed_id' => $this->id,
-					$this->meta_prefix.'name' => $post['name'],
-					$this->meta_prefix.'image' => $post['image'],
-					$this->meta_prefix.'link' => $post['link'],
-				),
-			);
-
-			$arr_meta_input_types = array('is_owner', 'is_reply', 'is_retweet', 'user_id');
-
-			foreach($arr_meta_input_types as $meta_input_type)
-			{
-				if(isset($post[$meta_input_type]) && $post[$meta_input_type] > 0)
-				{
-					$post_data['meta_input'][$this->meta_prefix.$meta_input_type] = $post[$meta_input_type];
-				}
-			}
-
-			$result = $wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_status = %s AND (post_title = %s OR post_name = %s) AND (post_parent = '%d' OR meta_key = %s AND meta_value = %s) GROUP BY ID", $this->post_type_post, 'publish', $post_title, $post_name, $this->id, $this->meta_prefix.'feed_id', $this->id));
-
-			if($wpdb->num_rows > 0)
-			{
-				$i = 0;
-
-				foreach($result as $r)
-				{
-					$post_id = $r->ID;
-
-					if($this->check_is_settings($post) && $i == 0)
-					{
-						$post_data['ID'] = $post_id;
-						$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input'], $post_data['ID']);
-
-						wp_update_post($post_data);
-
-						$i++;
-					}
-
-					else
-					{
-						wp_trash_post($post_id);
-					}
-				}
-			}
-
-			else
-			{
-				if($this->check_is_settings($post))
-				{
-					$wpdb->get_results($wpdb->prepare("SELECT ID FROM ".$wpdb->posts." INNER JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE post_type = %s AND post_parent = '%d' AND post_status = %s AND meta_key = '".$this->meta_prefix."name' AND meta_value = %s GROUP BY ID LIMIT 0, 1", $this->post_type_post, $this->id, 'pending', $post['name']));
-					$post_status = ($wpdb->num_rows > 0 ? 'draft' : 'publish');
-
-					$post_data['post_type'] = $this->post_type_post;
-					$post_data['post_status'] = $post_status;
-					$post_data['post_date'] = $post['created'];
-					$post_data['meta_input'] = apply_filters('filter_meta_input', $post_data['meta_input']);
-
-					$post_id = wp_insert_post($post_data);
-				}
-			}
-		}
 	}
 	#########################
 }
