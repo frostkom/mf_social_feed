@@ -24,13 +24,7 @@ jQuery(function($)
 {
 	var dom_obj = $(".widget.social_feed");
 
-	dom_obj.find(".text").shorten();
-
-	/*dom_obj.find("img").removeClass('hide').on("error", function()
-	{
-		jQuery(this).parents(".image").children("a").append(script_social_feed.image_fallback);
-		jQuery(this).addClass("hide");
-	});*/
+	dom_obj.find(".grid_text").shorten();
 
 	$(document).on('click', ".shorten-more-link", function(e)
 	{
