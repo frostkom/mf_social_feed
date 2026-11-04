@@ -354,20 +354,20 @@ class mf_social_feed
 							}
 
 							$out_temp .= "<div class='grid_meta'>
-								<a href='".$post_link."'>
+								<span>
 									<i class='".$this->get_post_icon($post_service)." fa-lg'></i>";
 
 									if($post_service == 'rss')
 									{
-										$out_temp .= get_the_title($post_feed);
+										$out_temp .= "&nbsp;".get_the_title($post_feed);
 									}
 
 									else if($post_username != '')
 									{
-										$out_temp .= $post_username;
+										$out_temp .= "&nbsp;".$post_username;
 									}
 
-								$out_temp .= "</a>
+								$out_temp .= "</span>
 								<span class='grey'>".format_date($post_date)."</span>
 							</div>
 						</div>
