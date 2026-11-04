@@ -87,10 +87,8 @@ class mf_social_feed
 				break;
 			}
 
-			//$this->set_date_modified();
 			$wpdb->query($wpdb->prepare("UPDATE ".$wpdb->posts." SET post_modified = NOW() WHERE ID = '%d' AND post_type = %s", $this->id, $this->post_type));
 
-			//$this->insert_posts();
 			if(get_option('setting_social_debug') == 'yes')
 			{
 				do_log(__FUNCTION__.": ".htmlspecialchars(var_export($this->arr_posts, true)));
@@ -181,11 +179,14 @@ class mf_social_feed
 
 			if($is_updated == true)
 			{
-				$post_id_social_feed = apply_filters('get_block_search', 0, 'mf/socialfeed');
+				$arr_post_id_social_feed = apply_filters('get_block_search', 0, 'mf/socialfeed', true);
 
-				if($post_id_social_feed > 0)
+				if(count($arr_post_id_social_feed) > 0)
 				{
-					do_action('clear_page_cache', $post_id_social_feed);
+					foreach($arr_post_id_social_feed as $post_id_social_feed)
+					{
+						do_action('clear_page_cache', $post_id_social_feed);
+					}
 				}
 			}
 		}
