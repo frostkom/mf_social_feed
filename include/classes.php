@@ -185,7 +185,7 @@ class mf_social_feed
 				{
 					foreach($arr_post_id_social_feed as $post_id_social_feed)
 					{
-						do_action('clear_page_cache', $post_id_social_feed);
+						do_action('clear_page_cache', $post_id_social_feed, "", true);
 					}
 				}
 			}
